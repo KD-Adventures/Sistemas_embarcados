@@ -1,6 +1,5 @@
 --cpu=Cortex-M4.fp
 ".\flash\exemplotiva.o"
-".\flash\moverimagem.o"
 ".\flash\buzzer.o"
 ".\flash\accel.o"
 ".\flash\buttons.o"
