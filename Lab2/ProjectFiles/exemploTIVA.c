@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "cmsis_os.h"
 
 #define TAMANHO_FILA 200
@@ -37,7 +38,8 @@ bool decodificado_tail = false;
 bool fim_teste_ultima = false;
 bool fim_teste_penultima = false;
 bool mensagem_decodificada = false;
-char previous_thread[2] = NULL;
+FILE* log_file = NULL;
+int previous_thread = -1;
 
 //-----------------
 // Fun��es de filas
@@ -76,6 +78,17 @@ int dequeue (fila_espera *fila) {
 }
 
 
+void print_log(int thread_index) {
+	if(previous_thread < 0) {
+		fprintf(log_file, "		thread %d, 1d", thread_index);
+		previous_thread = thread_index;
+		return;
+	}
+	fprintf(log_file, "		thread %d, :after %d, 1d", thread_index, previous_thread);
+	previous_thread = thread_index;
+	return;	
+}
+
 //------------------------------------------------------------------------------------
 // Thread respons�vel por encher a fila_chaves com n�meros inteiros em ordem crescente
 //------------------------------------------------------------------------------------
@@ -88,6 +101,7 @@ void gerar_chaves(void const *args){
 			continue;
 		enqueue (fila_chaves, chave);
 		chave++;
+		print_log(1);
 	}
 
 	free (fila_chaves);
@@ -107,7 +121,7 @@ void verificar_primo (void const *args) {
 	while (!chave_valida) {
 		if (fila_primos->full || fila_chaves->empty)
 			continue;
-
+		
 		atual = dequeue (fila_chaves);
 
 		for (i = 2, tem_divisor = false; i < (atual / 2)+1; i++) {
@@ -119,6 +133,7 @@ void verificar_primo (void const *args) {
 
 		if (!tem_divisor)
 			enqueue(fila_primos, atual);
+		print_log(2);
 	}
 
 	free (fila_primos);
@@ -129,34 +144,37 @@ osThreadDef (verificar_primo, osPriorityNormal, 1, 0);
 
 void decodificar_tail(void const *args){
 	if(!fila_primos->empty && !chave_valida) {
+		print_log(3);
+		decodificado_tail = true;
 	}
 }
 osThreadDef (decodificar_tail, osPriorityNormal, 1, 0);
 
 void testar_penultima_word(void const *args){
 	if(decodificar_tail) {
-
+		print_log(4);
 	}
 }
 osThreadDef (testar_penultima_word, osPriorityNormal, 1, 0);
 
 void testar_ultima_word(void const *args){
 	if(decodificar_tail) {
-
+		print_log(5);
 	}
 }
 osThreadDef (testar_ultima_word, osPriorityNormal, 1, 0);
 
 void decodificar_mensagem(void const *args){
 	if(decodificar_tail) {
-
+		print_log(6);
 	}
 }
 osThreadDef (decodificar_mensagem, osPriorityNormal, 1, 0);
 
 void imprime_mensagem(void const *args){
 	if(fim_teste_ultima && fim_teste_penultima && mensagem_decodificada) {
-
+		decodificado_tail = false;
+		print_log(7);
 	}
 }
 osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
@@ -174,5 +192,8 @@ int main(void) {
 	osThreadCreate(osThread(decodificar_mensagem), NULL);
 	osThreadCreate(osThread(imprime_mensagem), NULL);
 	osKernelStart();
+	
+	log_file = fopen("log_file.txt", "w");
+	fprintf(log_file, "gantt\n\ttitle Decodificacao");
 	osDelay(osWaitForever);
 }
