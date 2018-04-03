@@ -15,7 +15,10 @@
 #include <stdio.h>
 #include "cmsis_os.h"
 
-#define TAMANHO_FILA 200
+#define TAMANHO_FILA 500
+
+void imprime_mensagem(void const *args);
+osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
 
 //--------------------------------
 // Fila de espera de processamento
@@ -38,6 +41,7 @@ bool decodificado_tail = false;
 bool fim_teste_ultima = false;
 bool fim_teste_penultima = false;
 bool mensagem_decodificada = false;
+bool imprimindo_mensagem = false;
 FILE* log_file = NULL;
 int previous_thread = -1;
 
@@ -79,14 +83,23 @@ int dequeue (fila_espera *fila) {
 
 
 void print_log(int thread_index) {
-	if(previous_thread < 0) {
+	/*if(previous_thread < 0) {
 		fprintf(log_file, "		thread %d, 1d", thread_index);
 		previous_thread = thread_index;
 		return;
 	}
 	fprintf(log_file, "		thread %d, :after %d, 1d", thread_index, previous_thread);
-	previous_thread = thread_index;
-	return;	
+	previous_thread = thread_index;*/
+	int i;
+	for(i = 0; i < 7000; i++);
+	return;
+}
+
+void criar_thread_imprime_mensagem () {
+	if (fim_teste_penultima && fim_teste_ultima && mensagem_decodificada && !imprimindo_mensagem) {
+		imprimindo_mensagem = true;
+		osThreadCreate(osThread(imprime_mensagem), NULL);
+	}
 }
 
 //------------------------------------------------------------------------------------
@@ -94,11 +107,13 @@ void print_log(int thread_index) {
 //------------------------------------------------------------------------------------
 void gerar_chaves(void const *args){
 	int chave = 2;
-	criar_fila(fila_chaves);
 
 	while (!chave_valida) {
-		if (fila_chaves->full)
+		if (fila_chaves->full) {
+			osThreadYield();
 			continue;
+		}
+		
 		enqueue (fila_chaves, chave);
 		chave++;
 		print_log(1);
@@ -113,14 +128,15 @@ osThreadDef (gerar_chaves, osPriorityNormal, 1, 0);
 // Thread respons�vel por verificar se os n�meros da fila_chaves s�o primos.
 // Se sim, esses n�meros s�o salvos na fila_primos.
 //--------------------------------------------------------------------------
-void verificar_primo (void const *args) {
+void verificar_primos (void const *args) {
 	int i, atual;
 	bool tem_divisor;
-	criar_fila (fila_primos);
 
 	while (!chave_valida) {
-		if (fila_primos->full || fila_chaves->empty)
+		if (fila_primos->full || fila_chaves->empty) {
+			osThreadYield();
 			continue;
+		}
 		
 		atual = dequeue (fila_chaves);
 
@@ -135,65 +151,87 @@ void verificar_primo (void const *args) {
 			enqueue(fila_primos, atual);
 		print_log(2);
 	}
-
 	free (fila_primos);
 }
-osThreadDef (verificar_primo, osPriorityNormal, 1, 0);
-
-
-
-void decodificar_tail(void const *args){
-	if(!fila_primos->empty && !chave_valida) {
-		print_log(3);
-		decodificado_tail = true;
-	}
-}
-osThreadDef (decodificar_tail, osPriorityNormal, 1, 0);
+osThreadDef (verificar_primos, osPriorityNormal, 1, 0);
 
 void testar_penultima_word(void const *args){
-	if(decodificar_tail) {
+	if(decodificado_tail) {
 		print_log(4);
+		fim_teste_penultima = true;
+		criar_thread_imprime_mensagem();
 	}
 }
 osThreadDef (testar_penultima_word, osPriorityNormal, 1, 0);
 
 void testar_ultima_word(void const *args){
-	if(decodificar_tail) {
+	if(decodificado_tail) {
 		print_log(5);
+		fim_teste_ultima = true;
+		criar_thread_imprime_mensagem();
 	}
 }
 osThreadDef (testar_ultima_word, osPriorityNormal, 1, 0);
 
 void decodificar_mensagem(void const *args){
-	if(decodificar_tail) {
+	if(decodificado_tail) {
 		print_log(6);
+		mensagem_decodificada = true;
+		criar_thread_imprime_mensagem();
 	}
 }
 osThreadDef (decodificar_mensagem, osPriorityNormal, 1, 0);
 
-void imprime_mensagem(void const *args){
-	if(fim_teste_ultima && fim_teste_penultima && mensagem_decodificada) {
-		decodificado_tail = false;
-		print_log(7);
+void decodificar_tail(void const *args){
+	while (!chave_valida) {
+		if (fila_primos->empty) {
+			osThreadYield();
+			continue;
+		}
+		dequeue(fila_primos);
+		print_log(3);
+		decodificado_tail = true;
+		osThreadCreate(osThread(testar_penultima_word), NULL);
+		osThreadCreate(osThread(testar_ultima_word), NULL);
+		osThreadCreate(osThread(decodificar_mensagem), NULL);
+		osThreadTerminate(osThreadGetId());
 	}
 }
-osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
+osThreadDef (decodificar_tail, osPriorityNormal, 1, 0);
+
+void imprime_mensagem(void const *args){
+	while (!chave_valida) {
+		if (!fim_teste_ultima || !fim_teste_penultima || !mensagem_decodificada) {
+			osThreadYield();
+			continue;
+		}
+
+		print_log(7);
+
+		imprimindo_mensagem = false;
+		decodificado_tail = false;
+		fim_teste_ultima = false;
+		fim_teste_penultima = false;
+		mensagem_decodificada = false;
+		osThreadCreate(osThread(decodificar_tail), NULL);
+		osThreadTerminate(osThreadGetId());
+	}
+}
+//osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
 
 int main(void) {
 	fila_chaves = (fila_espera*) malloc (sizeof (fila_espera));
 	fila_primos = (fila_espera*) malloc (sizeof (fila_espera));
+	
+	criar_fila (fila_primos);
+	criar_fila (fila_chaves);
 
 	osKernelInitialize();
 	osThreadCreate(osThread(gerar_chaves), NULL);
-	osThreadCreate(osThread(decodificar_tail), NULL);
-	osThreadCreate(osThread(verificar_primo), NULL);
-	osThreadCreate(osThread(testar_penultima_word), NULL);
-	osThreadCreate(osThread(testar_ultima_word), NULL);
-	osThreadCreate(osThread(decodificar_mensagem), NULL);
-	osThreadCreate(osThread(imprime_mensagem), NULL);
+	osThreadCreate(osThread(verificar_primos), NULL);
+	osThreadCreate(osThread(decodificar_tail), NULL);	
 	osKernelStart();
 	
-	log_file = fopen("log_file.txt", "w");
-	fprintf(log_file, "gantt\n\ttitle Decodificacao");
+	//fprintf(log_file, "gantt\n\ttitle Decodificacao");
 	osDelay(osWaitForever);
 }
