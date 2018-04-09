@@ -20,16 +20,23 @@
 
 #define TAMANHO_FILA 500
 
-const uint32_t mensagem[] = {
-    0x5a990100, 0x6667feff, 0x76990100, 0x6867feff, 0x7b990100, 
-    0x6167feff, 0x27990100, 0x2667feff, 0x27990100, 0x4c67feff,
-    0x68990100, 0x6767feff, 0x7b990100, 0x5a67feff, 0x75990100,
-    0x5a67feff, 0x27990100, 0x5f67feff, 0x6c990100, 0x5a67feff, 
-    0x7b990100, 0x2767feff, 0x27990100, 0x4b67feff, 0x76990100,
-    0x5b67feff, 0x27990100, 0x4d67feff, 0x6f990100, 0x6867feff,
-    0x74990100, 0x5a67feff, 0x7a990100, 0x8a650200, 0x8ebffeff
+uint32_t mensagem[] = {
+	0x0001995a,  0xfffe6766,  0x00019976,  0xfffe6768,  0x0001997b,
+	0xfffe6761,  0x00019927,  0xfffe6726,  0x00019927,  0xfffe674c,
+	0x00019968,  0xfffe6767,  0x0001997b,  0xfffe675a,  0x00019975,
+	0xfffe675a,  0x00019927,  0xfffe675f,  0x0001996c,  0xfffe675a,
+	0x0001997b,  0xfffe6727,  0x00019927,  0xfffe674b,  0x00019976,
+	0xfffe675b,  0x00019927,  0xfffe674d,  0x0001996f,  0xfffe6768,  
+	0x00019974,  0xfffe675a,  0x0001997a,  0x0002658a,  0xfffebf8e 
 };
-const int mensagem_len = 35;
+
+
+
+//const int mensagem_len = 35;
+int mensagem_len = 35;
+
+char* mensagem_decodificada = NULL;
+int mensagem_decodificada_len = -1;
 
 //--------------------------------
 // Fila de espera de processamento
@@ -40,6 +47,7 @@ typedef struct fila {
 	int proxima_posicao_vazia;
 	bool full;
 	bool empty;
+	bool mutex;
 } fila_espera;
 
 //--------------------------------
@@ -52,7 +60,7 @@ bool chave_valida = false;
 bool decodificado_tail = false;
 bool fim_teste_ultima = false;
 bool fim_teste_penultima = false;
-bool mensagem_decodificada = false;
+bool is_mensagem_decodificada = false;
 bool imprimindo_mensagem = false;
 int chave_anterior = 0;
 int chave_atual = 0;
@@ -66,9 +74,15 @@ void criar_fila (fila_espera *fila) {
 	fila->proxima_posicao_vazia = 0;
 	fila->full = false;
 	fila->empty = true;
+	fila->mutex = false;
 }
 
 void enqueue (fila_espera *fila, int elemento) {
+	if(fila->mutex == true)
+		osThreadYield();
+	
+	fila->mutex = true;
+	
 	fila->elementos[fila->proxima_posicao_vazia] = elemento;
 	fila->proxima_posicao_vazia++;
 
@@ -78,10 +92,18 @@ void enqueue (fila_espera *fila, int elemento) {
 	fila->empty = false;
 	if (fila->proxima_posicao_vazia == fila->primeiro_elemento)
 		fila->full = true;
+	
+	fila->mutex = false;
 }
 
 int dequeue (fila_espera *fila) {
 	int elemento = fila->elementos[fila->primeiro_elemento];
+	
+	if(fila->mutex == true)
+		osThreadYield();
+	
+	fila->mutex = true;
+	
 	fila->primeiro_elemento++;
 
 	if (fila->primeiro_elemento == TAMANHO_FILA)
@@ -90,18 +112,19 @@ int dequeue (fila_espera *fila) {
 	fila->full = false;
 	if (fila->proxima_posicao_vazia == fila->primeiro_elemento)
 		fila->empty = true;
-
+	
+	fila->mutex = false;
 	return elemento;
 }
 
 void print_log(int thread_index) {
 	int i;
-	for(i = 0; i < 7000; i++);
+	for(i = 0; i < 1; i++);
 	return;
 }
 
 uint32_t decode(const uint32_t *msg, int index) {
-	if (index%2 == 0)
+	if ((index + 1)%2 == 0)
 		return msg[index] - chave_atual;
 	else
 		return msg[index] + chave_atual;
@@ -186,10 +209,16 @@ void testar_penultima_word(void const *args){
 			osThreadYield();
 			continue;
 		}
+
 		if (penultima_word_decodificada == chave_atual / 2)
+		{
 			passou_teste_penultima = true;
+		}
 		else
+		{
 			passou_teste_penultima = false;
+		}
+		
 		
 		print_log(4);
 		fim_teste_penultima = true;
@@ -204,10 +233,14 @@ void testar_ultima_word(void const *args){
 			continue;
 		}
 		
-		if (ultima_word_decodificada == ((chave_atual * chave_atual) / chave_anterior))
+		if (ultima_word_decodificada == (chave_atual * chave_atual / chave_anterior))
+		{
 			passou_teste_ultima = true;
+		}
 		else
+		{
 			passou_teste_ultima = false;
+		}
 		
 		print_log(5);
 		fim_teste_ultima = true;
@@ -219,36 +252,43 @@ void decodificar_mensagem(void const *args){
 	int i;
 	
 	while(!chave_valida) {
-		if(!decodificado_tail || mensagem_decodificada) {
+		if(!decodificado_tail || is_mensagem_decodificada) {
 			osThreadYield();
 			continue;
 		}
 		
+		mensagem_decodificada = (char*) malloc (sizeof (char) * (mensagem_len - 2));
 		for (i = 0; i < mensagem_len - 2; i++) {
-			// vai ter que criar uma variável global pra armazenar a mensagem decodificada
+			mensagem_decodificada[i] = decode(mensagem, i);
+            // vai ter que criar uma variável global pra armazenar a mensagem decodificada
 			// e usar malloc pq o tamanho muda pra cada mensagem.
 		}
+		mensagem_decodificada_len = mensagem_len - 2;
 		
 		print_log(6);
-		mensagem_decodificada = true;
+		is_mensagem_decodificada = true;
 	}
 }
 osThreadDef (decodificar_mensagem, osPriorityNormal, 1, 0);
 
 void imprime_mensagem(void const *args){
 	while (!chave_valida) {
-		if (!fim_teste_ultima || !fim_teste_penultima || !mensagem_decodificada) {
+		if (!fim_teste_ultima || !fim_teste_penultima || !is_mensagem_decodificada) {
 			osThreadYield();
 			continue;
 		}
 		if (passou_teste_ultima && passou_teste_penultima)
+		{
 			chave_valida = true;
+		}
 		
+		// Imprime mensagem
+		free(mensagem_decodificada);
 		print_log(7);
 		decodificado_tail = false;
 		fim_teste_ultima = false;
 		fim_teste_penultima = false;
-		mensagem_decodificada = false;
+		is_mensagem_decodificada = false;
 	}
 }
 osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
