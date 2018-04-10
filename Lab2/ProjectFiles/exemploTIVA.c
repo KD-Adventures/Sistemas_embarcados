@@ -18,7 +18,7 @@
 #include "cmsis_os.h"
 #include <stdint.h>
 
-#define TAMANHO_FILA 500
+#define TAMANHO_FILA 10000
 
 uint32_t mensagem[] = {
 	0x0001995a,  0xfffe6766,  0x00019976,  0xfffe6768,  0x0001997b,
@@ -65,6 +65,70 @@ bool imprimindo_mensagem = false;
 int chave_anterior = 0;
 int chave_atual = 0;
 uint32_t ultima_word_decodificada, penultima_word_decodificada;
+
+
+//------------------
+// Funções de primos
+//------------------
+uint32_t potencia_modulo(uint32_t base, uint32_t expoente, uint32_t modulo)
+{
+    uint32_t resultado = 1;
+    base = base % modulo;
+ 
+    while (expoente > 0)
+    {
+        if (expoente & 1)
+            resultado = (resultado*base) % modulo;
+ 
+        expoente = expoente>>1;
+        base = (base*base) % modulo;  
+    }
+    return resultado;
+}
+
+bool numero_primo (uint32_t numero) {
+    int i, j;
+    uint32_t s, d, a, x;
+    bool loop_interrompido = true;
+
+    if (numero == 2)
+        return true;
+    if (numero % 2 == 0)
+        return false;
+    
+    s = 0;
+    d = numero - 1;
+
+    while(d%2 == 0) {
+        s++;
+        d = d/2;
+    }
+
+    for(i = 1; i < numero && i < 8; i++) {
+        a = (uint32_t) (1 + ((numero - 1) * rand()) / RAND_MAX);
+
+        x = potencia_modulo(a,d,numero);
+        if (x != 1 && x != (numero - 1)) {
+
+            loop_interrompido = false;
+            for (j = 0; j < s; j++) {
+                x = (x * x) % numero;
+                if (x == 1)
+                    return false;
+                else if (x == numero - 1) {
+                    loop_interrompido = true;
+                    break;
+                }
+            }
+
+            if (!loop_interrompido)
+                return false;
+        }
+    }
+
+    return true;
+}
+
 
 //-----------------
 // Funcoes de filas
@@ -156,8 +220,7 @@ osThreadDef (gerar_chaves, osPriorityNormal, 1, 0);
 // Se sim, esses numeros sao salvos na fila_primos.
 //--------------------------------------------------------------------------
 void verificar_primos (void const *args) {
-	int i, atual;
-	bool tem_divisor;
+	int atual;
 
 	while (!chave_valida) {
 		if (fila_primos->full || fila_chaves->empty) {
@@ -167,14 +230,7 @@ void verificar_primos (void const *args) {
 		
 		atual = dequeue (fila_chaves);
 
-		for (i = 2, tem_divisor = false; i <= (int)sqrt((double) atual); i++) {
-			if (atual % i == 0) {
-				tem_divisor = true;
-				break;
-			}
-		}
-
-		if (!tem_divisor)
+		if(numero_primo (atual))
 			enqueue(fila_primos, atual);
 		print_log(2);
 	}
