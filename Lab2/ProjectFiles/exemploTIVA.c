@@ -16,18 +16,19 @@
 #include <math.h>
 #include "TM4C129.h"
 #include "cmsis_os.h"
-#include <stdint.h>
+#include <stdio.h>
 
 #define TAMANHO_FILA 500
+#define TICK_FACTOR 100000
 
 uint32_t mensagem[] = {
-	0x0001995a,  0xfffe6766,  0x00019976,  0xfffe6768,  0x0001997b,
-	0xfffe6761,  0x00019927,  0xfffe6726,  0x00019927,  0xfffe674c,
-	0x00019968,  0xfffe6767,  0x0001997b,  0xfffe675a,  0x00019975,
-	0xfffe675a,  0x00019927,  0xfffe675f,  0x0001996c,  0xfffe675a,
-	0x0001997b,  0xfffe6727,  0x00019927,  0xfffe674b,  0x00019976,
-	0xfffe675b,  0x00019927,  0xfffe674d,  0x0001996f,  0xfffe6768,  
-	0x00019974,  0xfffe675a,  0x0001997a,  0x0002658a,  0xfffebf8e 
+	0x0001995a ,  0xfffe6766 ,  0x00019976 ,  0xfffe6768 ,  0x0001997b ,
+	0xfffe6761 ,  0x00019927 ,  0xfffe6726 ,  0x00019927 ,  0xfffe674c ,
+	0x00019968 ,  0xfffe6767 ,  0x0001997b ,  0xfffe675a ,  0x00019975 ,
+	0xfffe675a ,  0x00019927 ,  0xfffe675f ,  0x0001996c ,  0xfffe675a ,
+	0x0001997b ,  0xfffe6727 ,  0x00019927 ,  0xfffe674b ,  0x00019976 ,
+	0xfffe675b ,  0x00019927 ,  0xfffe674d ,  0x0001996f ,  0xfffe6768 ,
+	0x00019974 ,  0xfffe675a ,  0x0001997a ,  0x0002658a ,  0xfffebf8e
 };
 
 
@@ -35,7 +36,7 @@ uint32_t mensagem[] = {
 //const int mensagem_len = 35;
 int mensagem_len = 35;
 
-char* mensagem_decodificada = NULL;
+char mensagem_decodificada[35];
 int mensagem_decodificada_len = -1;
 
 //--------------------------------
@@ -65,6 +66,8 @@ bool imprimindo_mensagem = false;
 int chave_anterior = 0;
 int chave_atual = 0;
 uint32_t ultima_word_decodificada, penultima_word_decodificada;
+
+uint32_t initTime = 0, final_time = 0;
 
 //-----------------
 // Funcoes de filas
@@ -124,11 +127,17 @@ void print_log(int thread_index) {
 }
 
 uint32_t decode(const uint32_t *msg, int index) {
-	if ((index + 1)%2 == 0)
+	if (index%2 == 0)
 		return msg[index] - chave_atual;
 	else
 		return msg[index] + chave_atual;
 }
+
+
+int fputc(int c, FILE *f) {
+  return(ITM_SendChar(c));
+}
+
 
 //------------------------------------------------------------------------------------
 // Thread responsavel por encher a fila_chaves com numeros inteiros em ordem crescente
@@ -194,8 +203,8 @@ void decodificar_tail(void const *args){
 		}
 		chave_anterior = chave_atual;
 		chave_atual = dequeue(fila_primos);
-		ultima_word_decodificada = decode(mensagem, mensagem_len - 1);
-		penultima_word_decodificada = decode(mensagem, mensagem_len - 2);
+		ultima_word_decodificada = mensagem[mensagem_len-1] + chave_atual; //decode(mensagem, mensagem_len - 1);
+		penultima_word_decodificada = mensagem[mensagem_len-2] - chave_atual;
 		
 		print_log(3);
 		decodificado_tail = true;
@@ -209,7 +218,8 @@ void testar_penultima_word(void const *args){
 			osThreadYield();
 			continue;
 		}
-
+		
+		
 		if (penultima_word_decodificada == chave_atual / 2)
 		{
 			passou_teste_penultima = true;
@@ -217,8 +227,7 @@ void testar_penultima_word(void const *args){
 		else
 		{
 			passou_teste_penultima = false;
-		}
-		
+		}  
 		
 		print_log(4);
 		fim_teste_penultima = true;
@@ -257,15 +266,13 @@ void decodificar_mensagem(void const *args){
 			continue;
 		}
 		
-		mensagem_decodificada = (char*) malloc (sizeof (char) * (mensagem_len - 2));
 		for (i = 0; i < mensagem_len - 2; i++) {
 			mensagem_decodificada[i] = decode(mensagem, i);
             // vai ter que criar uma variável global pra armazenar a mensagem decodificada
 			// e usar malloc pq o tamanho muda pra cada mensagem.
 		}
+		mensagem_decodificada[mensagem_len - 1] = '\0';
 		mensagem_decodificada_len = mensagem_len - 2;
-		
-		print_log(6);
 		is_mensagem_decodificada = true;
 	}
 }
@@ -282,14 +289,15 @@ void imprime_mensagem(void const *args){
 			chave_valida = true;
 		}
 		
-		// Imprime mensagem
-		free(mensagem_decodificada);
-		print_log(7);
+		printf("\nMensagem decodificada: %s", mensagem_decodificada);
+		printf("\nChave: %d", chave_atual);
 		decodificado_tail = false;
 		fim_teste_ultima = false;
 		fim_teste_penultima = false;
 		is_mensagem_decodificada = false;
 	}
+	final_time = osKernelSysTick()/100000;
+	printf("\nTempo total: %d", final_time);
 }
 osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
 
@@ -300,6 +308,7 @@ int main(void) {
 	criar_fila (fila_primos);
 	criar_fila (fila_chaves);
 
+
 	osKernelInitialize();
 	osThreadCreate(osThread(gerar_chaves), NULL);
 	osThreadCreate(osThread(verificar_primos), NULL);
@@ -309,6 +318,7 @@ int main(void) {
 	osThreadCreate(osThread(decodificar_mensagem), NULL);
 	osThreadCreate(osThread(imprime_mensagem), NULL);
 	osKernelStart();
+	initTime = osKernelSysTick()/100000;
 	
 	osDelay(osWaitForever);
 }
