@@ -17,18 +17,13 @@
 #include "TM4C129.h"
 #include "cmsis_os.h"
 #include <stdio.h>
+//#include <time.h>
 
-#define TAMANHO_FILA 10000
+#define TAMANHO_FILA 100
 #define TICK_FACTOR 100000
 
 uint32_t mensagem[] = {
-	0x0001995a ,  0xfffe6766 ,  0x00019976 ,  0xfffe6768 ,  0x0001997b ,
-	0xfffe6761 ,  0x00019927 ,  0xfffe6726 ,  0x00019927 ,  0xfffe674c ,
-	0x00019968 ,  0xfffe6767 ,  0x0001997b ,  0xfffe675a ,  0x00019975 ,
-	0xfffe675a ,  0x00019927 ,  0xfffe675f ,  0x0001996c ,  0xfffe675a ,
-	0x0001997b ,  0xfffe6727 ,  0x00019927 ,  0xfffe674b ,  0x00019976 ,
-	0xfffe675b ,  0x00019927 ,  0xfffe674d ,  0x0001996f ,  0xfffe6768 ,
-	0x00019974 ,  0xfffe675a ,  0x0001997a ,  0x0002658a ,  0xfffebf8e
+	0xad464fcd, 0x52b9b0e7, 0xad465000, 0x52b9b0d8, 0xad464ff0, 0x52b9b095, 0xad464fde, 0x52b9b0e5, 0xad464ffd, 0x52b9b0de, 0xad464ff9, 0x52b9b0dc, 0xad464ffe, 0x52b9b0e9, 0xad464ff0, 0x52b9b0da, 0xad464ff9, 0x52b9b095, 0xad464fb8, 0x52b9b095, 0xad464fcd, 0x52b9b0e4, 0xad464ffd, 0x52b9b0e3, 0xad464fab, 0x52b9b0e9, 0xad464ffa, 0x52b9b095, 0xad464fdd, 0x52b9b0ea, 0xad464ff9, 0x52b9b095, 0xad464fab, 0x03e97750, 0x52b9b075
 };
 
 
@@ -43,9 +38,9 @@ int mensagem_decodificada_len = -1;
 // Fila de espera de processamento
 //--------------------------------
 typedef struct fila {
-	int elementos[TAMANHO_FILA];
-	int primeiro_elemento;
-	int proxima_posicao_vazia;
+	uint32_t elementos[TAMANHO_FILA];
+	uint32_t primeiro_elemento;
+	uint32_t proxima_posicao_vazia;
 	bool full;
 	bool empty;
 	bool mutex;
@@ -63,18 +58,18 @@ bool fim_teste_ultima = false;
 bool fim_teste_penultima = false;
 bool is_mensagem_decodificada = false;
 bool imprimindo_mensagem = false;
-int chave_anterior = 0;
-int chave_atual = 0;
+uint32_t chave_anterior = 1;
+uint32_t chave_atual = 1;
 uint32_t ultima_word_decodificada, penultima_word_decodificada;
 
-uint32_t initTime = 0, final_time = 0;
+double initTime = 0, final_time = 0;
 
 //------------------
 // Funções de primos
 //------------------
-uint32_t potencia_modulo(uint32_t base, uint32_t expoente, uint32_t modulo)
+/*unsigned long long int potencia_modulo(unsigned long long int base, unsigned long long int expoente, unsigned long long int modulo)
 {
-    uint32_t resultado = 1;
+    unsigned long long int resultado = 1;
     base = base % modulo;
  
     while (expoente > 0)
@@ -88,9 +83,9 @@ uint32_t potencia_modulo(uint32_t base, uint32_t expoente, uint32_t modulo)
     return resultado;
 }
 
-bool numero_primo (uint32_t numero) {
+bool numero_primo (unsigned long long int numero) {
     int i, j;
-    uint32_t s, d, a, x;
+    unsigned long long int s, d, a, x;
     bool loop_interrompido = true;
 
     if (numero == 2)
@@ -107,7 +102,7 @@ bool numero_primo (uint32_t numero) {
     }
 
     for(i = 1; i < numero && i < 8; i++) {
-        a = (uint32_t) (1 + ((numero - 1) * rand()) / RAND_MAX);
+        a = (unsigned long long int) (1 + ((numero - 1) * rand()) / RAND_MAX);
 
         x = potencia_modulo(a,d,numero);
         if (x != 1 && x != (numero - 1)) {
@@ -129,7 +124,7 @@ bool numero_primo (uint32_t numero) {
     }
 
     return true;
-}
+}*/
 
 //-----------------
 // Funcoes de filas
@@ -142,7 +137,7 @@ void criar_fila (fila_espera *fila) {
 	fila->mutex = false;
 }
 
-void enqueue (fila_espera *fila, int elemento) {
+void enqueue (fila_espera *fila, uint32_t elemento) {
 	if(fila->mutex == true)
 		osThreadYield();
 	
@@ -196,16 +191,16 @@ uint32_t decode(const uint32_t *msg, int index) {
 }
 
 
-int fputc(int c, FILE *f) {
+/*int fputc(int c, FILE *f) {
   return(ITM_SendChar(c));
-}
+}*/
 
 
 //------------------------------------------------------------------------------------
 // Thread responsavel por encher a fila_chaves com numeros inteiros em ordem crescente
 //------------------------------------------------------------------------------------
 void gerar_chaves(void const *args){
-	int chave = 2;
+	uint32_t chave = (mensagem[0] & 0xFFFFFF00) - 0x100;
 
 	while (!chave_valida) {
 		if (fila_chaves->full) {
@@ -227,7 +222,9 @@ osThreadDef (gerar_chaves, osPriorityNormal, 1, 0);
 // Se sim, esses numeros sao salvos na fila_primos.
 //--------------------------------------------------------------------------
 void verificar_primos (void const *args) {
-	int atual;
+	uint32_t atual;
+	int i;
+	bool tem_divisor;
 
 	while (!chave_valida) {
 		if (fila_primos->full || fila_chaves->empty) {
@@ -237,7 +234,19 @@ void verificar_primos (void const *args) {
 		
 		atual = dequeue (fila_chaves);
 
-		if(numero_primo (atual))
+		//if(atual == 104711)
+			//printf("oi! %d", atual);
+		
+		
+		for (i = 2, tem_divisor = false; i <= (int)sqrt((double) atual); i ++) {
+			if (atual % i == 0) {
+				tem_divisor = true;
+				break;
+			}
+		}
+
+		if (!tem_divisor)
+		//if (numero_primo(atual))
 			enqueue(fila_primos, atual);
 		print_log(2);
 	}
@@ -343,15 +352,15 @@ void imprime_mensagem(void const *args){
 			chave_valida = true;
 		}
 		
-		printf("\nMensagem decodificada: %s", mensagem_decodificada);
-		printf("\nChave: %d", chave_atual);
+		/*printf("\nMensagem decodificada: %s", mensagem_decodificada);
+		printf("\nChave: %d", chave_atual);*/
 		decodificado_tail = false;
 		fim_teste_ultima = false;
 		fim_teste_penultima = false;
 		is_mensagem_decodificada = false;
 	}
-	final_time = osKernelSysTick()/100000;
-	printf("\nTempo total: %d", final_time);
+	final_time = ((double)osKernelSysTick())/((double)120);
+	//printf("\nTempo total: %d", final_time);
 }
 osThreadDef (imprime_mensagem, osPriorityNormal, 1, 0);
 
@@ -362,6 +371,7 @@ int main(void) {
 	criar_fila (fila_primos);
 	criar_fila (fila_chaves);
 
+	//srand(time(NULL));
 
 	osKernelInitialize();
 	osThreadCreate(osThread(gerar_chaves), NULL);
@@ -372,7 +382,7 @@ int main(void) {
 	osThreadCreate(osThread(decodificar_mensagem), NULL);
 	osThreadCreate(osThread(imprime_mensagem), NULL);
 	osKernelStart();
-	initTime = osKernelSysTick()/100000;
+	initTime = osKernelSysTick()/120000;
 	
 	osDelay(osWaitForever);
 }
