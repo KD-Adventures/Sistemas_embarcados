@@ -381,9 +381,19 @@
           <GroupName>Source Files</GroupName>
           <Files>
             <File>
-              <FileName>exemploTIVA.c</FileName>
+              <FileName>Enduro.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\exemploTIVA.c</FilePath>
+              <FilePath>.\Enduro.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_graphics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\car_graphics.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_graphics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\car_graphics.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -858,9 +868,19 @@
           <GroupName>Source Files</GroupName>
           <Files>
             <File>
-              <FileName>exemploTIVA.c</FileName>
+              <FileName>Enduro.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\exemploTIVA.c</FilePath>
+              <FilePath>.\Enduro.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_graphics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\car_graphics.c</FilePath>
+            </File>
+            <File>
+              <FileName>car_graphics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\car_graphics.h</FilePath>
             </File>
           </Files>
         </Group>
