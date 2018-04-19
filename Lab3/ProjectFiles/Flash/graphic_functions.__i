@@ -4,4 +4,4 @@
 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\RTOS\RTX\INC
 -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129
 -D__UVISION_VERSION="525" -D_RTE_ -DTM4C1294NCPDT -Drvmdk -DPART_TM4C1294NCPDT -DTARGET_IS_TM4C129_RA0
--o .\flash\buttons.o --omf_browse .\flash\buttons.crf --depend .\flash\buttons.d "buttons.c"
+-o .\flash\graphic_functions.o --omf_browse .\flash\graphic_functions.crf --depend .\flash\graphic_functions.d "graphic_functions.c"
