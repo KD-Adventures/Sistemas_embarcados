@@ -41,8 +41,8 @@ tContext sContext;
 extern void f_asm(void);
 unsigned char ImageMemory[128][128];
 int Direction;
-
-enum LoadedImage {Airplane=1, Car};
+int loadedImage;
+int backgroundColor, foregroundColor;
 
 
 /*----------------------------------------------------------------------------
@@ -88,14 +88,14 @@ void loadImageToMemory (const unsigned char* Image) {
 void printImage (void) {
 	int i, j;
 
-	GrContextBackgroundSet(&sContext, ClrBlack);
+	GrContextBackgroundSet(&sContext, backgroundColor);
 
 	for (i = 0; i < 128; i++) {
 		for (j = 0; j < 128; j++) {
 			if (ImageMemory[i][j] > 130)
-				GrContextForegroundSet(&sContext, ClrWhite);
+				GrContextForegroundSet(&sContext, foregroundColor);
 			else
-				GrContextForegroundSet(&sContext, ClrBlack);
+				GrContextForegroundSet(&sContext, backgroundColor);
 			GrPixelDraw(&sContext, i, j);
 		}
 	}
@@ -109,19 +109,22 @@ void printImage (void) {
  *---------------------------------------------------------------------------*/
 int main (void) {
 	bool s1_press, s2_press;
+	int i, velocidade = 3;
 	uint16_t direcao_x, direcao_y;	
-	enum LoadedImage loadedImage;
 	
 	//Initializing all peripherals
 	init_all();
 	loadImageToMemory(carArray);
-	loadedImage = Car;
+	loadedImage = 0;	
 
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 	GrContextFontSet(&sContext, g_psFontFixed6x8);
 	GrContextForegroundSet(&sContext, ClrWhite);
 	GrContextBackgroundSet(&sContext, ClrBlack);
+	
+	backgroundColor = ClrBlack;
+	foregroundColor = ClrWhite;
 	
 	Direction = -1;
 	
@@ -132,20 +135,33 @@ int main (void) {
 			direcao_x = joy_read_x();
 			direcao_y = joy_read_y();
 			
-			if (loadedImage == Car){
-				if (direcao_x < 0x0200)
-					Direction=0;
-				else if (direcao_x > 0x0E00)
-					Direction=1;
+			if (loadedImage == 0) //Carro
+			{ 
+				if (direcao_x < 0x0700){
+					velocidade = (int)((direcao_x-0x800)/0x100);
+					Direction = 0;
+				}
+				else if (direcao_x > 0x0900){
+					velocidade = (int)((direcao_x-0x800)/0x100);
+					Direction = 1;
+				}
 			}
-			else if (loadedImage == Airplane) {
-				if (direcao_y < 0x0200)
-					Direction=2;
-				else if (direcao_y > 0x0E00)
-					Direction=3;
+			else if (loadedImage == 1) { //Aviao				
+				if (direcao_y < 0x0700){
+					velocidade = (int)((direcao_y-0x800)/0x100);
+					Direction = 2;
+				}
+				else if (direcao_y > 0x0900){
+					velocidade = (int)((direcao_y-0x800)/0x100);
+					Direction = 3;
+				}
 			}
 			
-			f_asm();
+			if (velocidade < 0)
+				velocidade = -velocidade;
+			
+			for (i = 0; i < velocidade; i++)
+				f_asm();
 
 
 /*	Botoes 	*/			
@@ -153,12 +169,26 @@ int main (void) {
 			s2_press = button_read_s2();
 
 			if (s1_press){
-				loadImageToMemory(airplaneArray);
-				loadedImage = Airplane;
+				if(loadedImage == 0){
+					loadImageToMemory(airplaneArray);
+					loadedImage = 1;
+				}
+				else{
+					loadImageToMemory(carArray);
+					loadedImage = 0;
+				}
+				Direction = -1;
+				velocidade = 0;
 			}
 			else if (s2_press){
-				loadImageToMemory(carArray);
-				loadedImage = Car;
+				if (backgroundColor == ClrBlack) {
+					backgroundColor = ClrWhite;
+					foregroundColor = ClrBlack;
+				}
+				else {
+					backgroundColor = ClrBlack;
+					foregroundColor = ClrWhite;					
+				}
 			}
 	}	
 }
