@@ -23,12 +23,16 @@
 #include "joy.h"
 #include "graphic_functions.h"
 #include "datatypes.h"
+#include "image_constants.h"
+#include "Mountain.h"
+#include "Car.h"
+#include "Console.h"
 
 /*===========================================================================*
  *                                 THREADS                                   *
  *===========================================================================*/
 void user_input (void const *args){
-	joy_init(); 
+	joy_init();
 	button_init();
 }
 osThreadDef (user_input, osPriorityNormal, 1, 0);
@@ -80,30 +84,42 @@ osThreadDef (collision_detection, osPriorityNormal, 1, 0);
 //void graphics (void const *args){
 void graphics (void){
 	enum Weather weather = SUNRISE;
-	enum Runway_direction runway_direction = straight;
+	enum Runway_direction runway_direction = left;
 	int line, column;
-	
+	Car* car_player; 
+	Mountain* mountain;
+	Console* console;
+
 	tContext sContext;
 	int i = 0;
-	
+
 	Image_matrix* image_memory = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
+
+	load_images();
 	
+	car_player = new_car(GROUND_Y_POSITION, 50, 1, ClrYellow);
+	mountain = new_mountain(20, ClrWhite, 1);
+	console = new_console(0, 42);
 	//Configuring the display.
 	//This will be moved to user_output eventually
-	
+
 	cfaf128x128x16Init();
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 	//-------------
-	
+
 
 	clear_image(image_memory);
 	draw_background(image_memory, weather);
-	
-	
+
+
 	draw_runway(image_memory, runway_direction);
-	
+
+	draw_car(image_memory, car_player, weather);
+	draw_mountain(image_memory, mountain, weather);
+	draw_console(image_memory, console);
+
 	//Draw in the display pixels that might have changed.
 	//This will be moved to user_output eventually
 	clear_image(image_display);
@@ -118,9 +134,9 @@ void graphics (void){
 		}
 	}
 	//-------------
-	
-	
-	
+
+
+
 	//delete_matrix_image(image_memory);
 	//delete_matrix_image(image_display);
 }
@@ -129,7 +145,7 @@ void graphics (void){
 
 /*===========================================================================*/
 void user_output (void const *args){
-	
+
 }
 osThreadDef (user_output, osPriorityNormal, 1, 0);
 
@@ -146,8 +162,8 @@ int main(void) {
 	//osThreadCreate(osThread(graphics), NULL);
 	//osThreadCreate(osThread(user_output), NULL);
 	//osKernelStart();
-	
+
 	//osDelay(osWaitForever);
-	
+
 	graphics();
 }
