@@ -43,5 +43,6 @@ void draw_console (Image_matrix* image_memory, const Console* console);
 
 void draw_runway(Image_matrix* image_memory, enum Runway_direction runway_direction);
 void draw_line(Image_matrix* image_memory, int x1, int y1, int x2, int y2, int color);
+void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i32Radius, int color);
 
 #endif

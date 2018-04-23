@@ -247,21 +247,236 @@ void draw_line(Image_matrix* image_memory, int32_t i32X1, int32_t i32Y1, int32_t
     }
 }
 
+void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i32Radius, int color) {
+    int_fast32_t i32A, i32B, i32D, i32X1, i32Y1;
 
+    //
+    // Initialize the variables that control the Bresenham circle drawing
+    // algorithm.
+    //
+    i32A = 0;
+    i32B = i32Radius;
+    i32D = 3 - (2 * i32Radius);
 
-/*
-void draw_arc(Image_matrix* image_memory, int center_x, int center_y, int radius, int start_angle, int end_angle) {
-    int i = 0;
-    for(i = start_angle; i < end_angle; i++)
-	{
-	 drawpixel(50 + calculatede_cos(i) * radius, y: 100 + calculatede_sin(i) * radius); // center point is (50,100)
-	}
- }
- */
+    //
+    // Loop until the A delta is greater than the B delta, meaning that the
+    // entire circle has been drawn.
+    //
+    while(i32A <= i32B)
+    {
+        //
+        // Determine the row when subtracting the A delta.
+        //
+        i32Y1 = i32Y - i32A;
+
+        //
+        // See if this row is within the clipping region.
+        //
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+        {
+            //
+            // Determine the column when subtracting the B delta.
+            //
+            i32X1 = i32X - i32B;
+
+            //
+            // If this column is within the clipping region, then draw a pixel
+            // at that position.
+            //
+            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            {
+                image_memory->values[i32X1][i32Y1] = color;
+            }
+
+            //
+            // Determine the column when adding the B delta.
+            //
+            i32X1 = i32X + i32B;
+
+            //
+            // If this column is within the clipping region, then draw a pixel
+            // at that position.
+            //
+            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            {
+                image_memory->values[i32X1][i32Y1] = color;
+            }
+        }
+
+        //
+        // Determine the row when adding the A delta.
+        //
+        i32Y1 = i32Y + i32A;
+
+        //
+        // See if this row is within the clipping region, and the A delta is
+        // not zero (otherwise, it will be the same row as when the A delta was
+        // subtracted).
+        //
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)) && (i32A != 0))
+        {
+            //
+            // Determine the column when subtracting the B delta.
+            //
+            i32X1 = i32X - i32B;
+
+            //
+            // If this column is within the clipping region, then draw a pixel
+            // at that position.
+            //
+            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            {
+                image_memory->values[i32X1][i32Y1] = color;
+            }
+
+            //
+            // Determine the column when adding the B delta.
+            //
+            i32X1 = i32X + i32B;
+
+            //
+            // If this column is within the clipping region, then draw a pixel
+            // at that position.
+            //
+            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            {
+                image_memory->values[i32X1][i32Y1] = color;
+            }
+        }
+
+        //
+        // Only draw the complementary pixels if the A and B deltas are
+        // different (otherwise, they describe the same set of pixels).
+        //
+        if(i32A != i32B)
+        {
+            //
+            // Determine the row when subtracting the B delta.
+            //
+            i32Y1 = i32Y - i32B;
+
+            //
+            // See if this row is within the clipping region.
+            //
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+            {
+                //
+                // Determine the column when subtracting the a delta.
+                //
+                i32X1 = i32X - i32A;
+
+                //
+                // If this column is within the clipping region, then draw a
+                // pixel at that position.
+                //
+                if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                {
+                    image_memory->values[i32X1][i32Y1] = color;
+                }
+
+                //
+                // Only draw the mirrored pixel if the A delta is non-zero
+                // (otherwise, it will be the same pixel).
+                //
+                if(i32A != 0)
+                {
+                    //
+                    // Determine the column when adding the A delta.
+                    //
+                    i32X1 = i32X + i32A;
+
+                    //
+                    // If this column is within the clipping region, then draw
+                    // a pixel at that position.
+                    //
+                    if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                    {
+                        image_memory->values[i32X1][i32Y1] = color;
+                    }
+                }
+            }
+
+            //
+            // Determine the row when adding the B delta.
+            //
+            i32Y1 = i32Y + i32B;
+
+            //
+            // See if this row is within the clipping region.
+            //
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+            {
+                //
+                // Determine the column when subtracting the A delta.
+                //
+                i32X1 = i32X - i32A;
+
+                //
+                // If this column is within the clipping region, then draw a
+                // pixel at that position.
+                //
+                if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                {
+                    image_memory->values[i32X1][i32Y1] = color;
+                }
+
+                //
+                // Only draw the mirrored pixel if the A delta is non-zero
+                // (otherwise, it will be the same pixel).
+                //
+                if(i32A != 0)
+                {
+                    //
+                    // Determine the column when adding the A delta.
+                    //
+                    i32X1 = i32X + i32A;
+
+                    //
+                    // If this column is within the clipping region, then draw
+                    // a pixel at that position.
+                    //
+                    if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                    {
+                        image_memory->values[i32X1][i32Y1] = color;
+                    }
+                }
+            }
+        }
+
+        //
+        // See if the error term is negative.
+        //
+        if(i32D < 0)
+        {
+            //
+            // Since the error term is negative, adjust it based on a move in
+            // only the A delta.
+            //
+            i32D += (4 * i32A) + 6;
+        }
+        else
+        {
+            //
+            // Since the error term is non-negative, adjust it based on a move
+            // in both the A and B deltas.
+            //
+            i32D += (4 * (i32A - i32B)) + 10;
+
+            //
+            // Decrement the B delta.
+            //
+            i32B -= 1;
+        }
+
+        //
+        // Increment the A delta.
+        //
+        i32A++;
+    }
+}
 
 void draw_runway(Image_matrix* image_memory, enum Runway_direction runway_direction) {
 	
-
 	switch (runway_direction) {
 		case straight:
 			draw_line(image_memory, RUNWAY_START_Y_POS, RUNWAY_LEFT_START_X_POS, RUNWAY_END_Y_POS -1, RUNWAY_END_X_POS, ClrWhite);
