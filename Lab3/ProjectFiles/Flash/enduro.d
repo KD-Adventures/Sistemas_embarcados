@@ -5,12 +5,11 @@
 .\flash\enduro.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\flash\enduro.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C129.h
 .\flash\enduro.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C1294NCPDT.h
-.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\core_cm4.h
-.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_version.h
-.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_compiler.h
-.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_armcc.h
+.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm4.h
+.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h
+.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h
 .\flash\enduro.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\system_TM4C129.h
-.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\RTOS\RTX\INC\cmsis_os.h
+.\flash\enduro.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\RTOS\RTX\INC\cmsis_os.h
 .\flash\enduro.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\flash\enduro.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\flash\enduro.o: ..\grlib/grlib.h
@@ -20,3 +19,7 @@
 .\flash\enduro.o: graphic_functions.h
 .\flash\enduro.o: datatypes.h
 .\flash\enduro.o: image_constants.h
+.\flash\enduro.o: Mountain.h
+.\flash\enduro.o: Car.h
+.\flash\enduro.o: Console.h
+.\flash\enduro.o: utils.h
