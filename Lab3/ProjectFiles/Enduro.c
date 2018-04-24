@@ -27,28 +27,33 @@
 #include "Mountain.h"
 #include "Car.h"
 #include "Console.h"
+#include "utils.h"
 
 // Globais no momento
 enum Weather weather = DAY;
-enum Runway_direction runway_direction = left;
+Scenario scenario;
+enum Runway_direction runway_direction = straight;
 int line, column;
 
 tContext sContext;
 
 Image_matrix* image_memory;
 Image_matrix* image_display;
-	
 
-Car* car_player; 
+Car *car_player, *car_enemy;
 Mountain* mountain;
 Console* console;
 
 bool move_left = false;
 bool move_right = false;
+bool accelerating = false;
 
 int count_change_weather = 0;
-int max_count_change_weather = 10;
+int count_change_direction = 0;
+int max_count_change_weather = 50;
 int current_weather = 0;
+
+char buffer[10];
 	
 	
 /*===========================================================================*
@@ -56,7 +61,7 @@ int current_weather = 0;
  *===========================================================================*/
 //void user_input (void const *args){
 void user_input (void){
-	int x = 0;
+	int x = 0, y = 0;
 	
 	//joy_init();
 	//button_init();
@@ -65,11 +70,13 @@ void user_input (void){
 	move_right = false;
 
 	x = joy_read_x();
-	
 	if(x < 1500)
 		move_left = true;
 	else if(x > 2500)
 		move_right = true;
+	
+	y = joy_read_y();
+	accelerating = (y > 2500);
 }
 osThreadDef (user_input, osPriorityNormal, 1, 0);
 
@@ -107,13 +114,11 @@ switch (new_weather) {
 
 /*===========================================================================*/
 //void game_manager (void const *args){
-void game_manager (void){
-	
-	mountain->x_position++;
+void game_manager (void){	
 	console->distance++;
 	
 	count_change_weather++;
-	if(count_change_weather == max_count_change_weather)
+	if (count_change_weather == max_count_change_weather)
 	{
 		count_change_weather = 0;
 		current_weather++;
@@ -122,11 +127,40 @@ void game_manager (void){
 		set_current_weather(current_weather);
 	}
 	
-	if(move_left)
-		car_player->x_position--;
-	else if(move_right)
-		car_player->x_position++;
+	count_change_direction++;
+	if (count_change_direction > (max_count_change_weather - 5))
+	{
+		count_change_direction = 0;
+		if(runway_direction == left)
+			runway_direction = straight;
+		else if(runway_direction == straight)
+			runway_direction = right;
+		else if(runway_direction == right)
+			runway_direction = left;
+	}
 	
+	switch (runway_direction) {
+		case right:
+			mountain->x_position++;
+		break;
+		case left:
+			mountain->x_position--;
+		break;
+		default:
+		break;
+	}
+		
+	if (move_left && (car_player->x_position < (RUNWAY_LEFT_START_X_POS - car_player->image->width)))
+		car_player->x_position++;
+	else if (move_right && (car_player->x_position > RUNWAY_RIGHT_START_X_POS))
+		car_player->x_position--;
+	
+	if (accelerating && (car_player->y_position < 30))
+		car_player->y_position++;
+	else if (car_player->y_position > MENU_HEIGHT)
+		car_player->y_position--;
+	
+	console->distance++;
 }
 //osThreadDef (game_manager, osPriorityNormal, 1, 0);
 
@@ -191,47 +225,50 @@ void graphics (void){
 	//GrFlush(&sContext);
 	//-------------
 
-	//while(1){
-		clear_image(image_memory);
-		draw_background(image_memory, weather);
+	clear_image(image_memory);
+	
+	set_weather(weather, &scenario);
+	draw_background(image_memory, &scenario);
 
 
-		draw_runway(image_memory, runway_direction);
+	draw_runway(image_memory, runway_direction, &scenario);
 
-		draw_car(image_memory, car_player, weather);
-		draw_mountain(image_memory, mountain, weather);
-		draw_console(image_memory, console);
-		//Draw in the display pixels that might have changed.
-		//This will be moved to user_output eventually
-		
-		//invert_image_axis_x(image_memory);
-		//invert_image_axis_y(image_memory);
-		//clear_image(image_display);
-
-		for (line = 0; line < DISPLAY_HEIGHT; line++) {
-			for (column = 0; column < DISPLAY_WIDTH; column++) {
-				if (image_display->values[line][column] != image_memory->values[line][column]) {
-					image_display->values[line][column] = image_memory->values[line][column];
-					GrContextForegroundSet(&sContext, image_display->values[line][column]);
-					GrPixelDraw(&sContext, line, column);
-				}
+	draw_car(image_memory, car_player, &scenario);
+	draw_car(image_memory, car_enemy, &scenario);
+	draw_mountain(image_memory, mountain, &scenario);
+	draw_console(image_memory, console);
+	
+	
+	
+	
+	
+	//Draw in the display pixels that might have changed.
+	//This will be moved to user_output eventually
+	invert_image_axis_x(image_memory);
+	invert_image_axis_y(image_memory);
+	//clear_image(image_display);
+	for (line = 0; line < DISPLAY_HEIGHT; line++) {
+		for (column = 0; column < DISPLAY_WIDTH; column++) {
+			if (image_display->values[line][column] != image_memory->values[line][column]) {
+				image_display->values[line][column] = image_memory->values[line][column];
+				GrContextForegroundSet(&sContext, image_display->values[line][column]);
+				GrPixelDraw(&sContext, line, column);
 			}
 		}
-		
-		
-		//isso vai dentro do console
-		GrContextFontSet(&sContext, g_psFontFixed6x8);
-		GrContextForegroundSet(&sContext, ClrWhite);
-		GrContextBackgroundSet(&sContext, ClrBlack);
-		GrStringDraw(&sContext, "dist", -1, 10, (sContext.psFont->ui8Height+2)*1, true);
-		GrStringDraw(&sContext, "vol", -1, 50, (sContext.psFont->ui8Height+2)*1, true);
-		GrStringDraw(&sContext, "pos", -1, 90, (sContext.psFont->ui8Height+2)*1, true);
-		//-------------
-	//}
-
-
+	}
 	//delete_matrix_image(&image_memory);
 	//delete_matrix_image(&image_display);
+	
+	//isso vai dentro do console
+	GrContextFontSet(&sContext, g_psFontFixed6x8);
+	GrContextForegroundSet(&sContext, ClrWhite);
+	GrContextBackgroundSet(&sContext, ClrBlack);
+	GrStringDraw(&sContext, "vol", -1, 50, (sContext.psFont->ui8Height+5)*9, true);
+	GrStringDraw(&sContext, "pos", -1, 90, (sContext.psFont->ui8Height+5)*9, true);
+	
+	intToString(console->distance, buffer, 10, 10, 5);
+	GrStringDraw(&sContext, buffer, -1, 10, (sContext.psFont->ui8Height+5)*9, true);
+	//-------------
 }
 //osThreadDef (graphics, osPriorityNormal, 1, 800);
 
@@ -253,9 +290,10 @@ void init_temp(){
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 	
-	car_player = new_car(64, GROUND_Y_POSITION, 1, ClrYellow);
+	car_player = new_car(64, GROUND_Y_POSITION, 1, ClrYellow, 2);
+	car_enemy = new_car(58, GROUND_Y_POSITION + 20, 1, ClrAquamarine, 1);
 	mountain = new_mountain(40, ClrWhite, 1);
-	console = new_console(20, MENU_Y_POSITION);
+	console = new_console(0, MENU_Y_POSITION);
 	
 	joy_init();
 	button_init();

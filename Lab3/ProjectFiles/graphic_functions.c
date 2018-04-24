@@ -17,6 +17,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrBlue;
 			scene->horizon = ClrBlueViolet;
 			scene->mountains = ClrWhite;
+			scene->runway = ClrWhite;
 		break;
 
 		case NIGHT:
@@ -24,6 +25,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrGray;
 			scene->horizon = ClrGray;
 			scene->mountains = ClrWhite;
+			scene->runway = ClrWhite;
 		break;
 
 		case SNOW:
@@ -31,6 +33,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrBlue;
 			scene->horizon = ClrBlue;
 			scene->mountains = ClrWhite;
+			scene->runway = ClrBlack;
 		break;
 
 		case SUNSET:
@@ -38,6 +41,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrBlue;
 			scene->horizon = ClrViolet;
 			scene->mountains = ClrWhite;
+			scene->runway = ClrWhite;
 		break;
 
 		case SUNRISE:
@@ -45,6 +49,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrGray;
 			scene->horizon = ClrGray;
 			scene->mountains = ClrOrangeRed;
+			scene->runway = ClrWhite;
 		break;
 
 		default:
@@ -52,15 +57,15 @@ void set_weather(enum Weather weather, Scenario* scene) {
 			scene->sky = ClrBlue;
 			scene->horizon = ClrBlueViolet;
 			scene->mountains = ClrWhite;
+			scene->runway = ClrWhite;
 		break;
 	}
 }
 
-void draw_background (Image_matrix* image_memory, enum Weather weather) {
+void draw_background (Image_matrix* image_memory, Scenario* scene) {
 	int column, line;
-	Scenario scene;
 
-	set_weather(weather, &scene);
+	
 
 	//Draw menu - to do
 	for (line = MENU_Y_POSITION; line < MENU_Y_POSITION + MENU_HEIGHT; line++) {
@@ -72,21 +77,21 @@ void draw_background (Image_matrix* image_memory, enum Weather weather) {
 	//Draw ground
 	for (line = GROUND_Y_POSITION; line < GROUND_Y_POSITION + GROUND_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[column][line] = scene.ground;
+			image_memory->values[column][line] = scene->ground;
 		}
 	}
 
 	//Draw horizon
 	for (line = HORIZON_Y_POSITION; line < HORIZON_Y_POSITION + HORIZON_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[column][line] = scene.horizon;
+			image_memory->values[column][line] = scene->horizon;
 		}
 	}
 
 	//Draw sky
 	for (line = SKY_Y_POSITION; line < SKY_Y_POSITION + SKY_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[column][line] = scene.sky;
+			image_memory->values[column][line] = scene->sky;
 		}
 	}
 	
@@ -102,8 +107,10 @@ void draw_image(Image_matrix* image_memory, Image* image, uint8_t pos_x, uint8_t
 	for(j = 0; j < image->height; j++){
 		for(i = 0; i < image->width; i++){
 			if(image->array[image_array_index] > color_threshold) {
-				if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height)
+				if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height){
+					image_array_index--;
 					continue;
+				}
 				if(original_color)
 					image_memory->values[i + pos_x][j + pos_y] = image->array[image_array_index];
 				else
@@ -114,12 +121,12 @@ void draw_image(Image_matrix* image_memory, Image* image, uint8_t pos_x, uint8_t
 	}
 }
 
-void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, enum Weather weather) {
+void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, Scenario* scene) {
 	
 	draw_image(image_memory, mountain->image, mountain->x_position, HORIZON_Y_POSITION, mountain->color, false, 150);
 }
 
-void draw_car (Image_matrix* image_memory, const Car *car, enum Weather weather) {
+void draw_car (Image_matrix* image_memory, const Car *car, Scenario* scene) {
 	
 	draw_image(image_memory, car->image, car->x_position, car->y_position, car->color, false, 150);
 }
@@ -248,9 +255,10 @@ void draw_line(Image_matrix* image_memory, int32_t i32X1, int32_t i32Y1, int32_t
 void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i32Radius, int color) {
     int_fast32_t i32A, i32B, i32D, i32X1, i32Y1;
 
-	int x_left_limit, x_right_limit;
+	int x_left_limit, x_right_limit, y_limit;
 	x_left_limit = RUNWAY_LEFT_END_X_POS;
 	x_right_limit = RUNWAY_RIGHT_END_X_POS;
+	y_limit = HORIZON_Y_POSITION; 
     //
     // Initialize the variables that control the Bresenham circle drawing
     // algorithm.
@@ -273,7 +281,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
         //
         // See if this row is within the clipping region.
         //
-        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= y_limit))
         {
             //
             // Determine the column when subtracting the B delta.
@@ -314,7 +322,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
         // not zero (otherwise, it will be the same row as when the A delta was
         // subtracted).
         //
-        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)) && (i32A != 0))
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= y_limit) && (i32A != 0))
         {
             //
             // Determine the column when subtracting the B delta.
@@ -359,7 +367,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             //
             // See if this row is within the clipping region.
             //
-            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= y_limit))
             {
                 //
                 // Determine the column when subtracting the a delta.
@@ -405,7 +413,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             //
             // See if this row is within the clipping region.
             //
-            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= y_limit))
             {
                 //
                 // Determine the column when subtracting the A delta.
@@ -476,27 +484,27 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
     }
 }
 
-void draw_runway(Image_matrix* image_memory, enum Runway_direction runway_direction) {
+void draw_runway(Image_matrix* image_memory, enum Runway_direction runway_direction, Scenario* scene) {
+	
+	
 	
 	switch (runway_direction) {
 		case straight:
-			draw_line(image_memory, RUNWAY_LEFT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, ClrWhite);
-			draw_line(image_memory, RUNWAY_RIGHT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, ClrWhite);
+			draw_line(image_memory, RUNWAY_LEFT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, scene->runway);
+			draw_line(image_memory, RUNWAY_RIGHT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, scene->runway);
 		break;
 
-		// Nao desenha as curvas no momento, implementar Midpoint circle algorithm para arcos.
 		case left:
-			draw_arc(image_memory, 20, 0, 89, ClrWhite);
-			draw_arc(image_memory, -40, 30, 80, ClrWhite);
-		
-			//draw_line(image_memory, RUNWAY_LEFT_START_X_POS, RUNWAY_START_Y_POS, 15, RUNWAY_END_Y_POS -1, ClrWhite);
-			//draw_line(image_memory, RUNWAY_RIGHT_START_X_POS, RUNWAY_START_Y_POS, 15, RUNWAY_END_Y_POS -1, ClrWhite);
+			draw_arc(image_memory, 108, 0, 89, scene->runway);
+			draw_arc(image_memory, 168, 30, 80, scene->runway);
 		break;
 
 		case middle_left:
 		break;
 
 		case right:
+			draw_arc(image_memory, 20, 0, 89, scene->runway);
+			draw_arc(image_memory, -40, 30, 80, scene->runway);
 		break;
 
 		case middle_right:

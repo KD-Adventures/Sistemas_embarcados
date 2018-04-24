@@ -33,6 +33,15 @@ typedef struct mountain {
 	Image* image;
 } Mountain;
 
+typedef struct scenario {
+	uint32_t ground;
+	uint32_t sky;
+	uint32_t horizon;
+	uint32_t mountains;
+	uint32_t runway;
+	enum Weather weather;
+} Scenario;
+
 typedef struct console {
 	uint32_t x_position;
 	uint32_t y_position;
@@ -47,7 +56,6 @@ void invert_image_axis_x(Image_matrix* image_display);
 void invert_image_axis_y(Image_matrix* image_display);
 
 // poderia ser uint8_t
-Car* new_car(uint32_t x_position, uint32_t y_position, uint32_t speed, uint32_t color);
 
 Mountain* new_mountain(uint32_t x_position, uint32_t color, uint8_t model);
 

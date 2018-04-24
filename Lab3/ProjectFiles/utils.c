@@ -1,6 +1,6 @@
 #include "utils.h"
 
-static void intToString(int64_t value, char * pBuf, uint32_t len, uint32_t base, uint8_t zeros){
+void intToString(int64_t value, char * pBuf, uint32_t len, uint32_t base, uint8_t zeros){
 	static const char* pAscii = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	bool n = false;
 	int pos = 0, d = 0;

@@ -5,6 +5,7 @@
 #include "datatypes.h"
 
 extern Image CAR_BIG;
+extern Image CAR_MEDIUM;
 extern Image MOUNTAIN_1;
 extern Image CONSOLE;
 
