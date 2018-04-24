@@ -63,56 +63,60 @@ void draw_background (Image_matrix* image_memory, enum Weather weather) {
 	set_weather(weather, &scene);
 
 	//Draw menu - to do
-	for (line = 0; line < MENU_HEIGHT; line++) {
+	for (line = MENU_Y_POSITION; line < MENU_Y_POSITION + MENU_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[line][column] = ClrBlack;
+			image_memory->values[column][line] = ClrBlack;
 		}
 	}
 
 	//Draw ground
-	for (line = MENU_HEIGHT; line < MENU_HEIGHT + GROUND_HEIGHT; line++) {
+	for (line = GROUND_Y_POSITION; line < GROUND_Y_POSITION + GROUND_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[line][column] = scene.ground;
+			image_memory->values[column][line] = scene.ground;
 		}
 	}
 
 	//Draw horizon
-	for (line = MENU_HEIGHT + GROUND_HEIGHT; line < DISPLAY_HEIGHT - SKY_HEIGHT; line++) {
+	for (line = HORIZON_Y_POSITION; line < HORIZON_Y_POSITION + HORIZON_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[line][column] = scene.horizon;
+			image_memory->values[column][line] = scene.horizon;
 		}
 	}
 
 	//Draw sky
-	for (line = DISPLAY_HEIGHT - SKY_HEIGHT; line < DISPLAY_HEIGHT; line++) {
+	for (line = SKY_Y_POSITION; line < SKY_Y_POSITION + SKY_HEIGHT; line++) {
 		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			image_memory->values[line][column] = scene.sky;
+			image_memory->values[column][line] = scene.sky;
 		}
 	}
+	
+	//invert_image_axis_x(image_memory);
 
 
 }
 
 void draw_image(Image_matrix* image_memory, Image* image, uint8_t pos_x, uint8_t pos_y, uint32_t color, bool original_color, uint8_t color_threshold) {
 	int i, j;
-	int image_array_index = 0;
+	int image_array_index = image->height*image->width;
 	
-	for(i = 0; i < image->height; i++){
-		for(j = 0; j < image->width; j++) {
+	for(j = 0; j < image->height; j++){
+		for(i = 0; i < image->width; i++){
 			if(image->array[image_array_index] > color_threshold) {
+				if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height)
+					continue;
 				if(original_color)
 					image_memory->values[i + pos_x][j + pos_y] = image->array[image_array_index];
 				else
 					image_memory->values[i + pos_x][j + pos_y] = color;
 			}
-			image_array_index++;
+			image_array_index--;
 		}
 	}
 }
 
 void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, enum Weather weather) {
 	
-	draw_image(image_memory, mountain->image, HORIZON_Y_POSITION, mountain->x_position, mountain->color, false, 150);
+	draw_image(image_memory, mountain->image, mountain->x_position, HORIZON_Y_POSITION, mountain->color, false, 150);
 }
 
 void draw_car (Image_matrix* image_memory, const Car *car, enum Weather weather) {
@@ -123,12 +127,6 @@ void draw_car (Image_matrix* image_memory, const Car *car, enum Weather weather)
 void draw_console (Image_matrix* image_memory, const Console* console) {
 	
 	draw_image(image_memory, console->image, console->x_position, console->y_position, 0, true, 0);
-}
-
-void swap(int* x1, int* x2) {
-	int tmp = *x1;
-	*x1 = *x2;
-	*x2 = tmp;
 }
 
 
@@ -250,6 +248,9 @@ void draw_line(Image_matrix* image_memory, int32_t i32X1, int32_t i32Y1, int32_t
 void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i32Radius, int color) {
     int_fast32_t i32A, i32B, i32D, i32X1, i32Y1;
 
+	int x_left_limit, x_right_limit;
+	x_left_limit = RUNWAY_LEFT_END_X_POS;
+	x_right_limit = RUNWAY_RIGHT_END_X_POS;
     //
     // Initialize the variables that control the Bresenham circle drawing
     // algorithm.
@@ -272,7 +273,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
         //
         // See if this row is within the clipping region.
         //
-        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
         {
             //
             // Determine the column when subtracting the B delta.
@@ -283,7 +284,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             // If this column is within the clipping region, then draw a pixel
             // at that position.
             //
-            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
             {
                 image_memory->values[i32X1][i32Y1] = color;
             }
@@ -297,7 +298,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             // If this column is within the clipping region, then draw a pixel
             // at that position.
             //
-            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
             {
                 image_memory->values[i32X1][i32Y1] = color;
             }
@@ -313,7 +314,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
         // not zero (otherwise, it will be the same row as when the A delta was
         // subtracted).
         //
-        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)) && (i32A != 0))
+        if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)) && (i32A != 0))
         {
             //
             // Determine the column when subtracting the B delta.
@@ -324,7 +325,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             // If this column is within the clipping region, then draw a pixel
             // at that position.
             //
-            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
             {
                 image_memory->values[i32X1][i32Y1] = color;
             }
@@ -338,7 +339,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             // If this column is within the clipping region, then draw a pixel
             // at that position.
             //
-            if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+            if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
             {
                 image_memory->values[i32X1][i32Y1] = color;
             }
@@ -358,7 +359,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             //
             // See if this row is within the clipping region.
             //
-            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
             {
                 //
                 // Determine the column when subtracting the a delta.
@@ -369,7 +370,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
                 // If this column is within the clipping region, then draw a
                 // pixel at that position.
                 //
-                if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
                 {
                     image_memory->values[i32X1][i32Y1] = color;
                 }
@@ -389,7 +390,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
                     // If this column is within the clipping region, then draw
                     // a pixel at that position.
                     //
-                    if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                    if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
                     {
                         image_memory->values[i32X1][i32Y1] = color;
                     }
@@ -404,7 +405,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
             //
             // See if this row is within the clipping region.
             //
-            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT)))
+            if((i32Y1 >= MENU_HEIGHT) && (i32Y1 <= (DISPLAY_HEIGHT - SKY_HEIGHT - HORIZON_HEIGHT)))
             {
                 //
                 // Determine the column when subtracting the A delta.
@@ -415,7 +416,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
                 // If this column is within the clipping region, then draw a
                 // pixel at that position.
                 //
-                if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
                 {
                     image_memory->values[i32X1][i32Y1] = color;
                 }
@@ -435,7 +436,7 @@ void draw_arc(Image_matrix* image_memory, int32_t i32X, int32_t i32Y, int32_t i3
                     // If this column is within the clipping region, then draw
                     // a pixel at that position.
                     //
-                    if((i32X1 >= 0) && (i32X1 <= DISPLAY_WIDTH))
+                    if((i32X1 >= x_left_limit) && (i32X1 <= x_right_limit))
                     {
                         image_memory->values[i32X1][i32Y1] = color;
                     }
@@ -479,14 +480,17 @@ void draw_runway(Image_matrix* image_memory, enum Runway_direction runway_direct
 	
 	switch (runway_direction) {
 		case straight:
-			draw_line(image_memory, RUNWAY_START_Y_POS, RUNWAY_LEFT_START_X_POS, RUNWAY_END_Y_POS -1, RUNWAY_END_X_POS, ClrWhite);
-			draw_line(image_memory, RUNWAY_START_Y_POS, RUNWAY_RIGHT_START_X_POS, RUNWAY_END_Y_POS -1, RUNWAY_END_X_POS, ClrWhite);
+			draw_line(image_memory, RUNWAY_LEFT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, ClrWhite);
+			draw_line(image_memory, RUNWAY_RIGHT_START_X_POS, RUNWAY_START_Y_POS, RUNWAY_END_X_POS, RUNWAY_END_Y_POS -1, ClrWhite);
 		break;
 
 		// Nao desenha as curvas no momento, implementar Midpoint circle algorithm para arcos.
 		case left:
-			draw_line(image_memory, RUNWAY_START_Y_POS, RUNWAY_LEFT_START_X_POS, RUNWAY_END_Y_POS -1, 15, ClrWhite);
-			draw_line(image_memory, RUNWAY_START_Y_POS, RUNWAY_RIGHT_START_X_POS, RUNWAY_END_Y_POS -1, 15, ClrWhite);
+			draw_arc(image_memory, 20, 0, 89, ClrWhite);
+			draw_arc(image_memory, -40, 30, 80, ClrWhite);
+		
+			//draw_line(image_memory, RUNWAY_LEFT_START_X_POS, RUNWAY_START_Y_POS, 15, RUNWAY_END_Y_POS -1, ClrWhite);
+			//draw_line(image_memory, RUNWAY_RIGHT_START_X_POS, RUNWAY_START_Y_POS, 15, RUNWAY_END_Y_POS -1, ClrWhite);
 		break;
 
 		case middle_left:

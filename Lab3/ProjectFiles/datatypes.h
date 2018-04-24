@@ -36,16 +36,20 @@ typedef struct mountain {
 typedef struct console {
 	uint32_t x_position;
 	uint32_t y_position;
+	uint32_t distance;
 	// adicionar mais informações
 	Image* image;
 } Console;
 
 Image_matrix* new_matrix_image(uint32_t height, uint32_t width);
-void delete_matrix_image(Image_matrix* image);
+void delete_matrix_image(Image_matrix** image);
+void invert_image_axis_x(Image_matrix* image_display);
+void invert_image_axis_y(Image_matrix* image_display);
 
 // poderia ser uint8_t
 Car* new_car(uint32_t x_position, uint32_t y_position, uint32_t speed, uint32_t color);
 
 Mountain* new_mountain(uint32_t x_position, uint32_t color, uint8_t model);
 
+void swap(uint32_t* x1, uint32_t* x2);
 #endif
