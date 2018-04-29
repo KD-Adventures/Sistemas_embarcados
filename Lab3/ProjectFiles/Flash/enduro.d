@@ -18,8 +18,8 @@
 .\flash\enduro.o: joy.h
 .\flash\enduro.o: graphic_functions.h
 .\flash\enduro.o: datatypes.h
-.\flash\enduro.o: image_constants.h
-.\flash\enduro.o: Mountain.h
 .\flash\enduro.o: Car.h
+.\flash\enduro.o: Image.h
 .\flash\enduro.o: Console.h
+.\flash\enduro.o: Mountain.h
 .\flash\enduro.o: utils.h

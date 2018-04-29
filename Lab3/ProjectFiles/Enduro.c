@@ -22,12 +22,6 @@
 #include "buttons.h"
 #include "joy.h"
 #include "graphic_functions.h"
-#include "datatypes.h"
-#include "image_constants.h"
-#include "Mountain.h"
-#include "Car.h"
-#include "Console.h"
-#include "utils.h"
 
 // Globais no momento
 enum Weather weather = DAY;
@@ -52,8 +46,6 @@ int count_change_weather = 0;
 int count_change_direction = 0;
 int max_count_change_weather = 50;
 int current_weather = 0;
-
-char buffer[10];
 	
 	
 /*===========================================================================*
@@ -71,9 +63,9 @@ void user_input (void){
 
 	x = joy_read_x();
 	if(x < 1500)
-		move_left = true;
-	else if(x > 2500)
 		move_right = true;
+	else if(x > 2500)
+		move_left = true;
 	
 	y = joy_read_y();
 	accelerating = (y > 2500);
@@ -203,72 +195,18 @@ osThreadDef (collision_detection, osPriorityNormal, 1, 0);
 /*===========================================================================*/
 //void graphics (void const *args){
 void graphics (void){
-	int line, column;
-	//Car* car_player; 
-	//Mountain* mountain;
-	//Console* console;
-
-	//tContext sContext;
-	int i = 0;
-
-	//Image_matrix* image_memory = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-	//Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-
-	//load_images();
-	
-	
-	//Configuring the display.
-	//This will be moved to user_output eventually
-
-	//cfaf128x128x16Init();
-	//GrContextInit(&sContext, &g_sCfaf128x128x16);
-	//GrFlush(&sContext);
-	//-------------
-
 	clear_image(image_memory);
-	
 	set_weather(weather, &scenario);
 	draw_background(image_memory, &scenario);
-
-
 	draw_runway(image_memory, runway_direction, &scenario);
-
 	draw_car(image_memory, car_player, &scenario);
 	draw_car(image_memory, car_enemy, &scenario);
 	draw_mountain(image_memory, mountain, &scenario);
 	draw_console(image_memory, console);
-	
-	
-	
-	
-	
+
 	//Draw in the display pixels that might have changed.
-	//This will be moved to user_output eventually
-	invert_image_axis_x(image_memory);
-	invert_image_axis_y(image_memory);
-	//clear_image(image_display);
-	for (line = 0; line < DISPLAY_HEIGHT; line++) {
-		for (column = 0; column < DISPLAY_WIDTH; column++) {
-			if (image_display->values[line][column] != image_memory->values[line][column]) {
-				image_display->values[line][column] = image_memory->values[line][column];
-				GrContextForegroundSet(&sContext, image_display->values[line][column]);
-				GrPixelDraw(&sContext, line, column);
-			}
-		}
-	}
-	//delete_matrix_image(&image_memory);
-	//delete_matrix_image(&image_display);
-	
-	//isso vai dentro do console
-	GrContextFontSet(&sContext, g_psFontFixed6x8);
-	GrContextForegroundSet(&sContext, ClrWhite);
-	GrContextBackgroundSet(&sContext, ClrBlack);
-	GrStringDraw(&sContext, "vol", -1, 50, (sContext.psFont->ui8Height+5)*9, true);
-	GrStringDraw(&sContext, "pos", -1, 90, (sContext.psFont->ui8Height+5)*9, true);
-	
-	intToString(console->distance, buffer, 10, 10, 5);
-	GrStringDraw(&sContext, buffer, -1, 10, (sContext.psFont->ui8Height+5)*9, true);
-	//-------------
+	update_display(image_memory, image_display, sContext);
+	update_console(console, sContext);
 }
 //osThreadDef (graphics, osPriorityNormal, 1, 800);
 
@@ -280,11 +218,8 @@ void user_output (void const *args){
 osThreadDef (user_output, osPriorityNormal, 1, 0);
 
 void init_temp(){
-
 	image_memory = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 	image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-
-	load_images();
 
 	cfaf128x128x16Init();
 	GrContextInit(&sContext, &g_sCfaf128x128x16);

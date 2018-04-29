@@ -1,5 +1,4 @@
 #include "datatypes.h"
-#include <stdlib.h>
 
 void swap(uint32_t* x1, uint32_t* x2) {
 	uint32_t tmp = *x1;

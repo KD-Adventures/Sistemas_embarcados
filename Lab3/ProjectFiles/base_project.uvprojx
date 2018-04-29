@@ -386,14 +386,19 @@
               <FilePath>.\Enduro.c</FilePath>
             </File>
             <File>
+              <FileName>Image.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Image.c</FilePath>
+            </File>
+            <File>
+              <FileName>datatypes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\datatypes.c</FilePath>
+            </File>
+            <File>
               <FileName>graphic_functions.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\graphic_functions.c</FilePath>
-            </File>
-            <File>
-              <FileName>image_constants.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\image_constants.c</FilePath>
             </File>
             <File>
               <FileName>Car.c</FileName>
@@ -404,11 +409,6 @@
               <FileName>Console.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Console.c</FilePath>
-            </File>
-            <File>
-              <FileName>datatypes.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\datatypes.c</FilePath>
             </File>
             <File>
               <FileName>Mountain.c</FileName>
@@ -501,9 +501,9 @@
           <GroupName>Header Files</GroupName>
           <Files>
             <File>
-              <FileName>image_constants.h</FileName>
+              <FileName>Image.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\image_constants.h</FilePath>
+              <FilePath>.\Image.h</FilePath>
             </File>
             <File>
               <FileName>datatypes.h</FileName>
@@ -521,29 +521,14 @@
               <FilePath>.\Car.h</FilePath>
             </File>
             <File>
-              <FileName>car_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\car_array.h</FilePath>
-            </File>
-            <File>
               <FileName>Console.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Console.h</FilePath>
             </File>
             <File>
-              <FileName>console_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\console_array.h</FilePath>
-            </File>
-            <File>
               <FileName>Mountain.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Mountain.h</FilePath>
-            </File>
-            <File>
-              <FileName>mountain_1_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\mountain_1_array.h</FilePath>
             </File>
             <File>
               <FileName>utils.h</FileName>
@@ -943,14 +928,19 @@
               <FilePath>.\Enduro.c</FilePath>
             </File>
             <File>
+              <FileName>Image.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Image.c</FilePath>
+            </File>
+            <File>
+              <FileName>datatypes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\datatypes.c</FilePath>
+            </File>
+            <File>
               <FileName>graphic_functions.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\graphic_functions.c</FilePath>
-            </File>
-            <File>
-              <FileName>image_constants.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\image_constants.c</FilePath>
             </File>
             <File>
               <FileName>Car.c</FileName>
@@ -961,11 +951,6 @@
               <FileName>Console.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Console.c</FilePath>
-            </File>
-            <File>
-              <FileName>datatypes.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\datatypes.c</FilePath>
             </File>
             <File>
               <FileName>Mountain.c</FileName>
@@ -1058,9 +1043,9 @@
           <GroupName>Header Files</GroupName>
           <Files>
             <File>
-              <FileName>image_constants.h</FileName>
+              <FileName>Image.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\image_constants.h</FilePath>
+              <FilePath>.\Image.h</FilePath>
             </File>
             <File>
               <FileName>datatypes.h</FileName>
@@ -1078,29 +1063,14 @@
               <FilePath>.\Car.h</FilePath>
             </File>
             <File>
-              <FileName>car_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\car_array.h</FilePath>
-            </File>
-            <File>
               <FileName>Console.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Console.h</FilePath>
             </File>
             <File>
-              <FileName>console_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\console_array.h</FilePath>
-            </File>
-            <File>
               <FileName>Mountain.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Mountain.h</FilePath>
-            </File>
-            <File>
-              <FileName>mountain_1_array.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\mountain_1_array.h</FilePath>
             </File>
             <File>
               <FileName>utils.h</FileName>

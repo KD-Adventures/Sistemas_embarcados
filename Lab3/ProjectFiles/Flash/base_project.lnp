@@ -1,10 +1,10 @@
 --cpu=Cortex-M4.fp
 ".\flash\enduro.o"
+".\flash\image.o"
+".\flash\datatypes.o"
 ".\flash\graphic_functions.o"
-".\flash\image_constants.o"
 ".\flash\car.o"
 ".\flash\console.o"
-".\flash\datatypes.o"
 ".\flash\mountain.o"
 ".\flash\utils.o"
 ".\flash\buzzer.o"
