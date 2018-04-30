@@ -15,6 +15,15 @@ typedef struct image_matrix{
 	uint32_t** values;
 } Image_matrix;
 
+typedef struct game_state {
+	Car *player_car;
+	Car *enemy_car;
+	Mountain *mountain;
+	Console *console;
+	enum Runway_direction runway_direction;
+	enum Weather weather;
+} GameState;
+
 typedef struct scenario {
 	uint32_t ground;
 	uint32_t sky;

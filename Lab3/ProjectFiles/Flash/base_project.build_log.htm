@@ -52,10 +52,9 @@ D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Mountain.h(17): warning:  #1-D
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(10): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(73): warning:  #144-D: a value of type "void (*)(void)" cannot be used to initialize an entity of type "os_pthread"
-  
-sThreadDef (user_input, osPriorityNormal, 1, 0);
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(105): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(64): warning:  #191-D: type qualifier is meaningless on cast type
+        const osThreadId game_manager_id = (const osThreadId) args;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(101): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
   }
 Enduro.c: 12 warnings, 0 errors
 compiling Image.c...
@@ -222,7 +221,7 @@ compiling RTX_Conf_CM.c...
 assembling startup_TM4C129.s...
 compiling system_TM4C129.c...
 linking...
-Program Size: Code=15128 RO-data=16280 RW-data=124 ZI-data=210092  
+Program Size: Code=16300 RO-data=16364 RW-data=88 ZI-data=210200  
 ".\Flash\base_project.axf" - 0 Error(s), 73 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -250,24 +249,24 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device\Source\system_TM4C129.c
       Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\ARM\startup_TM4C129.s
+      Source file:   Device\Source\system_TM4C129.c
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
-      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
-      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
-      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
       Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
+      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
+      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
       Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
+      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
 
    * Component: ARM::CMSIS:CORE:5.0.1
 
