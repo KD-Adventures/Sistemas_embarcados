@@ -8,6 +8,7 @@
 
 enum Weather {DAY, NIGHT, SNOW, FOG, SUNSET, SUNRISE};
 enum Runway_direction {straight, middle_left, left, middle_right, right};
+enum User_input_direction {USER_INPUT_LEFT, USER_INPUT_RIGHT, USER_INPUT_STRAIGHT};
 
 typedef struct image_matrix{
 	uint32_t height;
@@ -15,13 +16,26 @@ typedef struct image_matrix{
 	uint32_t** values;
 } Image_matrix;
 
+typedef struct weather_manager {
+	enum Weather weather;
+	int weather_controller;
+	int weather_duration;
+	int weather_timer;
+} WeatherManager;
+
+typedef struct runway_manager {
+	enum Runway_direction runway_direction;
+	int runway_direction_duration;
+	int runway_direction_timer;
+} RunwayManager;
+
 typedef struct game_state {
 	Car *player_car;
 	Car *enemy_car;
 	Mountain *mountain;
 	Console *console;
-	enum Runway_direction runway_direction;
-	enum Weather weather;
+	RunwayManager runway_manager;
+	WeatherManager weather_manager;
 } GameState;
 
 typedef struct scenario {
@@ -30,6 +44,7 @@ typedef struct scenario {
 	uint32_t horizon;
 	uint32_t mountains;
 	uint32_t runway;
+	uint32_t mountain_position;
 	enum Weather weather;
 } Scenario;
 

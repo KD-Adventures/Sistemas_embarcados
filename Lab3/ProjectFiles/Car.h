@@ -2,12 +2,17 @@
 #define CAR_H
 
 #include "Image.h"
+#include <stdbool.h>
+
+enum Car_direction {LEFT, RIGHT, STRAIGHT};
 
 typedef struct car {
 	uint32_t x_position;
 	uint32_t y_position;
 	uint32_t speed;
 	uint32_t color;
+	bool accelerating;
+	enum Car_direction direction;
 	Image* image;
 } Car;
 

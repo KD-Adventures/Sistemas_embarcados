@@ -26,8 +26,19 @@
 #define SIGNAL_CAR_LEFT 0x0001
 #define SIGNAL_CAR_RIGHT 0x0002
 #define SIGNAL_CAR_ACCEL 0x0004
+
+#define WEATHER_DURATION 50
+#define RUNWAY_DIRECTION_DURATION 30 // TODO mudar para rand()
 	
-	
+// Variaveis globais 
+
+GameState *game;
+Image_matrix* image_memory;
+
+enum User_input_direction user_input_direction;
+bool user_input_accel;
+
+
 /*===========================================================================*
  *                                 THREADS                                   *
  *===========================================================================*/
@@ -51,10 +62,18 @@ osThreadDef (collision_detection, osPriorityNormal, 1, 0);
 osThreadDef (graphics, osPriorityNormal, 1, 0);
 osThreadDef (user_output, osPriorityNormal, 1, 0);
 
-osMessageQDef(GameStateMsgBox, 16, &GameState);
-osMessageQId GameStateMsgBox_Id;
-osMessageQDef(ImageMatrixMsgBox, 16, &ImageMatrix);
-osMessageQId ImageMatrixMsgBox_Id;
+osThreadId game_manager_id;
+osThreadId enemy_vehicles_id;
+osThreadId player_vehicles_id;
+osThreadId trajectory_manager_id;
+osThreadId game_stats_id;
+osThreadId collision_detection_id;
+osThreadId graphics_id;
+osThreadId user_output_id;
+
+osTimerDef(timer_game, user_input);
+
+osTimerId timer_game_id;
 
 osMutexDef (MutexImageMemory);
 osMutexId MutexImageMemory_Id;
@@ -64,47 +83,93 @@ void user_input (void const *args){
 	const osThreadId game_manager_id = (const osThreadId) args;
 	
 	while (1) {
-		osSignalClear(game_manager_id, SIGNAL_CAR_LEFT | SIGNAL_CAR_RIGHT);
-
+		
+		// Espera pelo timer
+		
+		user_input_direction = USER_INPUT_STRAIGHT;
+		user_input_accel = false;
+		
 		x = joy_read_x();
-		if (x < 1500)
-			osSignalSet(game_manager_id, SIGNAL_CAR_LEFT);
-		else if (x > 2500)
-			osSignalSet(game_manager_id, SIGNAL_CAR_RIGHT);
+		if (x < 1500) {
+			user_input_direction = USER_INPUT_LEFT; 
+		}
+		else if (x > 2500) {
+			user_input_direction = USER_INPUT_RIGHT; 
+		}
 
-		if (joy_read_y() > 2500)
-			osSignalSet(game_manager_id, SIGNAL_CAR_ACCEL);
-		else
-			osSignalClear(game_manager_id, SIGNAL_CAR_ACCEL);
+		if (joy_read_y() > 2500) {
+			user_input_accel  = true;
+		}
+		
+		osSignalSet(game_manager_id, 0x0001);
 	}
 }
 
 /*===========================================================================*/
-int set_current_weather(GameState *game, int new_weather){
-	switch (new_weather) {
+int set_current_weather(WeatherManager* weather_manager){
+	switch (weather_manager->weather_controller) {
 		case 0:
-			game->weather = DAY;
+			weather_manager->weather = DAY;
 		break;
 
 		case 1:
-			game->weather = NIGHT;
+			weather_manager->weather = NIGHT;
 		break;
 		
 		case 5:
-			game->weather = SNOW;
+			weather_manager->weather = SNOW;
 		break;
 
 		default:
-			game->weather = DAY;
+			weather_manager->weather = DAY;
 		break;
 	}
 }
 
+void weather_manager (WeatherManager* weather_manager) {
+	weather_manager->weather_timer++;
+	if (weather_manager->weather_timer == weather_manager->weather_duration)
+	{
+		weather_manager->weather_timer = 0;
+		weather_manager->weather_controller++;
+		if (weather_manager->weather_controller == 6)
+			weather_manager->weather_controller = 0;
+		set_current_weather(weather_manager);
+	}
+}
+
+
+void runway_manager (RunwayManager* runway_manager) {
+	runway_manager->runway_direction_timer++;
+	if (runway_manager->runway_direction_timer > runway_manager->runway_direction_duration)
+	{
+		runway_manager->runway_direction_timer = 0;
+		runway_manager->runway_direction_duration = RUNWAY_DIRECTION_DURATION; // TODO gerar um rand
+		
+		// TODO Gerar um rand para mudar a direção
+		if(runway_manager->runway_direction == left)
+			runway_manager->runway_direction = straight;
+		else if(runway_manager->runway_direction == straight)
+			runway_manager->runway_direction = right;
+		else if(runway_manager->runway_direction == right)
+			runway_manager->runway_direction = left;
+	}
+}
+
+void car_manager(Car* car) {
+	
+	if (car->direction == LEFT && (car->x_position < (RUNWAY_LEFT_START_X_POS - car->image->width)))
+			car->x_position++;
+		else if (car->direction == RIGHT && (car->x_position > RUNWAY_RIGHT_START_X_POS))
+			car->x_position--;
+		
+		if (car->accelerating && (car->y_position < 30))
+			car->y_position++;
+		else if (car->y_position > MENU_HEIGHT)
+			car->y_position--;
+}
+
 void game_manager (void const *args){
-	GameState *game;
-	int count_change_weather = 0;
-	int count_change_direction = 0;
-	int max_count_change_weather = 50;
 	int current_weather = 0;
 	bool car_move_left = false, car_move_right = false, car_accel = false; 
 	osEvent event;
@@ -114,51 +179,36 @@ void game_manager (void const *args){
 	game->enemy_car = new_car(58, GROUND_Y_POSITION + 20, 1, ClrAquamarine, 1);
 	game->mountain = new_mountain(40, ClrWhite, 1);
 	game->console = new_console(0, MENU_Y_POSITION);
-	game->runway_direction = straight;
-	game->weather = DAY;
+
+	// Weather
+	game->weather_manager.weather = DAY;
+	game->weather_manager.weather_duration = WEATHER_DURATION;
+	game->weather_manager.weather_controller = 0;
+	game->weather_manager.weather_timer = 0;
+
+	//Runaway direction
+	game->runway_manager.runway_direction = straight;
+	game->runway_manager.runway_direction_duration = RUNWAY_DIRECTION_DURATION;
+	game->runway_manager.runway_direction_timer = 0;
 	
-	osMessagePut(GameStateMsgBox_Id, (uint32_t) game, osWaitForever);
+	//osMessagePut(GameStateMsgBox_Id, (uint32_t) game, osWaitForever);
 	
 	while (1) {
-		car_move_left = false;
-		car_move_right = false;
-		car_accel = false;
 		
-		event = osSignalWait(0, 100);
-		if (event.status == osEventSignal) {
-			car_accel = ((event.value.signals & SIGNAL_CAR_ACCEL) > 0);
+		osSignalWait(0x0001, osWaitForever);
+		
+		game->player_car->accelerating = user_input_accel;
 
-			if ((event.value.signals & SIGNAL_CAR_LEFT) > 0)
-				car_move_left = true;
-			else if ((event.value.signals & SIGNAL_CAR_RIGHT) > 0)
-				car_move_right = true;
-		}
+		if (user_input_direction == USER_INPUT_LEFT)
+			game->player_car->direction = LEFT;
+		else if (user_input_direction == USER_INPUT_RIGHT)
+			game->player_car->direction = RIGHT;
 		
 		game->console->distance++;
+		weather_manager(&game->weather_manager);
+		runway_manager(&game->runway_manager);
 		
-		count_change_weather++;
-		if (count_change_weather == max_count_change_weather)
-		{
-			count_change_weather = 0;
-			current_weather++;
-			if(current_weather == 6)
-				current_weather = 0;
-			set_current_weather(game, current_weather);
-		}
-		
-		count_change_direction++;
-		if (count_change_direction > (max_count_change_weather - 5))
-		{
-			count_change_direction = 0;
-			if(game->runway_direction == left)
-				game->runway_direction = straight;
-			else if(game->runway_direction == straight)
-				game->runway_direction = right;
-			else if(game->runway_direction == right)
-				game->runway_direction = left;
-		}
-		
-		switch (game->runway_direction) {
+		switch (game->runway_manager.runway_direction) {
 			case right:
 				game->mountain->x_position++;
 			break;
@@ -169,75 +219,91 @@ void game_manager (void const *args){
 			break;
 		}
 			
-		if (car_move_left && (game->player_car->x_position < (RUNWAY_LEFT_START_X_POS - game->player_car->image->width)))
-			game->player_car->x_position++;
-		else if (car_move_right && (game->player_car->x_position > RUNWAY_RIGHT_START_X_POS))
-			game->player_car->x_position--;
-		
-		if (car_accel && (game->player_car->y_position < 30))
-			game->player_car->y_position++;
-		else if (game->player_car->y_position > MENU_HEIGHT)
-			game->player_car->y_position--;
+		car_manager(game->player_car);
 		
 		game->console->distance++;
+		
+		osSignalSet(enemy_vehicles_id, 0x0001);
+		osSignalSet(player_vehicles_id, 0x0001);
+		osSignalSet(enemy_vehicles_id, 0x0001);	
 	}
 }
 
 /*===========================================================================*/
 void enemy_vehicles (void const *args){
 
+	while(1) {
+		osSignalWait(0x0001, osWaitForever);
+		
+		
+		osSignalSet(game_stats_id, 0x0001);
+		osSignalSet(collision_detection_id, 0x0001);
+	}
 }
 
 /*===========================================================================*/
 void player_vehicle (void const *args){
-
+	while(1) {
+		osSignalWait(0x0001, osWaitForever);
+		
+		
+		osSignalSet(game_stats_id, 0x0002);
+		osSignalSet(collision_detection_id, 0x0002);
+	}
 }
 
 /*===========================================================================*/
 void trajectory_manager (void const *args){
-
+	while(1) {
+		osSignalWait(0x0001, osWaitForever);
+		
+		
+		osSignalSet(game_stats_id, 0x0004);
+		osSignalSet(collision_detection_id, 0x0004);
+	}
 }
 
 /*===========================================================================*/
 void game_stats (void const *args){
-
+	while(1) {
+		osSignalWait(0x0007, osWaitForever);
+		
+		osSignalSet(graphics_id, 0x0001);
+	}
 }
 
 
 /*===========================================================================*/
 void collision_detection (void const *args){
-
+	while(1) {
+		osSignalWait(0x0007, osWaitForever);		
+	}
 }
 
 /*===========================================================================*/
 void graphics (void const *args){
-	Image_matrix* image_memory = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-	GameState *game;
 	Scenario scenario;
-	osEvent event;
+	image_memory = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 	
-	osMessagePut(ImageMatrixMsgBox_Id, (uint32_t) image_memory, osWaitForever);
+	//osMessagePut(ImageMatrixMsgBox_Id, (uint32_t) image_memory, osWaitForever);
 	
 	while (1) {
-		event = osMessageGet(GameStateMsgBox_Id, osWaitForever);
-		if (event.status == osEventMessage) {
-			game = (GameState*) event.value.p;
-			break;
-		}
-	}
+		// Nos slides diz que as flags sao limpas automaticamente, slide 13, pdf 6: sincronismo de threads
+		osSignalWait(0x0001, osWaitForever);
 	
-	clear_image(image_memory);
-	while (1) {
-		set_weather(game->weather, &scenario);
-		
+		clear_image(image_memory);	
+		set_weather(game->weather_manager.weather, &scenario);
+
 		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		draw_background(image_memory, &scenario);
-		draw_runway(image_memory, game->runway_direction, &scenario);
+		draw_runway(image_memory, game->runway_manager.runway_direction, &scenario);
 		draw_car(image_memory, game->player_car, &scenario);
 		draw_car(image_memory, game->enemy_car, &scenario);
 		draw_mountain(image_memory, game->mountain, &scenario);
 		draw_console(image_memory, game->console);
 		osMutexRelease(MutexImageMemory_Id);
+		
+		osSignalSet(user_output_id, 0x0001);
 	}
 }
 
@@ -245,55 +311,52 @@ void graphics (void const *args){
 void user_output (void const *args){
 	tContext sContext;
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-	Image_matrix* image_memory;
-	osEvent event;
-
-	while(1) {
-		event = osMessageGet(ImageMatrixMsgBox_Id, osWaitForever);
-		if (event.status == osEventMessage) {
-			image_memory = (Image_matrix*) event.value.p;
-			break;
-		}
-	}
 	
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 	
 	while(1) {
+		
+		osSignalWait(0x0001, osWaitForever);
+		
 		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		update_display(image_memory, image_display, sContext);
 		osMutexRelease(MutexImageMemory_Id);
 		//update_console(console, sContext);
-		osDelay(100);
+		
+		
+		osTimerStart(timer_game_id, 15);
 	}
 }
 
 /*===========================================================================*/
-int main(void) {
-	osThreadId game_manager_id;
+int main(void) {	
 	
 	cfaf128x128x16Init();
 	joy_init();
 	button_init();
 	osKernelInitialize();
 	
-	//Message boxes
-	GameStateMsgBox_Id = osMessageCreate(osMessageQ(GameStateMsgBox), NULL);
-	ImageMatrixMsgBox_Id = osMessageCreate(osMessageQ(ImageMatrixMsgBox), NULL);
-
 	//Mutexes
 	MutexImageMemory_Id = osMutexCreate(osMutex(MutexImageMemory));
 	
 	//Threads
 	game_manager_id = osThreadCreate(osThread(game_manager), NULL);
 	osThreadCreate(osThread(user_input), game_manager_id);
-	/*osThreadCreate(osThread(enemy_vehicles), NULL);
-	osThreadCreate(osThread(player_vehicle), NULL);
-	osThreadCreate(osThread(trajectory_manager), NULL);
-	osThreadCreate(osThread(game_stats), NULL);
-	osThreadCreate(osThread(collision_detection), NULL);*/
-	osThreadCreate(osThread(graphics), NULL);
-	osThreadCreate(osThread(user_output), NULL);
+	
+
+	enemy_vehicles_id = osThreadCreate(osThread(enemy_vehicles), NULL);
+	player_vehicles_id = osThreadCreate(osThread(player_vehicle), NULL);
+	trajectory_manager_id = osThreadCreate(osThread(trajectory_manager), NULL);
+	game_stats_id = osThreadCreate(osThread(game_stats), NULL);
+	collision_detection_id = osThreadCreate(osThread(collision_detection), NULL);
+
+	graphics_id = osThreadCreate(osThread(graphics), NULL);
+	user_output_id =osThreadCreate(osThread(user_output), NULL);
+	
+	timer_game_id = osTimerCreate(osTimer(timer_game), osTimerOnce, (void*)0);
+	
+	osTimerStart(timer_game_id, 15);
 	
 	osKernelStart();
 

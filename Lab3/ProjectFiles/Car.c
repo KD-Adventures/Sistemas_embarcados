@@ -7,6 +7,8 @@ Car *new_car(uint32_t x_position, uint32_t y_position, uint32_t speed, uint32_t 
 	new_car->y_position = y_position;
 	new_car->speed = speed;
 	new_car->color = color;
+	new_car->accelerating = false;
+	new_car->direction = STRAIGHT;
 	
 	switch(size) {
 		case 0:
