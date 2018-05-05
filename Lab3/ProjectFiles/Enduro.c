@@ -43,6 +43,7 @@ bool user_input_accel;
  *                                 THREADS                                   *
  *===========================================================================*/
 //Declarações
+void timer_game_frames (void const *args);
 void user_input (void const *args);
 void game_manager (void const *args);
 void enemy_vehicles (void const *args);
@@ -62,6 +63,7 @@ osThreadDef (collision_detection, osPriorityNormal, 1, 0);
 osThreadDef (graphics, osPriorityNormal, 1, 0);
 osThreadDef (user_output, osPriorityNormal, 1, 0);
 
+osThreadId user_input_id;
 osThreadId game_manager_id;
 osThreadId enemy_vehicles_id;
 osThreadId player_vehicles_id;
@@ -71,24 +73,35 @@ osThreadId collision_detection_id;
 osThreadId graphics_id;
 osThreadId user_output_id;
 
-osTimerDef(timer_game, user_input);
+osTimerDef(timer_game, timer_game_frames);
 
 osTimerId timer_game_id;
 
 osMutexDef (MutexImageMemory);
 osMutexId MutexImageMemory_Id;
 /*===========================================================================*/
+
+void timer_game_frames (void const *args){
+	osSignalSet(user_input_id, 0x01);
+}
+
+int fputc(int c, FILE *f) {
+  return(ITM_SendChar(c));
+}
+
 void user_input (void const *args){
 	int x = 0;
-	const osThreadId game_manager_id = (const osThreadId) args;
 	
 	while (1) {
 		
-		// Espera pelo timer
+		osSignalWait(0x01, osWaitForever);
 		
 		user_input_direction = USER_INPUT_STRAIGHT;
 		user_input_accel = false;
 		
+		user_input_direction = USER_INPUT_LEFT;
+		user_input_accel  = false;
+	
 		x = joy_read_x();
 		if (x < 1500) {
 			user_input_direction = USER_INPUT_LEFT; 
@@ -101,7 +114,9 @@ void user_input (void const *args){
 			user_input_accel  = true;
 		}
 		
-		osSignalSet(game_manager_id, 0x0001);
+		printf("User Input\n");
+		
+		osSignalSet(game_manager_id, 0x01);
 	}
 }
 
@@ -195,7 +210,7 @@ void game_manager (void const *args){
 	
 	while (1) {
 		
-		osSignalWait(0x0001, osWaitForever);
+		osSignalWait(0x01, osWaitForever);
 		
 		game->player_car->accelerating = user_input_accel;
 
@@ -223,52 +238,57 @@ void game_manager (void const *args){
 		
 		game->console->distance++;
 		
-		osSignalSet(enemy_vehicles_id, 0x0001);
-		osSignalSet(player_vehicles_id, 0x0001);
-		osSignalSet(enemy_vehicles_id, 0x0001);	
+		printf("Game manager\n");
+		
+		osSignalSet(enemy_vehicles_id, 0x01);
+		osSignalSet(player_vehicles_id, 0x01);
+		osSignalSet(trajectory_manager_id, 0x01);	
 	}
 }
 
 /*===========================================================================*/
 void enemy_vehicles (void const *args){
-
+	int previous_flags = 0;
 	while(1) {
-		osSignalWait(0x0001, osWaitForever);
+		osSignalWait(0x01, osWaitForever);
 		
-		
-		osSignalSet(game_stats_id, 0x0001);
-		osSignalSet(collision_detection_id, 0x0001);
+		printf("Enemy vehicles\n");
+		previous_flags = osSignalSet(game_stats_id, 0x01);
+		osSignalSet(collision_detection_id, 0x01);
 	}
 }
 
 /*===========================================================================*/
 void player_vehicle (void const *args){
+	int previous_flags = 0;
 	while(1) {
-		osSignalWait(0x0001, osWaitForever);
+		osSignalWait(0x01, osWaitForever);
 		
-		
-		osSignalSet(game_stats_id, 0x0002);
-		osSignalSet(collision_detection_id, 0x0002);
+		printf("Player vehicles\n");
+		previous_flags = osSignalSet(game_stats_id, 0x02);
+		osSignalSet(collision_detection_id, 0x02);
 	}
 }
 
 /*===========================================================================*/
 void trajectory_manager (void const *args){
+	int previous_flags = 0;
 	while(1) {
 		osSignalWait(0x0001, osWaitForever);
 		
-		
-		osSignalSet(game_stats_id, 0x0004);
-		osSignalSet(collision_detection_id, 0x0004);
+		printf("Trajectory manager\n");
+		previous_flags = osSignalSet(game_stats_id, 0x04);
+		osSignalSet(collision_detection_id, 0x04);
 	}
 }
 
 /*===========================================================================*/
 void game_stats (void const *args){
 	while(1) {
-		osSignalWait(0x0007, osWaitForever);
+		osSignalWait(0x07, osWaitForever);
 		
-		osSignalSet(graphics_id, 0x0001);
+		printf("Game stats\n");
+		osSignalSet(graphics_id, 0x01);
 	}
 }
 
@@ -276,7 +296,8 @@ void game_stats (void const *args){
 /*===========================================================================*/
 void collision_detection (void const *args){
 	while(1) {
-		osSignalWait(0x0007, osWaitForever);		
+		osSignalWait(0x07, osWaitForever);		
+		printf("Collision detection\n");
 	}
 }
 
@@ -288,12 +309,12 @@ void graphics (void const *args){
 	//osMessagePut(ImageMatrixMsgBox_Id, (uint32_t) image_memory, osWaitForever);
 	
 	while (1) {
-		// Nos slides diz que as flags sao limpas automaticamente, slide 13, pdf 6: sincronismo de threads
-		osSignalWait(0x0001, osWaitForever);
+		osSignalWait(0x01, osWaitForever);
 	
 		clear_image(image_memory);	
 		set_weather(game->weather_manager.weather, &scenario);
 
+		
 		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		draw_background(image_memory, &scenario);
 		draw_runway(image_memory, game->runway_manager.runway_direction, &scenario);
@@ -303,7 +324,8 @@ void graphics (void const *args){
 		draw_console(image_memory, game->console);
 		osMutexRelease(MutexImageMemory_Id);
 		
-		osSignalSet(user_output_id, 0x0001);
+		printf("Graphics\n");
+		osSignalSet(user_output_id, 0x01);
 	}
 }
 
@@ -317,15 +339,15 @@ void user_output (void const *args){
 	
 	while(1) {
 		
-		osSignalWait(0x0001, osWaitForever);
+		osSignalWait(0x01, osWaitForever);
 		
 		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		update_display(image_memory, image_display, sContext);
 		osMutexRelease(MutexImageMemory_Id);
 		//update_console(console, sContext);
 		
-		
-		osTimerStart(timer_game_id, 15);
+		printf("User output\n");
+		osTimerStart(timer_game_id, 10);
 	}
 }
 
@@ -341,8 +363,8 @@ int main(void) {
 	MutexImageMemory_Id = osMutexCreate(osMutex(MutexImageMemory));
 	
 	//Threads
+	user_input_id = osThreadCreate(osThread(user_input), game_manager_id);
 	game_manager_id = osThreadCreate(osThread(game_manager), NULL);
-	osThreadCreate(osThread(user_input), game_manager_id);
 	
 
 	enemy_vehicles_id = osThreadCreate(osThread(enemy_vehicles), NULL);
@@ -352,11 +374,11 @@ int main(void) {
 	collision_detection_id = osThreadCreate(osThread(collision_detection), NULL);
 
 	graphics_id = osThreadCreate(osThread(graphics), NULL);
-	user_output_id =osThreadCreate(osThread(user_output), NULL);
+	user_output_id = osThreadCreate(osThread(user_output), NULL);
 	
 	timer_game_id = osTimerCreate(osTimer(timer_game), osTimerOnce, (void*)0);
 	
-	osTimerStart(timer_game_id, 15);
+	osTimerStart(timer_game_id, 10);
 	
 	osKernelStart();
 
