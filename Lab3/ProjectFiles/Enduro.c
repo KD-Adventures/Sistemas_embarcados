@@ -22,20 +22,22 @@
 #include "buttons.h"
 #include "joy.h"
 #include "graphic_functions.h"
+#include <time.h>
 
 
-#define WEATHER_DURATION 50
-#define DAY_DURATION 100;
+#define WEATHER_DURATION 500;
+#define DAY_DURATION 1000;
 #define RACE_DAYS_DURATION 2;
 
 #define RUNWAY_DIRECTION_DURATION 30 // TODO mudar para rand()
-#define RUNWAY_WIDTH RUNWAY_RIGHT_START_X_POS - RUNWAY_LEFT_START_X_POS
+#define RUNWAY_WIDTH (RUNWAY_LEFT_START_X_POS - RUNWAY_RIGHT_START_X_POS)
+#define COLLISION_FRONT_THRESHOLD 10
 
 #define MAX_ENEMY_CARS 1
 
-#define GAME_CLOCK_TIME 15
+#define GAME_CLOCK_TIME 30
 
-#define SEM_PLACA_PARA_TESTAR
+//#define SEM_PLACA_PARA_TESTAR
 	
 // Variaveis globais 
 
@@ -47,6 +49,8 @@ enum User_input_direction user_input_direction;
 bool user_input_accel;
 bool user_input_break;
 bool user_start_button_pressed;
+bool user_end_button_pressed;
+uint32_t x_distance;
 
 
 /*===========================================================================*
@@ -86,11 +90,7 @@ osThreadId graphics_id;
 osThreadId user_output_id;
 
 osTimerDef(timer_game, timer_game_frames);
-
 osTimerId timer_game_id;
-
-osMutexDef (MutexImageMemory);
-osMutexId MutexImageMemory_Id;
 /*===========================================================================*/
 
 void timer_game_frames (void const *args){
@@ -108,43 +108,47 @@ void start_game_clock_timer()
 
 void user_input (void const *args){
 	int x = 0;
-	bool start_button  = false;
 	while (1) {
 		
 		osSignalWait(0x01, osWaitForever);
-		
+		if (game->player_car->collision_detected) {
+			user_input_direction = USER_INPUT_STRAIGHT;
+			user_input_accel = false;
+			user_input_break = false;
+			user_start_button_pressed = false;
+			user_end_button_pressed = false;
+		}
+		else {
 #ifdef SEM_PLACA_PARA_TESTAR
-		user_input_direction = USER_INPUT_STRAIGHT;
-		user_input_accel = false;
-		user_input_break = false;
-		user_start_button_pressed = false;
+			user_input_direction = USER_INPUT_STRAIGHT;
+			user_input_accel = false;
+			user_input_break = false;
+			user_start_button_pressed = false;
+			user_end_button_pressed = false;
 #else
-		user_input_direction = USER_INPUT_STRAIGHT;
-		user_input_accel = false;
-		user_input_break = false;
-		user_start_button_pressed = false;
-	
-		x = joy_read_x();
-		if (x < 1500) {
-			user_input_direction = USER_INPUT_LEFT; 
-		}
-		else if (x > 2500) {
-			user_input_direction = USER_INPUT_RIGHT; 
-		}
-
-		if (joy_read_y() > 2500) {
-			user_input_accel  = true;
-		}
-		else if (joy_read_y() < 1500) {
-			user_input_break = true;
-		}
+			user_input_direction = USER_INPUT_STRAIGHT;
+			user_input_accel = false;
+			user_input_break = false;
 		
-		start_button = button_read_s1();
-		if (start_button) {
-			user_start_button_pressed = true;
-		}
+			x = joy_read_x();
+			if (x < 1500) {
+				user_input_direction = USER_INPUT_RIGHT; 
+			}
+			else if (x > 2500) {
+				user_input_direction = USER_INPUT_LEFT; 
+			}
+
+			if (joy_read_y() > 2500) {
+				user_input_accel  = true;
+			}
+			else if (joy_read_y() < 1500) {
+				user_input_break = true;
+			}
+			
+			user_start_button_pressed = button_read_s1();
+			user_end_button_pressed = button_read_s2();
 #endif
-		printf("User Input\n");
+		}
 		
 		osSignalSet(game_manager_id, 0x01);
 	}
@@ -189,7 +193,8 @@ void runway_manager (RunwayManager* runway_manager) {
 	if (runway_manager->runway_direction_timer > runway_manager->runway_direction_duration)
 	{
 		runway_manager->runway_direction_timer = 0;
-		runway_manager->runway_direction_duration = RUNWAY_DIRECTION_DURATION; // TODO gerar um rand
+		srand(osKernelSysTick());
+		runway_manager->runway_direction_duration = 30 * (int) (rand() / RAND_MAX) ; // TODO gerar um rand
 		
 		// TODO Gerar um rand para mudar a direção
 		if(runway_manager->runway_direction == left)
@@ -203,20 +208,23 @@ void runway_manager (RunwayManager* runway_manager) {
 
 void car_handle_colision(Car* car) {
 	if (car->collision_detected) {
-		car->speed -= car->collision_correction_speed;
-		if (car->speed < 1) {
-			car->speed = 1;
+		//Decreases car speed
+		if (car->speed > car->collision_correction_speed)
+			car->speed -= car->collision_correction_speed;
+		if (car->collision_correction_speed > 0)
 			car->collision_correction_speed--;
-		}
 		
+		//Moves car
 		switch(car->collision_correction_direction) {
 			case COLLISION_RIGHT:
 				car->runway_x_position += car->collision_correction_position;
-				car->collision_correction_position--;
+			  if (car->collision_correction_position > 0)
+					car->collision_correction_position--;
 			break;
 			case COLLISION_LEFT:
 				car->runway_x_position -= car->collision_correction_position;
-				car->collision_correction_position--;
+			  if (car->collision_correction_position > 0)
+					car->collision_correction_position--;
 			break;
 			// TODO front nem tem
 			case COLLISION_FRONT:
@@ -301,25 +309,22 @@ void game_manager (void const *args){
 			if (user_start_button_pressed == true) {
 				game->state = GAME_RUNNING;
 			}
-			printf("Game Not Started\n");
+			//printf("Game Not Started\n");
 			start_game_clock_timer();
 		}
-		
-#ifndef SEM_PLACA_PARA_TESTAR
-		while (user_start_button_pressed) {} 
-#endif	
 		
 		while (game->state == GAME_RUNNING) {
 			osSignalWait(0x01, osWaitForever);
 			
-			if (user_start_button_pressed == true) {
+			if (user_end_button_pressed == true) {
 				game->state = GAME_OVER;
-				continue;
+				start_game_clock_timer();
+				break;
 			}
 					
 			game_time_manager(game);
 			
-			printf("Game Started\n");
+			//printf("Game Started\n");
 			
 			osSignalSet(enemy_vehicles_id, 0x01);
 			osSignalSet(player_vehicles_id, 0x01);
@@ -331,34 +336,35 @@ void game_manager (void const *args){
 /*===========================================================================*/
 void enemy_vehicles (void const *args){
 	int i = 0;
+	int random;
 	bool too_far_away = false;
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
 		
-		if (game->enemy_cars_quantity < game->max_enemy_cars && rand() < 0.2) {
+		random = rand();
+		if ((game->enemy_cars_quantity < game->max_enemy_cars) /*|| (random < 0.2)*/) {
 			// TODO Ajustar a distancia na pista
 			// TODO ajustar GameState para suportar mais de 1 carro
 			// TODO impedir que carros sejam criados atras do player
 			game->enemy_cars_quantity++;
-			game->enemy_car = new_car(RUNWAY_WIDTH - 30, GROUND_Y_POSITION + 20, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+			game->enemy_car = new_car(RUNWAY_WIDTH - 45, GROUND_Y_POSITION + 15, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
 			game->enemy_car->direction = STRAIGHT;
 			game->enemy_car->accelerating = false;
 			game->enemy_car->breaking = false;
 		}
-		else
 		
-		too_far_away = (game->enemy_car->runway_distance > game->console->distance + 50) || (game->enemy_car->runway_distance < game->console->distance - 20);
+		/*too_far_away = (game->enemy_car->runway_distance > game->console->distance + 50) || (game->enemy_car->runway_distance < game->console->distance - 20);
 		if (game->enemy_cars_quantity > 0 && too_far_away) {
 			free(game->enemy_car);
 			game->enemy_cars_quantity--;
-		}
+		}*/
 		
 		// TODO ajustar para mais de um carro
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
 			car_manager(game->player_car);
 		}
 		
-		printf("Enemy vehicles\n");
+		//printf("Enemy vehicles\n");
 		osSignalSet(game_stats_id, 0x01);
 		osSignalSet(collision_detection_id, 0x01);
 	}
@@ -366,7 +372,7 @@ void enemy_vehicles (void const *args){
 
 /*===========================================================================*/
 void player_vehicle (void const *args){
-	game->player_car = new_car(RUNWAY_WIDTH/2, GROUND_Y_POSITION, 0, 1, ClrYellow, 2);
+	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, 2);
 	
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
@@ -378,11 +384,13 @@ void player_vehicle (void const *args){
 			game->player_car->direction = LEFT;
 		else if (user_input_direction == USER_INPUT_RIGHT)
 			game->player_car->direction = RIGHT;
+		else
+			game->player_car->direction = STRAIGHT;
 		
 		car_manager(game->player_car);
 		
 		
-		printf("Player vehicles\n");
+		//printf("Player vehicles\n");
 		osSignalSet(game_stats_id, 0x02);
 		osSignalSet(collision_detection_id, 0x02);
 	}
@@ -391,9 +399,8 @@ void player_vehicle (void const *args){
 /*===========================================================================*/
 void trajectory_manager (void const *args){
 	
-	//Runaway direction
+	//Runway direction
 	game->runway_manager.runway_direction = straight;
-	game->runway_manager.runway_direction_duration = RUNWAY_DIRECTION_DURATION;
 	game->runway_manager.runway_direction_timer = 0;
 	game->runway_manager.runway_width = RUNWAY_WIDTH;
 	
@@ -415,7 +422,7 @@ void trajectory_manager (void const *args){
 			break;
 		}
 		
-		printf("Trajectory manager\n");
+		//printf("Trajectory manager\n");
 		osSignalSet(game_stats_id, 0x04);
 		osSignalSet(collision_detection_id, 0x04);
 	}
@@ -430,39 +437,48 @@ void game_stats (void const *args){
 		// TODO usar mutex para o controle do painel de instrumentos (requisito)
 		game->console->distance++;
 		
-		printf("Game stats\n");
+		//printf("Game stats\n");
 		osSignalSet(graphics_id, 0x01);
 	}
 }
 
 void collision_detection_runway(Car* car) {
-	// Collision left
-	if (car->runway_x_position >= (RUNWAY_WIDTH - car->image->width/2)) {
+	if (car->runway_x_position >= RUNWAY_WIDTH - 3 - car->image->width) {
 		car->collision_correction_direction = COLLISION_LEFT;
-		car->collision_correction_position = 3;
+		car->collision_correction_position = 5;
 		car->collision_correction_speed = 1;
 		car->collision_detected = true;
 	}
-	else if (car->runway_x_position < car->image->width/2) {
-		car->collision_correction_direction = COLLISION_LEFT;
-		car->collision_correction_position = 3;
+	else if (car->runway_x_position < 3) {
+		car->collision_correction_direction = COLLISION_RIGHT;
+		car->collision_correction_position = 5;
 		car->collision_correction_speed = 1;
 		car->collision_detected = true;
 	}
 }
 
 void collision_detection_enemies(Car* player_car, Car* enemy_car) {
-
-	if (enemy_car->runway_distance - player_car->runway_distance > 0 &&  enemy_car->runway_distance - enemy_car->runway_distance < player_car->image->height) {
-		if (player_car->runway_x_position - player_car->image->width/2 < enemy_car->runway_x_position + enemy_car->image->width/2) {
-			// colisao pela direita
+	if (difference(enemy_car->runway_y_position, player_car->runway_y_position) < player_car->image->height) {
+		x_distance = difference(player_car->runway_x_position, enemy_car->runway_x_position);
+		
+		//Collision - player car behind
+		if (x_distance < COLLISION_FRONT_THRESHOLD) {
+			player_car->collision_correction_direction = COLLISION_FRONT;
+			player_car->collision_correction_position = 0;
+			player_car->collision_correction_speed = 5;
+			player_car->collision_detected = true;
+		}
+		
+		//Collision - player car on the right
+		else if ((player_car->runway_x_position > enemy_car->runway_x_position) && (x_distance < enemy_car->image->width)) {
 			player_car->collision_correction_direction = COLLISION_RIGHT;
 			player_car->collision_correction_position = 5;
 			player_car->collision_correction_speed = 3;
 			player_car->collision_detected = true;
 		}
-		else if (player_car->runway_x_position + player_car->image->width/2 < enemy_car->runway_x_position - enemy_car->image->width/2) {
-			// colisao pela direita
+		
+		//Collision - player car on the left
+		else if ((player_car->runway_x_position < enemy_car->runway_x_position) && (x_distance < player_car->image->width)) {
 			player_car->collision_correction_direction = COLLISION_LEFT;
 			player_car->collision_correction_position = 5;
 			player_car->collision_correction_speed = 3;
@@ -476,13 +492,13 @@ void collision_detection (void const *args){
 	int i = 0;
 	while(1) {
 		osSignalWait(0x07, osWaitForever);		
-		printf("Collision detection\n");
+		//printf("Collision detection\n");
 		
 		collision_detection_runway(game->player_car);
 		// TODO ajustar para suportar mais de um inimigo
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
 			collision_detection_enemies(game->player_car, game->enemy_car);
-		}		
+		}
 	}
 }
 
@@ -500,8 +516,6 @@ void graphics (void const *args){
 		clear_image(image_memory);	
 		set_weather(game->weather_manager.weather, &scenario);
 
-		
-		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		draw_background(image_memory, &scenario);
 		draw_runway(image_memory, game->runway_manager.runway_direction, &scenario);
 		draw_car(image_memory, game->player_car, &scenario);
@@ -510,9 +524,8 @@ void graphics (void const *args){
 		}
 		draw_mountain(image_memory, game->mountain, &scenario);
 		draw_console(image_memory, game->console);
-		osMutexRelease(MutexImageMemory_Id);
 		
-		printf("Graphics\n");
+		//printf("Graphics\n");
 		osSignalSet(user_output_id, 0x01);
 	}
 }
@@ -532,15 +545,10 @@ void user_output (void const *args){
 		osSignalWait(0x01, osWaitForever);
 		
 #ifdef SEM_PLACA_PARA_TESTAR
-
 #else
-		osMutexWait(MutexImageMemory_Id, osWaitForever);
 		update_display(image_memory, image_display, sContext);
-		osMutexRelease(MutexImageMemory_Id);
 #endif
-		//update_console(console, sContext);
-		
-		printf("User output\n");
+		//printf("User output\n");
 		start_game_clock_timer();
 	}
 }
@@ -556,13 +564,9 @@ int main(void) {
 #endif
 	osKernelInitialize();
 	
-	//Mutexes
-	MutexImageMemory_Id = osMutexCreate(osMutex(MutexImageMemory));
-	
 	//Threads
 	user_input_id = osThreadCreate(osThread(user_input), game_manager_id);
 	game_manager_id = osThreadCreate(osThread(game_manager), NULL);
-	
 
 	enemy_vehicles_id = osThreadCreate(osThread(enemy_vehicles), NULL);
 	player_vehicles_id = osThreadCreate(osThread(player_vehicle), NULL);

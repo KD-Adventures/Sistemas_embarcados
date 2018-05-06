@@ -5,10 +5,10 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.24.2.0
 Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: . ., ., LIC=----
+License Information: Lucas Kaminski, UTFPR, LIC=X1ERA-1JA8P-YBIE9-4Z9Q2-9TM5L-L63C2
  
 Tool Versions:
-Toolchain:       MDK-Lite  Version: 5.24.1
+Toolchain:       MDK-ARM Professional  Version: 5.24.1
 Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
 C Compiler:      Armcc.exe V5.06 update 5 (build 528)
 Assembler:       Armasm.exe V5.06 update 5 (build 528)
@@ -22,7 +22,7 @@ Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\base_project.uvprojx
-Project File Date:  04/29/2018
+Project File Date:  05/06/2018
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
@@ -44,19 +44,31 @@ D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\joy.h(20): warning:  #1295-D: 
 ool joy_read_center();
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Image.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(22): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(37): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Console.h(16): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Mountain.h(17): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(10): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(64): warning:  #191-D: type qualifier is meaningless on cast type
-        const osThreadId game_manager_id = (const osThreadId) args;
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(101): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(70): warning:  #1295-D: Deprecated declaration start_game_clock_timer - give arg types
+  void start_game_clock_timer();
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(176): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
   }
-Enduro.c: 12 warnings, 0 errors
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(281): warning:  #177-D: variable "current_weather"  was declared but never referenced
+        int current_weather = 0;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(282): warning:  #177-D: variable "car_move_left"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false; 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(282): warning:  #177-D: variable "car_move_right"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false; 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(282): warning:  #177-D: variable "car_accel"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false; 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(339): warning:  #550-D: variable "random"  was set but never used
+        int random;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(340): warning:  #177-D: variable "too_far_away"  was declared but never referenced
+        bool too_far_away = false;
+Enduro.c: 18 warnings, 0 errors
 compiling Image.c...
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Image.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
@@ -66,7 +78,7 @@ Image.c: 2 warnings, 0 errors
 compiling datatypes.c...
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Image.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(22): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(37): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Console.h(16): warning:  #1-D: last line of file ends without a newline
   #endif
@@ -76,23 +88,23 @@ datatypes.c: 4 warnings, 0 errors
 compiling graphic_functions.c...
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Image.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(22): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(37): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Console.h(16): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Mountain.h(17): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(10): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(483): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(485): warning:  #1-D: last line of file ends without a newline
   }
 graphic_functions.c: 6 warnings, 0 errors
 compiling Car.c...
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Image.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(22): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.h(37): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.c(64): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Car.c(72): warning:  #1-D: last line of file ends without a newline
   };
 Car.c: 3 warnings, 0 errors
 compiling Console.c...
@@ -112,9 +124,9 @@ D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Mountain.c(26): warning:  #1-D
   };
 Mountain.c: 3 warnings, 0 errors
 compiling utils.c...
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(10): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.c(58): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.c(66): warning:  #1-D: last line of file ends without a newline
   }
 utils.c: 2 warnings, 0 errors
 compiling buzzer.c...
@@ -221,8 +233,8 @@ compiling RTX_Conf_CM.c...
 assembling startup_TM4C129.s...
 compiling system_TM4C129.c...
 linking...
-Program Size: Code=16300 RO-data=16364 RW-data=88 ZI-data=210200  
-".\Flash\base_project.axf" - 0 Error(s), 73 Warning(s).
+Program Size: Code=17200 RO-data=16432 RW-data=136 ZI-data=238368  
+".\Flash\base_project.axf" - 0 Error(s), 79 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -249,24 +261,24 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.0.0
-      Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\ARM\startup_TM4C129.s
+      Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\system_TM4C129.c
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
       Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
-      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
       Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
-      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
       Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
+      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
+      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: ARM::CMSIS:CORE:5.0.1
 

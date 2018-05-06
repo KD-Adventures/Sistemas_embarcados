@@ -1,4 +1,4 @@
---cpu Cortex-M4.fp --pd "__RTX SETA 1" --pd "__EVAL SETA 1" -g --apcs=interwork 
+--cpu Cortex-M4.fp --pd "__RTX SETA 1" -g --apcs=interwork 
 -I.\RTE\_TM4C129_Flash
 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include
 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\RTOS\RTX\INC

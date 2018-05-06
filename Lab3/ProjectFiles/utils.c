@@ -56,3 +56,11 @@ void intToString(int64_t value, char * pBuf, uint32_t len, uint32_t base, uint8_
 			value /= base;
 	} while(value > 0);
 }
+
+
+uint32_t difference(uint32_t value1, uint32_t value2) {
+	if (value1 > value2)
+		return value1 - value2;
+	else
+		return value2 - value1;
+}

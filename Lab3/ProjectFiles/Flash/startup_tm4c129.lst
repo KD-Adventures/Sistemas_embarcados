@@ -69,25 +69,25 @@ ARM Macro Assembler    Page 1
 ARM Macro Assembler    Page 2 
 
 
-   44 00001000 00030000 
+   44 00001000 00035000 
                        Heap_Size
-                               EQU              0x00030000
+                               EQU              0x00035000
    45 00001000         
    46 00001000                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
 3
    47 00000000         __heap_base
    48 00000000         Heap_Mem
                                SPACE            Heap_Size
-   49 00030000         __heap_limit
-   50 00030000         
-   51 00030000         
-   52 00030000                 PRESERVE8
-   53 00030000                 THUMB
-   54 00030000         
-   55 00030000         
-   56 00030000         ; Vector Table Mapped to Address 0 at Reset
-   57 00030000         
-   58 00030000                 AREA             RESET, DATA, READONLY
+   49 00035000         __heap_limit
+   50 00035000         
+   51 00035000         
+   52 00035000                 PRESERVE8
+   53 00035000                 THUMB
+   54 00035000         
+   55 00035000         
+   56 00035000         ; Vector Table Mapped to Address 0 at Reset
+   57 00035000         
+   58 00035000                 AREA             RESET, DATA, READONLY
    59 00000000                 EXPORT           __Vectors
    60 00000000                 EXPORT           __Vectors_End
    61 00000000                 EXPORT           __Vectors_Size
@@ -1304,16 +1304,15 @@ ARM Macro Assembler    Page 20
 ARM Macro Assembler    Page 21 
 
 
-              00030000 
+              00035000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\flash\startup_tm4c129.d -o.\flash\startup_tm4c129.o -I.\RTE\_
 TM4C129_Flash -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include -IC:\Keil_v5\
 ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\RTOS\RTX\INC -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP
-\1.1.0\Device\Include\TM4C129 --predefine="__RTX SETA 1" --predefine="__EVAL SE
-TA 1" --predefine="__UVISION_VERSION SETA 524" --predefine="_RTE_ SETA 1" --pre
-define="TM4C1294NCPDT SETA 1" --list=.\flash\startup_tm4c129.lst RTE\Device\TM4
-C1294NCPDT\startup_TM4C129.s
+\1.1.0\Device\Include\TM4C129 --predefine="__RTX SETA 1" --predefine="__UVISION
+_VERSION SETA 524" --predefine="_RTE_ SETA 1" --predefine="TM4C1294NCPDT SETA 1
+" --list=.\flash\startup_tm4c129.lst RTE\Device\TM4C1294NCPDT\startup_TM4C129.s
 
 
 
@@ -1377,7 +1376,7 @@ Symbol: __heap_base
    Uses
       None
 Comment: __heap_base unused
-__heap_limit 00030000
+__heap_limit 00035000
 
 Symbol: __heap_limit
    Definitions
@@ -2735,7 +2734,7 @@ Comment: __user_initial_stackheap used once
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-Heap_Size 00030000
+Heap_Size 00035000
 
 Symbol: Heap_Size
    Definitions
@@ -2793,4 +2792,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 3 symbols
-489 symbols in table
+488 symbols in table

@@ -23,3 +23,4 @@
 .\flash\enduro.o: Console.h
 .\flash\enduro.o: Mountain.h
 .\flash\enduro.o: utils.h
+.\flash\enduro.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\time.h

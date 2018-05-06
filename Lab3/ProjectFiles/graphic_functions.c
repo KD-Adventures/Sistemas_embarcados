@@ -123,8 +123,8 @@ void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, Scenari
 void draw_car (Image_matrix* image_memory, const Car *car, Scenario* scene) {
 	
 	uint32_t car_x_position;
-	car_x_position = car->runway_x_position + RUNWAY_RIGHT_START_X_POS - car->image->width/2;
-	draw_image(image_memory, car->image, car->runway_x_position, car->runway_y_position, car->color, false, 150);
+	car_x_position = car->runway_x_position + RUNWAY_RIGHT_START_X_POS; //- car->image->width/2;
+	draw_image(image_memory, car->image, car_x_position, car->runway_y_position, car->color, false, 150);
 }
 
 void draw_console (Image_matrix* image_memory, const Console* console) {

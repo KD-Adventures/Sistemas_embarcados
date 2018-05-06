@@ -3,3 +3,4 @@
 .\flash\car.o: Image.h
 .\flash\car.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\flash\car.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\flash\car.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
