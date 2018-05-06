@@ -1,14 +1,20 @@
 #include "Car.h"
 
-Car *new_car(uint32_t x_position, uint32_t y_position, uint32_t speed, uint32_t color, uint32_t size) {
+Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t runway_distance, uint32_t speed, uint32_t color, uint32_t size) {
 
 	Car* new_car = (Car*)malloc(sizeof(Car));
-	new_car->x_position = x_position;
-	new_car->y_position = y_position;
+	new_car->runway_x_position = runway_x_position;
+	new_car->runway_y_position = runway_y_position;
+	new_car->runway_distance = runway_distance;
 	new_car->speed = speed;
 	new_car->color = color;
 	new_car->accelerating = false;
 	new_car->direction = STRAIGHT;
+	new_car->max_speed = MAX_CAR_SPEED;
+	new_car->collision_correction_direction = COLLISION_FRONT;
+	new_car->collision_correction_position = 0;
+	new_car->collision_correction_speed = 0;
+	new_car->collision_detected = false;
 	
 	switch(size) {
 		case 0:
