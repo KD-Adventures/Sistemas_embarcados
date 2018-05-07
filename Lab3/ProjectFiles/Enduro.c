@@ -21,6 +21,7 @@
 #include "cfaf128x128x16.h"
 #include "buttons.h"
 #include "joy.h"
+#include "buzzer.h"
 #include "graphic_functions.h"
 #include <time.h>
 
@@ -37,7 +38,7 @@
 
 #define GAME_CLOCK_TIME 30
 
-//#define SEM_PLACA_PARA_TESTAR
+#define SEM_PLACA_PARA_TESTAR
 	
 // Variaveis globais 
 
@@ -91,6 +92,9 @@ osThreadId user_output_id;
 
 osTimerDef(timer_game, timer_game_frames);
 osTimerId timer_game_id;
+
+osMutexDef(MutexConsole);
+osMutexId MutexConsole_id;
 /*===========================================================================*/
 
 void timer_game_frames (void const *args){
@@ -188,12 +192,13 @@ void weather_manager (WeatherManager* weather_manager) {
 }
 
 
+
 void runway_manager (RunwayManager* runway_manager) {
 	runway_manager->runway_direction_timer++;
 	if (runway_manager->runway_direction_timer > runway_manager->runway_direction_duration)
 	{
-		runway_manager->runway_direction_timer = 0;
 		srand(osKernelSysTick());
+		runway_manager->runway_direction_timer = 0;
 		runway_manager->runway_direction_duration = 30 * (int) (rand() / RAND_MAX) ; // TODO gerar um rand
 		
 		// TODO Gerar um rand para mudar a direção
@@ -263,6 +268,34 @@ void car_manager(Car* car) {
 	
 	car_handle_colision(car);
 	car->runway_distance += car->speed;
+	
+	osMutexWait(MutexConsole_id, osWaitForever);
+	game->console->distance = car->runway_distance;
+	osMutexRelease(MutexConsole_id);
+}
+
+void player_position(Car* player_car, Car* enemy_car) {
+	if (difference(enemy_car->runway_y_position, player_car->runway_y_position) < player_car->image->height) {
+		x_distance = difference(player_car->runway_x_position, enemy_car->runway_x_position);
+		
+		//Collision - player car behind
+		if (player_car->runway_distance >= enemy_car->runway_distance && player_car->speed >= enemy_car->speed) {
+			if (player_car->race_position < enemy_car->race_position) {
+				player_car->race_position++;
+				osMutexWait(MutexConsole_id, osWaitForever);
+				game->console->player_position--;
+				osMutexRelease(MutexConsole_id);
+			}
+		}
+		else{
+			if (player_car->race_position > enemy_car->race_position) {
+				player_car->race_position--;
+				osMutexWait(MutexConsole_id, osWaitForever);
+				game->console->player_position++;
+				osMutexRelease(MutexConsole_id);
+			}
+		}
+	}
 }
 
 void game_time_manager(GameState *game) {
@@ -275,6 +308,10 @@ void game_time_manager(GameState *game) {
 	if (game->day >= game->day_max) {
 		game->state = GAME_OVER;
 	}
+	
+	osMutexWait(MutexConsole_id, osWaitForever);
+	game->console->race_lap = game->day;
+	osMutexRelease(MutexConsole_id);
 }
 
 void game_manager (void const *args){
@@ -338,16 +375,25 @@ void enemy_vehicles (void const *args){
 	int i = 0;
 	int random;
 	bool too_far_away = false;
+	int enemy_distance;
+	int player_position;
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
 		
 		random = rand();
+		//Enemy car gerados a frente
 		if ((game->enemy_cars_quantity < game->max_enemy_cars) /*|| (random < 0.2)*/) {
 			// TODO Ajustar a distancia na pista
 			// TODO ajustar GameState para suportar mais de 1 carro
 			// TODO impedir que carros sejam criados atras do player
+			osMutexWait(MutexConsole_id, osWaitForever);
+			enemy_distance = game->console->distance;
+			player_position = 200 - game->console->player_position;
+			osMutexRelease(MutexConsole_id);
+			
 			game->enemy_cars_quantity++;
-			game->enemy_car = new_car(RUNWAY_WIDTH - 45, GROUND_Y_POSITION + 15, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+			game->enemy_car = new_car(RUNWAY_WIDTH - 45, GROUND_Y_POSITION + 15, enemy_distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+			game->enemy_car->race_position = player_position - 1; // TODO arrumar a posicao dos inimigos
 			game->enemy_car->direction = STRAIGHT;
 			game->enemy_car->accelerating = false;
 			game->enemy_car->breaking = false;
@@ -372,7 +418,9 @@ void enemy_vehicles (void const *args){
 
 /*===========================================================================*/
 void player_vehicle (void const *args){
+	int i = 0;
 	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, 2);
+	game->player_car->race_position = 200;
 	
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
@@ -388,6 +436,11 @@ void player_vehicle (void const *args){
 			game->player_car->direction = STRAIGHT;
 		
 		car_manager(game->player_car);
+		
+		for(i = 0; i < game->enemy_cars_quantity; i++) {
+			player_position(game->player_car, game->enemy_car);
+		}
+		
 		
 		
 		//printf("Player vehicles\n");
@@ -433,9 +486,8 @@ void game_stats (void const *args){
 	game->console = new_console(0, MENU_Y_POSITION);
 	while(1) {
 		osSignalWait(0x07, osWaitForever);
-		
-		// TODO usar mutex para o controle do painel de instrumentos (requisito)
-		game->console->distance++;
+
+		draw_console(image_memory, game->console);
 		
 		//printf("Game stats\n");
 		osSignalSet(graphics_id, 0x01);
@@ -523,7 +575,6 @@ void graphics (void const *args){
 			draw_car(image_memory, game->enemy_car, &scenario);
 		}
 		draw_mountain(image_memory, game->mountain, &scenario);
-		draw_console(image_memory, game->console);
 		
 		//printf("Graphics\n");
 		osSignalSet(user_output_id, 0x01);
@@ -532,11 +583,11 @@ void graphics (void const *args){
 
 /*===========================================================================*/
 void user_output (void const *args){
+	int sound_period = 400; // nao sei qual é a unidade para o periodo do buzzer
+	bool new_collision = false;
 	tContext sContext;
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-
-#ifdef SEM_PLACA_PARA_TESTAR	
-#else
+#ifndef SEM_PLACA_PARA_TESTAR	
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 #endif	
@@ -544,10 +595,26 @@ void user_output (void const *args){
 		
 		osSignalWait(0x01, osWaitForever);
 		
-#ifdef SEM_PLACA_PARA_TESTAR
-#else
+#ifndef SEM_PLACA_PARA_TESTAR
 		update_display(image_memory, image_display, sContext);
+		
+		//Very simple sound manager to "see" if works
+		if (game->player_car->accelerating) {
+			sound_period++;
+			buzzer_per_set(sound_period);
+			buzzer_write(true);
+		}
+		else {
+			sound_period = 400;
+			buzzer_write(false);
+		}
+		
+		if (new_collision == false && game->player_car->collision_detected) {
+			buzzer_per_set(500);
+			buzzer_write(true);
+		}
 #endif
+		
 		//printf("User output\n");
 		start_game_clock_timer();
 	}
@@ -556,13 +623,16 @@ void user_output (void const *args){
 /*===========================================================================*/
 int main(void) {	
 	
-#ifdef SEM_PLACA_PARA_TESTAR
-#else
+#ifndef SEM_PLACA_PARA_TESTAR
 	cfaf128x128x16Init();
 	joy_init();
 	button_init();
+	buzzer_init();
 #endif
 	osKernelInitialize();
+	
+	// Mutex
+	MutexConsole_id = osMutexCreate(osMutex(MutexConsole));
 	
 	//Threads
 	user_input_id = osThreadCreate(osThread(user_input), game_manager_id);
@@ -577,6 +647,7 @@ int main(void) {
 	graphics_id = osThreadCreate(osThread(graphics), NULL);
 	user_output_id = osThreadCreate(osThread(user_output), NULL);
 	
+	// Timer
 	timer_game_id = osTimerCreate(osTimer(timer_game), osTimerOnce, (void*)0);
 	
 	osTimerStart(timer_game_id, 100);

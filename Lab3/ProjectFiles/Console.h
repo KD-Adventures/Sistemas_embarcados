@@ -7,6 +7,8 @@ typedef struct console {
 	uint32_t x_position;
 	uint32_t y_position;
 	uint32_t distance;
+	uint32_t player_position;
+	uint32_t race_lap;
 	const Image *image;
 } Console;
 
