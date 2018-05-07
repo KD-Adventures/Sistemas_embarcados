@@ -11,5 +11,6 @@ typedef struct image {
 } Image;
 
 Image* new_image(const int *array, uint32_t height, uint32_t width);
+Image* switch_image(const int *array, uint32_t height, uint32_t width, Image* old_image);
 
 #endif

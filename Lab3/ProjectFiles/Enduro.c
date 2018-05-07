@@ -30,21 +30,21 @@
 #define DAY_DURATION 1000;
 #define RACE_DAYS_DURATION 2;
 
-#define RUNWAY_DIRECTION_DURATION 30 // TODO mudar para rand()
 #define RUNWAY_WIDTH (RUNWAY_LEFT_START_X_POS - RUNWAY_RIGHT_START_X_POS)
 #define COLLISION_FRONT_THRESHOLD 10
 
-#define MAX_ENEMY_CARS 1
-
 #define GAME_CLOCK_TIME 30
 
-#define SEM_PLACA_PARA_TESTAR
+//#define SEM_PLACA_PARA_TESTAR
+//#define BUZZER
 	
 // Variaveis globais 
 
 GameState *game;
 
 Image_matrix* image_memory;
+
+tContext sContext;
 
 enum User_input_direction user_input_direction;
 bool user_input_accel;
@@ -141,14 +141,9 @@ void user_input (void const *args){
 			else if (x > 2500) {
 				user_input_direction = USER_INPUT_LEFT; 
 			}
-
-			if (joy_read_y() > 2500) {
-				user_input_accel  = true;
-			}
-			else if (joy_read_y() < 1500) {
-				user_input_break = true;
-			}
 			
+			user_input_accel  = (joy_read_y() > 2500);
+			user_input_break = (joy_read_y() < 1500);
 			user_start_button_pressed = button_read_s1();
 			user_end_button_pressed = button_read_s2();
 #endif
@@ -191,22 +186,19 @@ void weather_manager (WeatherManager* weather_manager) {
 	}
 }
 
-
-
 void runway_manager (RunwayManager* runway_manager) {
 	runway_manager->runway_direction_timer++;
 	if (runway_manager->runway_direction_timer > runway_manager->runway_direction_duration)
 	{
 		srand(osKernelSysTick());
 		runway_manager->runway_direction_timer = 0;
-		runway_manager->runway_direction_duration = 30 * (int) (rand() / RAND_MAX) ; // TODO gerar um rand
+		runway_manager->runway_direction_duration = 30 + (rand() / (RAND_MAX / 30));
 		
-		// TODO Gerar um rand para mudar a direção
-		if(runway_manager->runway_direction == left)
+		if (runway_manager->runway_direction == left || runway_manager->runway_direction == right)
 			runway_manager->runway_direction = straight;
-		else if(runway_manager->runway_direction == straight)
+		else if ((rand() / (RAND_MAX / 2)) == 1)
 			runway_manager->runway_direction = right;
-		else if(runway_manager->runway_direction == right)
+		else
 			runway_manager->runway_direction = left;
 	}
 }
@@ -231,8 +223,8 @@ void car_handle_colision(Car* car) {
 			  if (car->collision_correction_position > 0)
 					car->collision_correction_position--;
 			break;
-			// TODO front nem tem
 			case COLLISION_FRONT:
+				//Nothing here
 				break;
 			default:
 				break;
@@ -244,11 +236,10 @@ void car_handle_colision(Car* car) {
 }
 
 void car_manager(Car* car) {
-	
-	if (car->direction == LEFT )
-		car->runway_x_position++;
+	if (car->direction == LEFT)
+		car->runway_x_position += 5;
 	else if (car->direction == RIGHT)
-		car->runway_x_position--;
+		car->runway_x_position -= 5;
 		
 	if (car->accelerating && (car->runway_y_position < 30)) {
 		car->runway_y_position++;
@@ -370,44 +361,88 @@ void game_manager (void const *args){
 	}
 }
 
+void delete_enemy_car (Car *enemy_car, int index) {
+	int i;
+	
+	if (index < game->enemy_cars_quantity - 1) {
+		for (i = index; i < game->enemy_cars_quantity - 1; i++) {
+			game->enemy_car[i] = game->enemy_car[i+1];
+		}
+	}
+	
+	free(enemy_car);
+	game->enemy_car[game->enemy_cars_quantity - 1] = NULL;
+	game->enemy_cars_quantity--;
+}
+
 /*===========================================================================*/
 void enemy_vehicles (void const *args){
 	int i = 0;
-	int random;
+	double random;
+	uint32_t starting_x_position, starting_y_position;
 	bool too_far_away = false;
-	int enemy_distance;
+	bool create_car;
 	int player_position;
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
 		
-		random = rand();
-		//Enemy car gerados a frente
-		if ((game->enemy_cars_quantity < game->max_enemy_cars) /*|| (random < 0.2)*/) {
-			// TODO Ajustar a distancia na pista
-			// TODO ajustar GameState para suportar mais de 1 carro
-			// TODO impedir que carros sejam criados atras do player
+		random = ((double) rand()) / ((double) RAND_MAX);
+		if ((game->enemy_cars_quantity < game->max_enemy_cars) && (random < 0.2)) {
 			osMutexWait(MutexConsole_id, osWaitForever);
-			enemy_distance = game->console->distance;
 			player_position = 200 - game->console->player_position;
 			osMutexRelease(MutexConsole_id);
+	
+			create_car = true;
+			starting_x_position = 20 + rand() / (RAND_MAX / (RUNWAY_WIDTH - 20));
+			if (game->player_car->speed > MAX_CAR_SPEED / 2) {
+				starting_y_position = GROUND_HEIGHT;				
+				
+				//Checks if x_position isn't already occupied
+				for(i = 0; i < game->enemy_cars_quantity; i++) {
+					if (difference(starting_x_position, game->enemy_car[i]->runway_x_position) <= game->enemy_car[i]->image->width)
+						create_car = false; //Does not create the car in this case.
+				}
+			}
+			else {
+				starting_y_position = MENU_HEIGHT;
+				
+				//Checks if x_position isn't already occupied
+				if (difference(starting_x_position, game->player_car->runway_x_position) <= game->player_car->image->width)
+					create_car = false; //Does not create the car in this case.
+				for(i = 0; i < game->enemy_cars_quantity; i++) {
+					if (difference(starting_x_position, game->enemy_car[i]->runway_x_position) <= game->enemy_car[i]->image->width)
+						create_car = false; //Does not create the car in this case.
+				}
+			}
 			
-			game->enemy_cars_quantity++;
-			game->enemy_car = new_car(RUNWAY_WIDTH - 45, GROUND_Y_POSITION + 15, enemy_distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
-			game->enemy_car->race_position = player_position - 1; // TODO arrumar a posicao dos inimigos
-			game->enemy_car->direction = STRAIGHT;
-			game->enemy_car->accelerating = false;
-			game->enemy_car->breaking = false;
+			if (create_car) {
+				game->enemy_car[game->enemy_cars_quantity] = new_car(starting_x_position, starting_y_position, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+				game->enemy_car[game->enemy_cars_quantity]->race_position = player_position - 1;
+				game->enemy_car[game->enemy_cars_quantity]->direction = STRAIGHT;
+				game->enemy_car[game->enemy_cars_quantity]->accelerating = false;
+				game->enemy_car[game->enemy_cars_quantity]->breaking = false;
+				game->enemy_cars_quantity++;
+			}
 		}
 		
-		/*too_far_away = (game->enemy_car->runway_distance > game->console->distance + 50) || (game->enemy_car->runway_distance < game->console->distance - 20);
-		if (game->enemy_cars_quantity > 0 && too_far_away) {
-			free(game->enemy_car);
-			game->enemy_cars_quantity--;
-		}*/
-		
-		// TODO ajustar para mais de um carro
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
-			car_manager(game->player_car);
+			too_far_away = (game->enemy_car[i]->runway_y_position < MENU_HEIGHT || game->enemy_car[i]->runway_y_position > GROUND_HEIGHT);
+			if (game->enemy_cars_quantity > 0 && too_far_away)
+				delete_enemy_car(game->enemy_car[i], i);
+		}
+		
+		for(i = 0; i < game->enemy_cars_quantity; i++) {
+			if(game->player_car->speed > game->enemy_car[i]->speed)
+				game->enemy_car[i]->runway_y_position -= game->player_car->speed - game->enemy_car[i]->speed;
+			else
+				game->enemy_car[i]->runway_y_position += game->enemy_car[i]->speed + game->player_car->speed;
+			
+			if (game->enemy_car[i]->runway_y_position < MENU_HEIGHT + 20)
+				game->enemy_car[i]->image = switch_image((const int*) CAR_BIG_ARRAY, 11, 25, game->enemy_car[i]->image);
+			else if (game->enemy_car[i]->runway_y_position < (MENU_HEIGHT + GROUND_HEIGHT - 20))
+				game->enemy_car[i]->image = switch_image((const int*) CAR_MEDIUM_ARRAY, 9, 18, game->enemy_car[i]->image);
+			else
+				game->enemy_car[i]->image = switch_image((const int*) CAR_SMALL_ARRAY, 6, 10, game->enemy_car[i]->image);
 		}
 		
 		//printf("Enemy vehicles\n");
@@ -438,7 +473,7 @@ void player_vehicle (void const *args){
 		car_manager(game->player_car);
 		
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
-			player_position(game->player_car, game->enemy_car);
+			player_position(game->player_car, game->enemy_car[i]);
 		}
 		
 		
@@ -488,20 +523,20 @@ void game_stats (void const *args){
 		osSignalWait(0x07, osWaitForever);
 
 		draw_console(image_memory, game->console);
-		
+		update_console(game->console, sContext);
 		//printf("Game stats\n");
 		osSignalSet(graphics_id, 0x01);
 	}
 }
 
 void collision_detection_runway(Car* car) {
-	if (car->runway_x_position >= RUNWAY_WIDTH - 3 - car->image->width) {
+	if (car->runway_x_position >= RUNWAY_WIDTH - (car->image->width / 2)) {
 		car->collision_correction_direction = COLLISION_LEFT;
 		car->collision_correction_position = 5;
 		car->collision_correction_speed = 1;
 		car->collision_detected = true;
 	}
-	else if (car->runway_x_position < 3) {
+	else if (car->runway_x_position < (car->image->width / 2)) {
 		car->collision_correction_direction = COLLISION_RIGHT;
 		car->collision_correction_position = 5;
 		car->collision_correction_speed = 1;
@@ -517,7 +552,7 @@ void collision_detection_enemies(Car* player_car, Car* enemy_car) {
 		if (x_distance < COLLISION_FRONT_THRESHOLD) {
 			player_car->collision_correction_direction = COLLISION_FRONT;
 			player_car->collision_correction_position = 0;
-			player_car->collision_correction_speed = 5;
+			player_car->collision_correction_speed = 3;
 			player_car->collision_detected = true;
 		}
 		
@@ -547,9 +582,8 @@ void collision_detection (void const *args){
 		//printf("Collision detection\n");
 		
 		collision_detection_runway(game->player_car);
-		// TODO ajustar para suportar mais de um inimigo
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
-			collision_detection_enemies(game->player_car, game->enemy_car);
+			collision_detection_enemies(game->player_car, game->enemy_car[i]);
 		}
 	}
 }
@@ -572,7 +606,7 @@ void graphics (void const *args){
 		draw_runway(image_memory, game->runway_manager.runway_direction, &scenario);
 		draw_car(image_memory, game->player_car, &scenario);
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
-			draw_car(image_memory, game->enemy_car, &scenario);
+			draw_car(image_memory, game->enemy_car[i], &scenario);
 		}
 		draw_mountain(image_memory, game->mountain, &scenario);
 		
@@ -585,7 +619,6 @@ void graphics (void const *args){
 void user_output (void const *args){
 	int sound_period = 400; // nao sei qual é a unidade para o periodo do buzzer
 	bool new_collision = false;
-	tContext sContext;
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 #ifndef SEM_PLACA_PARA_TESTAR	
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
@@ -598,9 +631,10 @@ void user_output (void const *args){
 #ifndef SEM_PLACA_PARA_TESTAR
 		update_display(image_memory, image_display, sContext);
 		
+#ifdef BUZZER_HELL
 		//Very simple sound manager to "see" if works
 		if (game->player_car->accelerating) {
-			sound_period++;
+			sound_period--;
 			buzzer_per_set(sound_period);
 			buzzer_write(true);
 		}
@@ -613,6 +647,7 @@ void user_output (void const *args){
 			buzzer_per_set(500);
 			buzzer_write(true);
 		}
+#endif
 #endif
 		
 		//printf("User output\n");

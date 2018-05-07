@@ -16,6 +16,7 @@
 .\flash\enduro.o: cfaf128x128x16.h
 .\flash\enduro.o: buttons.h
 .\flash\enduro.o: joy.h
+.\flash\enduro.o: buzzer.h
 .\flash\enduro.o: graphic_functions.h
 .\flash\enduro.o: datatypes.h
 .\flash\enduro.o: Car.h

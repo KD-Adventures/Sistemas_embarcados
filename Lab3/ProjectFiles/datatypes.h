@@ -6,6 +6,8 @@
 #include "Console.h"
 #include "Mountain.h"
 
+#define MAX_ENEMY_CARS 2
+
 enum Weather {DAY, NIGHT, SNOW, FOG, SUNSET, SUNRISE};
 enum Runway_direction {straight, middle_left, left, middle_right, right};
 enum User_input_direction {USER_INPUT_LEFT, USER_INPUT_RIGHT, USER_INPUT_STRAIGHT};
@@ -33,7 +35,7 @@ typedef struct runway_manager {
 
 typedef struct game_state {
 	Car *player_car;
-	Car *enemy_car;
+	Car *enemy_car[MAX_ENEMY_CARS];
 	uint32_t max_enemy_cars;
 	uint32_t enemy_cars_quantity;
 	Mountain *mountain;

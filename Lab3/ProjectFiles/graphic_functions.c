@@ -121,14 +121,21 @@ void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, Scenari
 }
 
 void draw_car (Image_matrix* image_memory, const Car *car, Scenario* scene) {
-	
 	uint32_t car_x_position;
-	car_x_position = car->runway_x_position + RUNWAY_RIGHT_START_X_POS; //- car->image->width/2;
+	
+	// Don't ask
+	car_x_position = car->runway_x_position + RUNWAY_RIGHT_START_X_POS - (car->image->width / 2);
+	if (car_x_position > (DISPLAY_WIDTH / 2)) {
+		car_x_position -= ((car_x_position - (DISPLAY_WIDTH / 2)) * (car->runway_y_position - MENU_HEIGHT) / (GROUND_HEIGHT));
+	}
+	else {
+		car_x_position += (((DISPLAY_WIDTH / 2) - car_x_position) * (car->runway_y_position - MENU_HEIGHT) / (GROUND_HEIGHT));
+	}
+	
 	draw_image(image_memory, car->image, car_x_position, car->runway_y_position, car->color, false, 150);
 }
 
 void draw_console (Image_matrix* image_memory, const Console* console) {
-	
 	draw_image(image_memory, console->image, console->x_position, console->y_position, 0, true, 0);
 }
 
