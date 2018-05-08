@@ -416,7 +416,7 @@ void enemy_vehicles (void const *args){
 			}
 			
 			if (create_car) {
-				game->enemy_car[game->enemy_cars_quantity] = new_car(starting_x_position, starting_y_position, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+				game->enemy_car[game->enemy_cars_quantity] = new_car(starting_x_position, starting_y_position, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, SMALL_CAR);
 				game->enemy_car[game->enemy_cars_quantity]->race_position = player_position - 1;
 				game->enemy_car[game->enemy_cars_quantity]->direction = STRAIGHT;
 				game->enemy_car[game->enemy_cars_quantity]->accelerating = false;
@@ -454,7 +454,7 @@ void enemy_vehicles (void const *args){
 /*===========================================================================*/
 void player_vehicle (void const *args){
 	int i = 0;
-	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, 2);
+	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, BIG_CAR);
 	game->player_car->race_position = 200;
 	
 	while(1) {
