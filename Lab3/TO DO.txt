@@ -1,0 +1,8 @@
+COISAS IMPORTANTES
+ - Carros precisam seguir a curva
+ - Apresentar todas as informações no painel
+
+COISAS NEM TÃO IMPORTANTES
+ - Os carros estão grandes demais pra jogar direito
+ - Todos os carros inimigos estão com a mesma cor
+ - Seria bom ter mais um tamanho de carro (menor que todos) pq lá no final eles ficam um pouco pra fora da estrada.
