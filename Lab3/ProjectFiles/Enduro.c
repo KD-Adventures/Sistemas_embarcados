@@ -26,17 +26,17 @@
 #include <time.h>
 
 
-#define WEATHER_DURATION 500
-#define DAY_DURATION 1000
+#define WEATHER_DURATION 200
+#define DAY_DURATION 1200
 #define RACE_DAYS_DURATION 2
 
 #define RUNWAY_WIDTH (RUNWAY_LEFT_START_X_POS - RUNWAY_RIGHT_START_X_POS)
 #define COLLISION_FRONT_THRESHOLD 10
 
-#define GAME_CLOCK_TIME 30
+#define GAME_CLOCK_TIME 50
 
 //#define SEM_PLACA_PARA_TESTAR
-//#define BUZZER
+#define BUZZER_HELL
 	
 // Variaveis globais 
 
@@ -99,6 +99,9 @@ osTimerId timer_game_id;
 
 osMutexDef(MutexConsole);
 osMutexId MutexConsole_id;
+
+osMutexDef(GameMutex);
+osMutexId GameMutex_id;
 /*===========================================================================*/
 
 void timer_game_frames (void const *args){
@@ -158,35 +161,44 @@ void user_input (void const *args){
 }
 
 /*===========================================================================*/
-int set_current_weather(WeatherManager* weather_manager){
-	switch (weather_manager->weather_controller) {
+int set_current_weather(WeatherManager weather_manager){
+	switch (weather_manager.weather_controller) {
 		case 0:
-			weather_manager->weather = DAY;
+			game->weather_manager.weather = DAY;
 		break;
 
 		case 1:
-			weather_manager->weather = NIGHT;
+			game->weather_manager.weather = SUNSET;
 		break;
 		
-		case 5:
-			weather_manager->weather = SNOW;
+		case 2:
+			game->weather_manager.weather = NIGHT;
+		break;
+		
+		case 3:
+			game->weather_manager.weather = SUNRISE;
+		break;
+		
+		case 4:
+			game->weather_manager.weather = SNOW;
 		break;
 
 		default:
-			weather_manager->weather = DAY;
+			game->weather_manager.weather = DAY;
 		break;
 	}
 }
 
 void weather_manager (WeatherManager* weather_manager) {
-	weather_manager->weather_timer++;
-	if (weather_manager->weather_timer == weather_manager->weather_duration)
+	set_current_weather(game->weather_manager);
+	
+	game->weather_manager.weather_timer++;
+	if (game->weather_manager.weather_timer == game->weather_manager.weather_duration)
 	{
-		weather_manager->weather_timer = 0;
-		weather_manager->weather_controller++;
-		if (weather_manager->weather_controller == 6)
-			weather_manager->weather_controller = 0;
-		set_current_weather(weather_manager);
+		game->weather_manager.weather_timer = 0;
+		game->weather_manager.weather_controller++;
+		if (game->weather_manager.weather_controller == 6)
+			game->weather_manager.weather_controller = 0;
 	}
 }
 
@@ -244,12 +256,28 @@ void car_manager(Car* car) {
 		car->runway_x_position += 5;
 	else if (car->direction == RIGHT)
 		car->runway_x_position -= 5;
-		
-	if (car->accelerating && (car->runway_y_position < 30)) {
-		car->runway_y_position++;
+	
+	car->inversion_counter++;
+	if (car->inversion_counter == 10) {
+		car->inverted = !car->inverted;
+		car->inversion_counter = 0;
 	}
-	else if (car->runway_y_position > MENU_HEIGHT) {
-		car->runway_y_position--;
+	
+	if (game->weather_manager.weather != SNOW) {
+		if (car->accelerating && (car->runway_y_position < 30)) {
+			car->runway_y_position += 2;
+		}
+		else if (car->runway_y_position > MENU_HEIGHT) {
+			car->runway_y_position -= 2;
+		}
+	}
+	else {
+		if (car->accelerating && (car->runway_y_position < 30)) {
+			car->runway_y_position ++;
+		}
+		else if (car->runway_y_position > MENU_HEIGHT) {
+			car->runway_y_position --;
+		}
 	}
 	
 	if (car->accelerating && car->speed < car->max_speed)
@@ -277,6 +305,7 @@ void game_time_manager(GameState *game) {
 	}
 	
 	if (game->day >= game->day_max) {
+		clear_image(image_memory);
 		game->state = GAME_OVER;
 	}
 	
@@ -293,6 +322,11 @@ void game_manager (void const *args){
 	game = (GameState*) malloc (sizeof(GameState));
 	game->mountain = new_mountain(40, ClrWhite, 1);
 
+	game->weather_manager.weather = SUNRISE;
+	game->weather_manager.weather_duration = WEATHER_DURATION;
+	game->weather_manager.weather_controller = 0;
+	game->weather_manager.weather_timer = 0;
+	
 	game->max_enemy_cars = MAX_ENEMY_CARS;
 	game->enemy_cars_quantity = 0;
 	
@@ -304,11 +338,13 @@ void game_manager (void const *args){
 		while (game->state == GAME_OVER) {
 			osSignalWait(0x01, osWaitForever);
 			
+			buzzer_write(false);
+			
 			if (user_start_button_pressed == true) {
 				game->state = GAME_RUNNING;
 				
 				// Weather
-				game->weather_manager.weather = DAY;
+				game->weather_manager.weather = SUNRISE;
 				game->weather_manager.weather_duration = WEATHER_DURATION;
 				game->weather_manager.weather_controller = 0;
 				game->weather_manager.weather_timer = 0;
@@ -318,9 +354,12 @@ void game_manager (void const *args){
 				game->day_max = RACE_DAYS_DURATION;
 				game->day_time = 0;
 				
+				game->player_car->speed = 1;
+				game->player_car->accelerating = false;
+				
 				if (game->console != NULL) {
 					game->console->race_lap = 1;
-					game->console->player_position = 200;
+					game->console->player_position = N_ENEMIES_GOAL;
 					game->player_car->runway_distance = 0;
 				}
 			}
@@ -344,6 +383,16 @@ void game_manager (void const *args){
 					
 			game_time_manager(game);
 			
+			if (game->state == GAME_OVER) {
+				clear_image(image_memory);
+				
+				for(i = 0; i < game->enemy_cars_quantity; i++)
+					delete_enemy_car(game->enemy_car[i], i);
+				
+				osSignalSet(user_output_id, 0x01);
+				break;
+			}
+			
 			//printf("Game Started\n");
 			
 			osSignalSet(enemy_vehicles_id, 0x01);
@@ -360,7 +409,11 @@ void menu (void const *args){
 	while (1) {
 		osSignalWait(0x01, osWaitForever);
 		game_finished = (game->console->distance > 0);
+		
+		#ifndef SEM_PLACA_PARA_TESTAR
 		draw_menu(image_memory, sContext, game_finished, game->console);
+		#endif
+		
 		osSignalSet(user_output_id, 0x01);
 	}
 }
@@ -387,13 +440,21 @@ void enemy_vehicles (void const *args){
 	uint32_t starting_x_position, starting_y_position;
 	bool too_far_away = false;
 	bool create_car;
-	int player_position;
+	int player_position, enemy_position;
+	uint32_t player_car_x_position, player_car_speed;
+	
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
 		
+		osMutexWait(GameMutex_id, osWaitForever);
+		player_car_x_position = game->player_car->runway_x_position;
+		player_car_speed = game->player_car->speed;
+		osMutexRelease(GameMutex_id);
+
 		random = ((double) rand()) / ((double) RAND_MAX);
-		if ((game->enemy_cars_quantity < game->max_enemy_cars) && (random < 0.2)) {
+		if ((game->enemy_cars_quantity < game->max_enemy_cars) && (random < 0.08)) {
 			osMutexWait(MutexConsole_id, osWaitForever);
+			enemy_position = game->console->player_position;
 			player_position = N_ENEMIES_GOAL - game->console->player_position;
 			osMutexRelease(MutexConsole_id);
 	
@@ -411,8 +472,11 @@ void enemy_vehicles (void const *args){
 			else {
 				starting_y_position = MENU_HEIGHT;
 				
+				if (enemy_position >= N_ENEMIES_GOAL)
+					create_car = false;
+				
 				//Checks if x_position isn't already occupied
-				if (difference(starting_x_position, game->player_car->runway_x_position) <= game->player_car->image->width)
+				if (difference(starting_x_position, player_car_x_position) <= game->player_car->image->width)
 					create_car = false; //Does not create the car in this case.
 				for(i = 0; i < game->enemy_cars_quantity; i++) {
 					if (difference(starting_x_position, game->enemy_car[i]->runway_x_position) <= game->enemy_car[i]->image->width)
@@ -435,14 +499,16 @@ void enemy_vehicles (void const *args){
 				game->enemy_cars_quantity++;
 			}
 		}
-		
+
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
 			if (game->enemy_car[i]->runway_y_position < MENU_HEIGHT) {
 				osMutexWait(MutexConsole_id, osWaitForever);
-				if (game->console->player_position > 0)
+				if (game->console->player_position > 1)
 					game->console->player_position--;
-				else
+				else {
+					clear_image(image_memory);
 					game->state = GAME_OVER;
+				}
 				osMutexRelease(MutexConsole_id);
 			}
 				
@@ -452,17 +518,19 @@ void enemy_vehicles (void const *args){
 		}
 		
 		for(i = 0; i < game->enemy_cars_quantity; i++) {
-			if(game->player_car->speed > game->enemy_car[i]->speed)
-				game->enemy_car[i]->runway_y_position -= game->player_car->speed - game->enemy_car[i]->speed;
+			if(player_car_speed > game->enemy_car[i]->speed)
+				game->enemy_car[i]->runway_y_position -= player_car_speed - game->enemy_car[i]->speed;
 			else
-				game->enemy_car[i]->runway_y_position += game->enemy_car[i]->speed + game->player_car->speed;
+				game->enemy_car[i]->runway_y_position += game->enemy_car[i]->speed + player_car_speed;
 			
-			if (game->enemy_car[i]->runway_y_position < MENU_HEIGHT + 20)
-				game->enemy_car[i]->image = switch_image((const int*) CAR_BIG_ARRAY, 11, 25, game->enemy_car[i]->image);
-			else if (game->enemy_car[i]->runway_y_position < (MENU_HEIGHT + GROUND_HEIGHT - 20))
-				game->enemy_car[i]->image = switch_image((const int*) CAR_MEDIUM_ARRAY, 9, 18, game->enemy_car[i]->image);
-			else
+			if (game->enemy_car[i]->runway_y_position < 40)
+				game->enemy_car[i]->image = switch_image((const int*) CAR_BIG_ARRAY, 10, 20, game->enemy_car[i]->image);
+			else if (game->enemy_car[i]->runway_y_position < 55)
+				game->enemy_car[i]->image = switch_image((const int*) CAR_MEDIUM_ARRAY, 8, 15, game->enemy_car[i]->image);
+			else if (game->enemy_car[i]->runway_y_position < 65)
 				game->enemy_car[i]->image = switch_image((const int*) CAR_SMALL_ARRAY, 6, 10, game->enemy_car[i]->image);
+			else
+				game->enemy_car[i]->image = switch_image((const int*) CAR_VERY_SMALL_ARRAY, 2, 5, game->enemy_car[i]->image);
 		}
 		
 		//printf("Enemy vehicles\n");
@@ -540,7 +608,11 @@ void game_stats (void const *args){
 		osSignalWait(0x07, osWaitForever);
 
 		osMutexWait(MutexConsole_id, osWaitForever);
+		
+		#ifndef SEM_PLACA_PARA_TESTAR
 		update_console(game->console, sContext);
+		#endif
+		
 		osMutexRelease(MutexConsole_id);
 		//printf("Game stats\n");
 		osSignalSet(graphics_id, 0x01);
@@ -646,24 +718,31 @@ void user_output (void const *args){
 
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
-		update_display(image_memory, image_display, sContext);
 		
+#ifndef SEM_PLACA_PARA_TESTAR
+		update_display(image_memory, image_display, sContext);
 #ifdef BUZZER_HELL
 		//Very simple sound manager to "see" if works
-		if (game->player_car->accelerating) {
-			sound_period--;
-			buzzer_per_set(sound_period);
-			buzzer_write(true);
+		if (game->state == GAME_RUNNING) {
+			if (game->player_car->accelerating) {
+				if (sound_period > 1000)
+					sound_period -= 100;
+				buzzer_per_set(sound_period);
+				buzzer_write(true);
+			}
+			else {
+				sound_period = 4000;
+				buzzer_write(false);
+			}
+			
+			if (new_collision == false && game->player_car->collision_detected) {
+				buzzer_per_set(5000);
+				buzzer_write(true);
+			}
 		}
-		else {
-			sound_period = 400;
+		else
 			buzzer_write(false);
-		}
-		
-		if (new_collision == false && game->player_car->collision_detected) {
-			buzzer_per_set(500);
-			buzzer_write(true);
-		}
+#endif
 #endif
 		start_game_clock_timer();
 	}
@@ -680,10 +759,12 @@ int main(void) {
 	GrContextInit(&sContext, &g_sCfaf128x128x16);
 	GrFlush(&sContext);
 #endif
+	buzzer_vol_set(500);
 	osKernelInitialize();
 	
 	// Mutex
 	MutexConsole_id = osMutexCreate(osMutex(MutexConsole));
+	GameMutex_id = osMutexCreate(osMutex(GameMutex));
 	
 	//Threads
 	user_input_id = osThreadCreate(osThread(user_input), game_manager_id);

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Flash\base_project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Flash\base_project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Tue May 08 02:21:56 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060528: Last Updated: Tue May 08 12:21:20 2018
 <BR><P>
 <H3>Maximum Stack Usage =        152 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -548,12 +548,16 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[da]"></a>set_current_weather</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, enduro.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;weather_manager
+<P><STRONG><a name="[da]"></a>set_current_weather</STRONG> (Thumb, 70 bytes, Stack size 20 bytes, enduro.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = set_current_weather
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;weather_manager
 </UL>
 
-<P><STRONG><a name="[d9]"></a>weather_manager</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, enduro.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_current_weather
+<P><STRONG><a name="[d9]"></a>weather_manager</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, enduro.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = weather_manager &rArr; set_current_weather
+</UL>
+<BR>[Calls]<UL><LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_current_weather
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;trajectory_manager
 </UL>
@@ -572,7 +576,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;car_manager
 </UL>
 
-<P><STRONG><a name="[df]"></a>car_manager</STRONG> (Thumb, 134 bytes, Stack size 16 bytes, enduro.o(.text))
+<P><STRONG><a name="[df]"></a>car_manager</STRONG> (Thumb, 196 bytes, Stack size 16 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = car_manager
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexWait
@@ -582,71 +586,74 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;player_vehicle
 </UL>
 
-<P><STRONG><a name="[e3]"></a>game_time_manager</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, enduro.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = game_time_manager
+<P><STRONG><a name="[e3]"></a>game_time_manager</STRONG> (Thumb, 74 bytes, Stack size 16 bytes, enduro.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = game_time_manager &rArr; clear_image
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexWait
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexRelease
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
 </UL>
 
-<P><STRONG><a name="[e4]"></a>delete_enemy_car</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, enduro.o(.text))
+<P><STRONG><a name="[e5]"></a>delete_enemy_car</STRONG> (Thumb, 66 bytes, Stack size 16 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = delete_enemy_car &rArr; free &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
 </UL>
 
-<P><STRONG><a name="[9b]"></a>game_manager</STRONG> (Thumb, 242 bytes, Stack size 16 bytes, enduro.o(.text))
+<P><STRONG><a name="[9b]"></a>game_manager</STRONG> (Thumb, 342 bytes, Stack size 16 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = game_manager &rArr; new_mountain &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
-<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
-<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_time_manager
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[9a]"></a>menu</STRONG> (Thumb, 88 bytes, Stack size 40 bytes, enduro.o(.text))
+<P><STRONG><a name="[9a]"></a>menu</STRONG> (Thumb, 70 bytes, Stack size 40 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = menu &rArr; draw_menu &rArr; intToString &rArr; __aeabi_ldivmod
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
-<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[9c]"></a>enemy_vehicles</STRONG> (Thumb, 600 bytes, Stack size 24 bytes, enduro.o(.text))
+<P><STRONG><a name="[9c]"></a>enemy_vehicles</STRONG> (Thumb, 674 bytes, Stack size 24 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = enemy_vehicles &rArr; new_car &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
+<BR>[Calls]<UL><LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexWait
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexRelease
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;difference
-<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
-<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
-<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
+<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;difference
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
+<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmple
+<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[9d]"></a>player_vehicle</STRONG> (Thumb, 118 bytes, Stack size 16 bytes, enduro.o(.text))
+<P><STRONG><a name="[9d]"></a>player_vehicle</STRONG> (Thumb, 122 bytes, Stack size 16 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = player_vehicle &rArr; new_car &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;car_manager
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
@@ -661,29 +668,29 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[9f]"></a>game_stats</STRONG> (Thumb, 98 bytes, Stack size 32 bytes, enduro.o(.text))
+<P><STRONG><a name="[9f]"></a>game_stats</STRONG> (Thumb, 152 bytes, Stack size 32 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = game_stats &rArr; update_console &rArr; intToString &rArr; __aeabi_ldivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
+<BR>[Calls]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexWait
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexRelease
-<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
-<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[f4]"></a>collision_detection_runway</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, enduro.o(.text))
+<P><STRONG><a name="[f5]"></a>collision_detection_runway</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = collision_detection_runway
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection
 </UL>
 
-<P><STRONG><a name="[f3]"></a>collision_detection_enemies</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, enduro.o(.text))
+<P><STRONG><a name="[f4]"></a>collision_detection_enemies</STRONG> (Thumb, 116 bytes, Stack size 24 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = collision_detection_enemies
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;difference
+<BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;difference
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection
 </UL>
@@ -692,306 +699,315 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = collision_detection &rArr; collision_detection_enemies
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
-<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_enemies
-<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_runway
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_enemies
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_runway
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
 <P><STRONG><a name="[a1]"></a>graphics</STRONG> (Thumb, 154 bytes, Stack size 40 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = graphics &rArr; draw_runway &rArr; draw_bezier_curve &rArr; __aeabi_d2f
 </UL>
-<BR>[Calls]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_weather
+<BR>[Calls]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_weather
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalSet
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexWait
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexRelease
-<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
-<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
-<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_mountain
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_console
-<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
-<LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_background
-<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
+<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_mountain
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_console
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
+<LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_background
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clear_image
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[a2]"></a>user_output</STRONG> (Thumb, 64 bytes, Stack size 40 bytes, enduro.o(.text))
+<P><STRONG><a name="[a2]"></a>user_output</STRONG> (Thumb, 154 bytes, Stack size 40 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = user_output &rArr; new_matrix_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_display
+<BR>[Calls]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_display
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSignalWait
-<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;start_game_clock_timer
-<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> enduro.o(.constdata)
 </UL>
-<P><STRONG><a name="[ab]"></a>main</STRONG> (Thumb, 206 bytes, Stack size 8 bytes, enduro.o(.text))
+<P><STRONG><a name="[ab]"></a>main</STRONG> (Thumb, 224 bytes, Stack size 8 bytes, enduro.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = main &rArr; cfaf128x128x16Init &rArr; cfaf128x128x16Clear &rArr; cfaf128x128x16ClearColor &rArr; cfaf128x128x16Rect &rArr; cfaf128x128x16SetWindow &rArr; cfaf128x128x16WriteData &rArr; cfaf128x128x16SsiTransfer
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerStart
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerCreate
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerCreate
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osThreadCreate
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexCreate
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexCreate
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osKernelStart
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osKernelInitialize
-<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextInit
+<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextInit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rtx_conf_cm.o(.constdata)
 </UL>
-<P><STRONG><a name="[105]"></a>new_image</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, image.o(.text))
+<P><STRONG><a name="[108]"></a>new_image</STRONG> (Thumb, 22 bytes, Stack size 16 bytes, image.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Calls]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
-<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
+<BR>[Called By]<UL><LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
+<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
 </UL>
 
-<P><STRONG><a name="[f0]"></a>switch_image</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, image.o(.text))
+<P><STRONG><a name="[f1]"></a>switch_image</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, image.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = switch_image &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 </UL>
 
-<P><STRONG><a name="[108]"></a>swap</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, datatypes.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_y
-<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_x
+<P><STRONG><a name="[10b]"></a>swap</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, datatypes.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_y
+<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_x
 </UL>
 
-<P><STRONG><a name="[f5]"></a>new_matrix_image</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, datatypes.o(.text))
+<P><STRONG><a name="[f6]"></a>new_matrix_image</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, datatypes.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = new_matrix_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Calls]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;user_output
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[106]"></a>delete_matrix_image</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, datatypes.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<P><STRONG><a name="[109]"></a>delete_matrix_image</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, datatypes.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 
-<P><STRONG><a name="[107]"></a>invert_image_axis_x</STRONG> (Thumb, 58 bytes, Stack size 16 bytes, datatypes.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap
+<P><STRONG><a name="[10a]"></a>invert_image_axis_x</STRONG> (Thumb, 58 bytes, Stack size 16 bytes, datatypes.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap
 </UL>
 
-<P><STRONG><a name="[109]"></a>invert_image_axis_y</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, datatypes.o(.text))
+<P><STRONG><a name="[10c]"></a>invert_image_axis_y</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, datatypes.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = invert_image_axis_y
 </UL>
-<BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap
+<BR>[Calls]<UL><LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;swap
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_display
+<BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_display
 </UL>
 
-<P><STRONG><a name="[e8]"></a>clear_image</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[e4]"></a>clear_image</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = clear_image
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
+<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
+<LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_time_manager
 </UL>
 
-<P><STRONG><a name="[f6]"></a>set_weather</STRONG> (Thumb, 108 bytes, Stack size 20 bytes, graphic_functions.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = set_weather
+<P><STRONG><a name="[f7]"></a>set_weather</STRONG> (Thumb, 108 bytes, Stack size 16 bytes, graphic_functions.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = set_weather
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[f7]"></a>draw_background</STRONG> (Thumb, 116 bytes, Stack size 12 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[f8]"></a>draw_background</STRONG> (Thumb, 116 bytes, Stack size 12 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = draw_background
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[10a]"></a>draw_image</STRONG> (Thumb, 124 bytes, Stack size 36 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[10d]"></a>draw_image</STRONG> (Thumb, 230 bytes, Stack size 36 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = draw_image
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_mountain
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_console
-<LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
+<BR>[Called By]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_mountain
+<LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_console
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
 </UL>
 
-<P><STRONG><a name="[fb]"></a>draw_mountain</STRONG> (Thumb, 26 bytes, Stack size 20 bytes, graphic_functions.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = draw_mountain &rArr; draw_image
+<P><STRONG><a name="[fc]"></a>draw_mountain</STRONG> (Thumb, 28 bytes, Stack size 24 bytes, graphic_functions.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 60<LI>Call Chain = draw_mountain &rArr; draw_image
 </UL>
-<BR>[Calls]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
+<BR>[Calls]<UL><LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[10c]"></a>_getPt</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, graphic_functions.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
+<P><STRONG><a name="[10f]"></a>_getPt</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, graphic_functions.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
 </UL>
 
-<P><STRONG><a name="[10b]"></a>draw_bezier_curve</STRONG> (Thumb, 228 bytes, Stack size 40 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[10e]"></a>draw_bezier_curve</STRONG> (Thumb, 228 bytes, Stack size 40 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = draw_bezier_curve &rArr; __aeabi_d2f
 </UL>
-<BR>[Calls]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_getPt
-<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<BR>[Calls]<UL><LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_getPt
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
+<BR>[Called By]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
 </UL>
 
-<P><STRONG><a name="[110]"></a>bezier_curve_car</STRONG> (Thumb, 218 bytes, Stack size 40 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[113]"></a>bezier_curve_car</STRONG> (Thumb, 218 bytes, Stack size 40 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = bezier_curve_car &rArr; __aeabi_d2f
 </UL>
-<BR>[Calls]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_getPt
-<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
+<BR>[Calls]<UL><LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_getPt
+<LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
+<BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_car
 </UL>
 
-<P><STRONG><a name="[f9]"></a>draw_car</STRONG> (Thumb, 218 bytes, Stack size 24 bytes, graphic_functions.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = draw_car &rArr; bezier_curve_car &rArr; __aeabi_d2f
+<P><STRONG><a name="[fa]"></a>draw_car</STRONG> (Thumb, 218 bytes, Stack size 32 bytes, graphic_functions.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = draw_car &rArr; bezier_curve_car &rArr; __aeabi_d2f
 </UL>
-<BR>[Calls]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
-<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
+<BR>[Calls]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
+<LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[fa]"></a>draw_console</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, graphic_functions.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = draw_console &rArr; draw_image
+<P><STRONG><a name="[fb]"></a>draw_console</STRONG> (Thumb, 26 bytes, Stack size 20 bytes, graphic_functions.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = draw_console &rArr; draw_image
 </UL>
-<BR>[Calls]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
+<BR>[Calls]<UL><LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_image
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[ea]"></a>draw_menu</STRONG> (Thumb, 324 bytes, Stack size 56 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[eb]"></a>draw_menu</STRONG> (Thumb, 324 bytes, Stack size 56 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = draw_menu &rArr; intToString &rArr; __aeabi_ldivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
-<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrStringDraw
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
+<BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
+<LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrStringDraw
+<LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;menu
 </UL>
 
-<P><STRONG><a name="[114]"></a>draw_line</STRONG> (Thumb, 154 bytes, Stack size 28 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[117]"></a>draw_line</STRONG> (Thumb, 154 bytes, Stack size 28 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = draw_line
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
+<BR>[Called By]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_runway
 </UL>
 
-<P><STRONG><a name="[f8]"></a>draw_runway</STRONG> (Thumb, 224 bytes, Stack size 40 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[f9]"></a>draw_runway</STRONG> (Thumb, 224 bytes, Stack size 40 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = draw_runway &rArr; draw_bezier_curve &rArr; __aeabi_d2f
 </UL>
-<BR>[Calls]<UL><LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_line
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
+<BR>[Calls]<UL><LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_line
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;graphics
 </UL>
 
-<P><STRONG><a name="[fc]"></a>update_display</STRONG> (Thumb, 128 bytes, Stack size 40 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[fd]"></a>update_display</STRONG> (Thumb, 128 bytes, Stack size 40 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = update_display &rArr; invert_image_axis_y
 </UL>
-<BR>[Calls]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_y
+<BR>[Calls]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;invert_image_axis_y
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;user_output
 </UL>
 
-<P><STRONG><a name="[f2]"></a>update_console</STRONG> (Thumb, 262 bytes, Stack size 56 bytes, graphic_functions.o(.text))
+<P><STRONG><a name="[f3]"></a>update_console</STRONG> (Thumb, 270 bytes, Stack size 56 bytes, graphic_functions.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = update_console &rArr; intToString &rArr; __aeabi_ldivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
-<LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrStringDraw
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
+<BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
+<LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrStringDraw
+<LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_stats
 </UL>
 
-<P><STRONG><a name="[ef]"></a>new_car</STRONG> (Thumb, 118 bytes, Stack size 32 bytes, car.o(.text))
+<P><STRONG><a name="[f0]"></a>new_car</STRONG> (Thumb, 142 bytes, Stack size 32 bytes, car.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = new_car &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;player_vehicle
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 </UL>
 
-<P><STRONG><a name="[115]"></a>delete_car</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, car.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<P><STRONG><a name="[118]"></a>delete_car</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, car.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 
-<P><STRONG><a name="[f1]"></a>new_console</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, console.o(.text))
+<P><STRONG><a name="[f2]"></a>new_console</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, console.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = new_console &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_stats
 </UL>
 
-<P><STRONG><a name="[e7]"></a>new_mountain</STRONG> (Thumb, 42 bytes, Stack size 24 bytes, mountain.o(.text))
+<P><STRONG><a name="[e8]"></a>new_mountain</STRONG> (Thumb, 42 bytes, Stack size 24 bytes, mountain.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = new_mountain &rArr; new_image &rArr; malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
-<BR>[Calls]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Calls]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
 </UL>
 
-<P><STRONG><a name="[113]"></a>intToString</STRONG> (Thumb, 202 bytes, Stack size 40 bytes, utils.o(.text))
+<P><STRONG><a name="[116]"></a>intToString</STRONG> (Thumb, 202 bytes, Stack size 40 bytes, utils.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = intToString &rArr; __aeabi_ldivmod
 </UL>
-<BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ldivmod
+<BR>[Calls]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ldivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
+<BR>[Called By]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
 </UL>
 
-<P><STRONG><a name="[ee]"></a>difference</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, utils.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_enemies
+<P><STRONG><a name="[ef]"></a>difference</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, utils.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collision_detection_enemies
 <LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 </UL>
 
-<P><STRONG><a name="[119]"></a>buzzer_write</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, buzzer.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMOutputState
+<P><STRONG><a name="[e9]"></a>buzzer_write</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, buzzer.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMOutputState
 </UL>
-<BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;user_output
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
 </UL>
 
-<P><STRONG><a name="[11b]"></a>buzzer_vol_set</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, buzzer.o(.text))
+<P><STRONG><a name="[104]"></a>buzzer_vol_set</STRONG> (Thumb, 54 bytes, Stack size 16 bytes, buzzer.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = buzzer_vol_set
 </UL>
-<BR>[Calls]<UL><LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
-<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenPeriodGet
+<BR>[Calls]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
+<LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenPeriodGet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[11e]"></a>buzzer_per_set</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, buzzer.o(.text))
+<P><STRONG><a name="[fe]"></a>buzzer_per_set</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, buzzer.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = buzzer_per_set &rArr; buzzer_vol_set
 </UL>
 <BR>[Calls]<UL><LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenPeriodSet
-<LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
-<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
 </UL>
-<BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;user_output
 </UL>
 
-<P><STRONG><a name="[100]"></a>buzzer_init</STRONG> (Thumb, 120 bytes, Stack size 8 bytes, buzzer.o(.text))
+<P><STRONG><a name="[102]"></a>buzzer_init</STRONG> (Thumb, 120 bytes, Stack size 8 bytes, buzzer.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = buzzer_init &rArr; GPIOPinTypePWM &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralReady
@@ -1001,15 +1017,15 @@ Global Symbols
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenConfigure
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
-<LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
-<LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
-<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
-<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_div_set
+<LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_div_set
+<LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ff]"></a>button_init</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, buttons.o(.text))
+<P><STRONG><a name="[101]"></a>button_init</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, buttons.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = button_init &rArr; GPIOPinTypeGPIOInput &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOInput
@@ -1079,7 +1095,7 @@ Global Symbols
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16WriteCommand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16ClearColor
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
 <P><STRONG><a name="[135]"></a>cfaf128x128x16ClearColor</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, cfaf128x128x16.o(.text))
@@ -1096,7 +1112,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16ClearColor
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
 <P><STRONG><a name="[137]"></a>InitSSICom</STRONG> (Thumb, 138 bytes, Stack size 32 bytes, cfaf128x128x16.o(.text))
@@ -1104,10 +1120,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockFreqSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
-<P><STRONG><a name="[fd]"></a>cfaf128x128x16Init</STRONG> (Thumb, 322 bytes, Stack size 16 bytes, cfaf128x128x16.o(.text))
+<P><STRONG><a name="[ff]"></a>cfaf128x128x16Init</STRONG> (Thumb, 322 bytes, Stack size 16 bytes, cfaf128x128x16.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = cfaf128x128x16Init &rArr; cfaf128x128x16Clear &rArr; cfaf128x128x16ClearColor &rArr; cfaf128x128x16Rect &rArr; cfaf128x128x16SetWindow &rArr; cfaf128x128x16WriteData &rArr; cfaf128x128x16SsiTransfer
 </UL>
 <BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;InitSSICom
@@ -1120,7 +1136,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[fe]"></a>joy_init</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, joy.o(.text))
+<P><STRONG><a name="[100]"></a>joy_init</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, joy.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = joy_init &rArr; GPIOPinTypeGPIOInput &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOInput
@@ -2095,20 +2111,20 @@ Global Symbols
 <LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__Heap_Full
 <LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Heap1_SizeAdjust
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 
-<P><STRONG><a name="[e6]"></a>malloc</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, h1_alloc_mt.o(.text))
+<P><STRONG><a name="[e7]"></a>malloc</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, h1_alloc_mt.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = malloc &rArr; _malloc_internal &rArr; __Heap_Full &rArr; __Heap_ProvideMemory &rArr; _free_internal
 </UL>
 <BR>[Calls]<UL><LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_heap_descriptor
 <LI><a href="#[151]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_malloc_internal
 </UL>
-<BR>[Called By]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
-<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
-<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_image
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_mountain
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_matrix_image
+<LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_console
+<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_car
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;game_manager
 </UL>
 
@@ -2119,19 +2135,19 @@ Global Symbols
 <LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_mutex_acquire
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__Heap_ProvideMemory
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
 </UL>
 
-<P><STRONG><a name="[e5]"></a>free</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, h1_free_mt.o(.text))
+<P><STRONG><a name="[e6]"></a>free</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, h1_free_mt.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = free &rArr; _free_internal
 </UL>
 <BR>[Calls]<UL><LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_heap_descriptor
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_free_internal
 </UL>
-<BR>[Called By]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_car
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_matrix_image
-<LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
-<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
+<BR>[Called By]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_car
+<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_matrix_image
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;switch_image
+<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delete_enemy_car
 </UL>
 
 <P><STRONG><a name="[157]"></a>__aeabi_uldivmod</STRONG> (Thumb, 0 bytes, Stack size 48 bytes, lludivv7m.o(.text))
@@ -2143,10 +2159,10 @@ Global Symbols
 
 <P><STRONG><a name="[1da]"></a>_ll_udiv</STRONG> (Thumb, 238 bytes, Stack size 48 bytes, lludivv7m.o(.text), UNUSED)
 
-<P><STRONG><a name="[116]"></a>__aeabi_ldivmod</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, llsdiv.o(.text))
+<P><STRONG><a name="[119]"></a>__aeabi_ldivmod</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, llsdiv.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_ldivmod
 </UL>
-<BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
+<BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;intToString
 </UL>
 
 <P><STRONG><a name="[156]"></a>_ll_sdiv</STRONG> (Thumb, 72 bytes, Stack size 8 bytes, llsdiv.o(.text), UNUSED)
@@ -2178,7 +2194,7 @@ Global Symbols
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[e9]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
+<P><STRONG><a name="[ea]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, rt_memcpy_w.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;user_output
@@ -2204,8 +2220,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_perproc_libspace
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_init_alloc
-<LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;free
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;malloc
 </UL>
 
 <P><STRONG><a name="[1df]"></a>__use_no_heap</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, hguard.o(.text), UNUSED)
@@ -2364,7 +2380,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[123]"></a>GPIOPinConfigure</STRONG> (Thumb, 60 bytes, Stack size 0 bytes, gpio.o(i.GPIOPinConfigure))
-<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR><BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
 <P><STRONG><a name="[128]"></a>GPIOPinRead</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, gpio.o(i.GPIOPinRead))
@@ -2388,8 +2404,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
+<BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
 </UL>
 
 <P><STRONG><a name="[122]"></a>GPIOPinTypePWM</STRONG> (Thumb, 28 bytes, Stack size 12 bytes, gpio.o(i.GPIOPinTypePWM))
@@ -2398,19 +2414,19 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
-<P><STRONG><a name="[111]"></a>GrContextFontSet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, string.o(i.GrContextFontSet))
+<P><STRONG><a name="[114]"></a>GrContextFontSet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, string.o(i.GrContextFontSet))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = GrContextFontSet &rArr; UpdateContextCharMapping
 </UL>
 <BR>[Calls]<UL><LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UpdateContextCharMapping
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
+<BR>[Called By]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
 </UL>
 
-<P><STRONG><a name="[101]"></a>GrContextInit</STRONG> (Thumb, 88 bytes, Stack size 0 bytes, context.o(i.GrContextInit))
+<P><STRONG><a name="[103]"></a>GrContextInit</STRONG> (Thumb, 88 bytes, Stack size 0 bytes, context.o(i.GrContextInit))
 <BR><BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -2437,43 +2453,43 @@ Global Symbols
 <P><STRONG><a name="[ac]"></a>GrMapISO8859_1_Unicode</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, charmap.o(i.GrMapISO8859_1_Unicode))
 <BR>[Address Reference Count : 1]<UL><LI> context.o(.constdata)
 </UL>
-<P><STRONG><a name="[112]"></a>GrStringDraw</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, string.o(i.GrStringDraw))
+<P><STRONG><a name="[115]"></a>GrStringDraw</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, string.o(i.GrStringDraw))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = GrStringDraw
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
+<BR>[Called By]<UL><LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;update_console
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_menu
 </UL>
 
-<P><STRONG><a name="[118]"></a>PWMClockSet</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, pwm.o(i.PWMClockSet))
-<BR><BR>[Called By]<UL><LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_div_set
+<P><STRONG><a name="[11b]"></a>PWMClockSet</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, pwm.o(i.PWMClockSet))
+<BR><BR>[Called By]<UL><LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_div_set
 </UL>
 
 <P><STRONG><a name="[124]"></a>PWMGenConfigure</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, pwm.o(i.PWMGenConfigure))
-<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR><BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
 <P><STRONG><a name="[126]"></a>PWMGenEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, pwm.o(i.PWMGenEnable))
-<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR><BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
-<P><STRONG><a name="[11c]"></a>PWMGenPeriodGet</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, pwm.o(i.PWMGenPeriodGet))
-<BR><BR>[Called By]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
+<P><STRONG><a name="[11d]"></a>PWMGenPeriodGet</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, pwm.o(i.PWMGenPeriodGet))
+<BR><BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
 </UL>
 
 <P><STRONG><a name="[11f]"></a>PWMGenPeriodSet</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, pwm.o(i.PWMGenPeriodSet))
-<BR><BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
+<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_per_set
 </UL>
 
 <P><STRONG><a name="[125]"></a>PWMOutputInvert</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, pwm.o(i.PWMOutputInvert))
-<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR><BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
-<P><STRONG><a name="[11a]"></a>PWMOutputState</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, pwm.o(i.PWMOutputState))
-<BR><BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
+<P><STRONG><a name="[11c]"></a>PWMOutputState</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, pwm.o(i.PWMOutputState))
+<BR><BR>[Called By]<UL><LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_write
 </UL>
 
-<P><STRONG><a name="[11d]"></a>PWMPulseWidthSet</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, pwm.o(i.PWMPulseWidthSet))
-<BR><BR>[Called By]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
+<P><STRONG><a name="[11e]"></a>PWMPulseWidthSet</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, pwm.o(i.PWMPulseWidthSet))
+<BR><BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_vol_set
 </UL>
 
 <P><STRONG><a name="[138]"></a>SysCtlClockFreqSet</STRONG> (Thumb, 706 bytes, Stack size 24 bytes, sysctl.o(i.SysCtlClockFreqSet))
@@ -2483,15 +2499,15 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[120]"></a>SysCtlPeripheralEnable</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, sysctl.o(i.SysCtlPeripheralEnable))
-<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
+<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
 </UL>
 
 <P><STRONG><a name="[121]"></a>SysCtlPeripheralReady</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, sysctl.o(i.SysCtlPeripheralReady))
-<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
+<BR><BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;joy_init
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;button_init
 </UL>
 
 <P><STRONG><a name="[18f]"></a>_init_box</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, rt_membox.o(i._init_box))
@@ -2566,7 +2582,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;isrMessagePut
 </UL>
 
-<P><STRONG><a name="[104]"></a>osDelay</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, rt_cmsis.o(i.osDelay))
+<P><STRONG><a name="[107]"></a>osDelay</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, rt_cmsis.o(i.osDelay))
 <BR><BR>[Called By]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -2598,7 +2614,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerThread
 </UL>
 
-<P><STRONG><a name="[102]"></a>osMutexCreate</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, rt_cmsis.o(i.osMutexCreate))
+<P><STRONG><a name="[105]"></a>osMutexCreate</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, rt_cmsis.o(i.osMutexCreate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = osMutexCreate &rArr; svcMutexCreate
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;svcMutexCreate
@@ -2667,7 +2683,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerThread
 </UL>
 
-<P><STRONG><a name="[103]"></a>osTimerCreate</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, rt_cmsis.o(i.osTimerCreate))
+<P><STRONG><a name="[106]"></a>osTimerCreate</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, rt_cmsis.o(i.osTimerCreate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = osTimerCreate &rArr; svcTimerCreate
 </UL>
 <BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;svcTimerCreate
@@ -3173,7 +3189,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_mut_init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexCreate
+<BR>[Called By]<UL><LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osMutexCreate
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rt_cmsis.o(i.osMutexCreate)
 </UL>
@@ -3248,7 +3264,7 @@ Global Symbols
 <P><STRONG><a name="[94]"></a>svcTimerCreate</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, rt_cmsis.o(i.svcTimerCreate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = svcTimerCreate
 </UL>
-<BR>[Called By]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerCreate
+<BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osTimerCreate
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> rt_cmsis.o(i.osTimerCreate)
 </UL>
@@ -3272,11 +3288,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_systick
 </UL>
 
-<P><STRONG><a name="[10f]"></a>__aeabi_d2f</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, d2f.o(x$fpl$d2f))
+<P><STRONG><a name="[112]"></a>__aeabi_d2f</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, d2f.o(x$fpl$d2f))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_d2f
 </UL>
-<BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
+<BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
 </UL>
 
 <P><STRONG><a name="[1a4]"></a>_d2f</STRONG> (Thumb, 98 bytes, Stack size 32 bytes, d2f.o(x$fpl$d2f), UNUSED)
@@ -3284,11 +3300,11 @@ Global Symbols
 <LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
 </UL>
 
-<P><STRONG><a name="[10e]"></a>__aeabi_dadd</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, daddsub_clz.o(x$fpl$dadd))
+<P><STRONG><a name="[111]"></a>__aeabi_dadd</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, daddsub_clz.o(x$fpl$dadd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_dadd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
+<BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
 </UL>
 
 <P><STRONG><a name="[1a7]"></a>_dadd</STRONG> (Thumb, 332 bytes, Stack size 16 bytes, daddsub_clz.o(x$fpl$dadd), UNUSED)
@@ -3301,7 +3317,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[1ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dcmple
 </UL>
 
-<P><STRONG><a name="[ec]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv))
+<P><STRONG><a name="[ed]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_ddiv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
@@ -3312,13 +3328,13 @@ Global Symbols
 <LI><a href="#[1a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
 </UL>
 
-<P><STRONG><a name="[eb]"></a>__aeabi_i2d</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dflt))
+<P><STRONG><a name="[ec]"></a>__aeabi_i2d</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dflt))
 <BR><BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
 </UL>
 
 <P><STRONG><a name="[1e4]"></a>_dflt</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dflt), UNUSED)
 
-<P><STRONG><a name="[ed]"></a>__aeabi_cdcmple</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf))
+<P><STRONG><a name="[ee]"></a>__aeabi_cdcmple</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dleqf.o(x$fpl$dleqf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_cdcmple
 </UL>
 <BR>[Called By]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;enemy_vehicles
@@ -3352,11 +3368,11 @@ Global Symbols
 <LI><a href="#[1ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
 </UL>
 
-<P><STRONG><a name="[10d]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
+<P><STRONG><a name="[110]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_f2d
 </UL>
-<BR>[Called By]<UL><LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
+<BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;bezier_curve_car
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;draw_bezier_curve
 </UL>
 
 <P><STRONG><a name="[1af]"></a>_f2d</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d), UNUSED)
@@ -3383,10 +3399,10 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[117]"></a>buzzer_div_set</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, buzzer.o(.text))
-<BR><BR>[Calls]<UL><LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMClockSet
+<P><STRONG><a name="[11a]"></a>buzzer_div_set</STRONG> (Thumb, 76 bytes, Stack size 0 bytes, buzzer.o(.text))
+<BR><BR>[Calls]<UL><LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMClockSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
+<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;buzzer_init
 </UL>
 
 <P><STRONG><a name="[133]"></a>swap_ui16</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, cfaf128x128x16.o(.text))
@@ -3415,7 +3431,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16SetOrientation
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16SetWindow
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16WriteRegister
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
 <P><STRONG><a name="[12b]"></a>cfaf128x128x16WriteData</STRONG> (Thumb, 70 bytes, Stack size 24 bytes, cfaf128x128x16.o(.text))
@@ -3426,7 +3442,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16SetOrientation
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16SetWindow
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16WriteRegister
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
 <P><STRONG><a name="[12c]"></a>cfaf128x128x16WriteRegister</STRONG> (Thumb, 16 bytes, Stack size 16 bytes, cfaf128x128x16.o(.text))
@@ -3435,7 +3451,7 @@ Local Symbols
 <BR>[Calls]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16WriteData
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16WriteCommand
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cfaf128x128x16Init
 </UL>
 
 <P><STRONG><a name="[12d]"></a>cfaf128x128x16SetWindow</STRONG> (Thumb, 192 bytes, Stack size 24 bytes, cfaf128x128x16.o(.text))
@@ -3512,7 +3528,7 @@ Local Symbols
 <P><STRONG><a name="[165]"></a>UpdateContextCharMapping</STRONG> (Thumb, 108 bytes, Stack size 16 bytes, string.o(i.UpdateContextCharMapping))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = UpdateContextCharMapping
 </UL>
-<BR>[Called By]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
+<BR>[Called By]<UL><LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GrContextFontSet
 </UL>
 
 <P><STRONG><a name="[19f]"></a>rt_id2obj</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, rt_cmsis.o(i.rt_id2obj))
