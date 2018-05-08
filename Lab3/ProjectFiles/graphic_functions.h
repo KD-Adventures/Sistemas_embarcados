@@ -33,6 +33,7 @@ void draw_background (Image_matrix* image_memory, Scenario* scene);
 void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, Scenario* scene);
 void draw_car (Image_matrix* image_memory, const Car *car, enum Runway_direction runway_direction);
 void draw_console (Image_matrix* image_memory, const Console* console);
+void draw_menu (Image_matrix* image_memory, tContext sContext, bool game_finished, const Console *console);
 
 void set_weather(enum Weather weather, Scenario* scene);
 

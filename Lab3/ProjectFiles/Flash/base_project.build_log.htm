@@ -56,25 +56,25 @@ D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Mountain.h(17): warning:  #1-D
   #endif
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\utils.h(11): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(71): warning:  #1295-D: Deprecated declaration start_game_clock_timer - give arg types
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(72): warning:  #1295-D: Deprecated declaration start_game_clock_timer - give arg types
   void start_game_clock_timer();
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(175): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(179): warning:  #940-D: missing return statement at end of non-void function "set_current_weather" 
   }
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(285): warning:  #177-D: variable "current_weather"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(290): warning:  #177-D: variable "current_weather"  was declared but never referenced
         int current_weather = 0;
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(286): warning:  #177-D: variable "car_move_left"  was declared but never referenced
-        bool car_move_left = false, car_move_right = false, car_accel = false; 
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(286): warning:  #177-D: variable "car_move_right"  was declared but never referenced
-        bool car_move_left = false, car_move_right = false, car_accel = false; 
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(286): warning:  #177-D: variable "car_accel"  was declared but never referenced
-        bool car_move_left = false, car_move_right = false, car_accel = false; 
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(361): warning:  #550-D: variable "player_position"  was set but never used
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(291): warning:  #177-D: variable "car_move_left"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(291): warning:  #177-D: variable "car_move_right"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(291): warning:  #177-D: variable "car_accel"  was declared but never referenced
+        bool car_move_left = false, car_move_right = false, car_accel = false;
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(390): warning:  #550-D: variable "player_position"  was set but never used
         int player_position;
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(445): warning:  #177-D: variable "i"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(476): warning:  #177-D: variable "i"  was declared but never referenced
         int i = 0;
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(612): warning:  #177-D: variable "sound_period"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(643): warning:  #177-D: variable "sound_period"  was declared but never referenced
         int sound_period = 400; // nao sei qual é a unidade para o periodo do buzzer
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(613): warning:  #177-D: variable "new_collision"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\Enduro.c(644): warning:  #177-D: variable "new_collision"  was declared but never referenced
         bool new_collision = false;
 Enduro.c: 22 warnings, 0 errors
 compiling Image.c...
@@ -108,7 +108,7 @@ D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(131): warn
         for (i = 0 ; i < 1 ; i += 0.01)
 D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(147): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         for (i = 0 ; i < 1 ; i += 0.01)
-D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(358): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab3\ProjectFiles\graphic_functions.c(383): warning:  #1-D: last line of file ends without a newline
   }
 graphic_functions.c: 8 warnings, 0 errors
 compiling Car.c...
@@ -245,7 +245,7 @@ compiling RTX_Conf_CM.c...
 assembling startup_TM4C129.s...
 compiling system_TM4C129.c...
 linking...
-Program Size: Code=21272 RO-data=16988 RW-data=152 ZI-data=238432  
+Program Size: Code=21808 RO-data=17004 RW-data=156 ZI-data=238428  
 ".\Flash\base_project.axf" - 0 Error(s), 85 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -273,29 +273,29 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device\Source\system_TM4C129.c
-      Source file:   Device\Source\ARM\startup_TM4C129.s
       Include file:  Device\Include\TM4C129\TM4C129.h
+      Source file:   Device\Source\ARM\startup_TM4C129.s
+      Source file:   Device\Source\system_TM4C129.c
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
-      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
-      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
       Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
-      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
       Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
+      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
+      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
+      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: ARM::CMSIS:CORE:5.0.1
 
    * Component: ::CMSIS:RTOS:1.0.0 (API)
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>

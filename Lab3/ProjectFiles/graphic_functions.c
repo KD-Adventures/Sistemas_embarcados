@@ -199,6 +199,31 @@ void draw_console (Image_matrix* image_memory, const Console* console) {
 	draw_image(image_memory, console->image, console->x_position, console->y_position, 0, true, 0);
 }
 
+void draw_menu (Image_matrix* image_memory, tContext sContext, bool game_finished, const Console *console) {
+	char buffer[10];
+
+	GrContextFontSet(&sContext, g_psFontFixed6x8);
+	GrContextForegroundSet(&sContext, ClrWhite);
+	GrContextBackgroundSet(&sContext, ClrBlack);
+
+	GrStringDraw(&sContext, "Aperte S1 para jogar", -1, 5, (sContext.psFont->ui8Height+5)*1, true);
+	
+	if (game_finished) {
+		GrStringDraw(&sContext, "STATS", -1, 10, (sContext.psFont->ui8Height+5)*3, true);
+		GrStringDraw(&sContext, "Dist. :", -1, 10, (sContext.psFont->ui8Height+5)*4, true);
+		GrStringDraw(&sContext, "Volta :", -1, 10, (sContext.psFont->ui8Height+5)*5, true);
+		GrStringDraw(&sContext, "Pos.  :", -1, 10, (sContext.psFont->ui8Height+5)*6, true);
+		
+		intToString(console->distance, buffer, 10, 10, 5);
+		GrStringDraw(&sContext, buffer, -1, 60, (sContext.psFont->ui8Height+5)*4, true);
+		
+		intToString(console->race_lap, buffer, 10, 10, 2);
+		GrStringDraw(&sContext, buffer, -1, 60, (sContext.psFont->ui8Height+5)*5, true);
+		
+		intToString(console->player_position, buffer, 10, 10, 3);
+		GrStringDraw(&sContext, buffer, -1, 60, (sContext.psFont->ui8Height+5)*6, true);
+	}
+}
 
 void draw_line(Image_matrix* image_memory, int32_t i32X1, int32_t i32Y1, int32_t i32X2, int32_t i32Y2, int color) {
     int32_t i32Error, i32DeltaX, i32DeltaY, i32YStep, bSteep;

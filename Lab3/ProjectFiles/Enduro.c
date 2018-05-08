@@ -60,6 +60,7 @@ uint32_t x_distance;
 //Declarações
 void timer_game_frames (void const *args);
 void user_input (void const *args);
+void menu (void const *args);
 void game_manager (void const *args);
 void enemy_vehicles (void const *args);
 void player_vehicle (void const *args);
@@ -69,8 +70,10 @@ void collision_detection (void const *args);
 void graphics (void const *args);
 void user_output (void const *args);
 void start_game_clock_timer();
+void delete_enemy_car (Car *enemy_car, int index);
 
 osThreadDef (user_input, osPriorityNormal, 1, 0);
+osThreadDef (menu, osPriorityNormal, 1, 0);
 osThreadDef (game_manager, osPriorityNormal, 1, 0);
 osThreadDef (enemy_vehicles, osPriorityNormal, 1, 0);
 osThreadDef (player_vehicle, osPriorityNormal, 1, 0);
@@ -81,6 +84,7 @@ osThreadDef (graphics, osPriorityNormal, 1, 0);
 osThreadDef (user_output, osPriorityNormal, 1, 0);
 
 osThreadId user_input_id;
+osThreadId menu_id;
 osThreadId game_manager_id;
 osThreadId enemy_vehicles_id;
 osThreadId player_vehicles_id;
@@ -282,47 +286,59 @@ void game_time_manager(GameState *game) {
 }
 
 void game_manager (void const *args){
+	int i;
 	int current_weather = 0;
-	bool car_move_left = false, car_move_right = false, car_accel = false; 
-
+	bool car_move_left = false, car_move_right = false, car_accel = false;
+	
 	game = (GameState*) malloc (sizeof(GameState));
 	game->mountain = new_mountain(40, ClrWhite, 1);
 
-	// Weather
-	game->weather_manager.weather = DAY;
-	game->weather_manager.weather_duration = WEATHER_DURATION;
-	game->weather_manager.weather_controller = 0;
-	game->weather_manager.weather_timer = 0;
-	
-	game->day = 0;
-	game->day_duration = DAY_DURATION;
-	game->day_max = RACE_DAYS_DURATION;
-	game->day_time = 0;
-	game->state = GAME_OVER;
-	
 	game->max_enemy_cars = MAX_ENEMY_CARS;
 	game->enemy_cars_quantity = 0;
 	
+	game->state = GAME_OVER;
+	
 	//osMessagePut(GameStateMsgBox_Id, (uint32_t) game, osWaitForever);
 	
-	while (1) {
-		
+	while (1) {	
 		while (game->state == GAME_OVER) {
 			osSignalWait(0x01, osWaitForever);
 			
 			if (user_start_button_pressed == true) {
 				game->state = GAME_RUNNING;
+				
+				// Weather
+				game->weather_manager.weather = DAY;
+				game->weather_manager.weather_duration = WEATHER_DURATION;
+				game->weather_manager.weather_controller = 0;
+				game->weather_manager.weather_timer = 0;
+				
+				game->day = 0;
+				game->day_duration = DAY_DURATION;
+				game->day_max = RACE_DAYS_DURATION;
+				game->day_time = 0;
+				
+				if (game->console != NULL) {
+					game->console->race_lap = 1;
+					game->console->player_position = 200;
+					game->player_car->runway_distance = 0;
+				}
 			}
-			//printf("Game Not Started\n");
-			start_game_clock_timer();
+			//printf("Game Not Started\n");						
+			osSignalSet(menu_id, 0x01);
 		}
-		
+				
 		while (game->state == GAME_RUNNING) {
 			osSignalWait(0x01, osWaitForever);
 			
 			if (user_end_button_pressed == true) {
 				game->state = GAME_OVER;
-				start_game_clock_timer();
+				clear_image(image_memory);
+				
+				for(i = 0; i < game->enemy_cars_quantity; i++)
+					delete_enemy_car(game->enemy_car[i], i);
+				
+				osSignalSet(user_output_id, 0x01);
 				break;
 			}
 					
@@ -336,6 +352,19 @@ void game_manager (void const *args){
 		}
 	}
 }
+
+/*===========================================================================*/
+void menu (void const *args){
+	bool game_finished = false;
+	
+	while (1) {
+		osSignalWait(0x01, osWaitForever);
+		game_finished = (game->console->distance > 0);
+		draw_menu(image_memory, sContext, game_finished, game->console);
+		osSignalSet(user_output_id, 0x01);
+	}
+}
+
 
 void delete_enemy_car (Car *enemy_car, int index) {
 	int i;
@@ -412,6 +441,8 @@ void enemy_vehicles (void const *args){
 				osMutexWait(MutexConsole_id, osWaitForever);
 				if (game->console->player_position > 0)
 					game->console->player_position--;
+				else
+					game->state = GAME_OVER;
 				osMutexRelease(MutexConsole_id);
 			}
 				
@@ -612,15 +643,9 @@ void user_output (void const *args){
 	int sound_period = 400; // nao sei qual é a unidade para o periodo do buzzer
 	bool new_collision = false;
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
-#ifndef SEM_PLACA_PARA_TESTAR	
-	GrContextInit(&sContext, &g_sCfaf128x128x16);
-	GrFlush(&sContext);
-#endif	
+
 	while(1) {
-		
 		osSignalWait(0x01, osWaitForever);
-		
-#ifndef SEM_PLACA_PARA_TESTAR
 		update_display(image_memory, image_display, sContext);
 		
 #ifdef BUZZER_HELL
@@ -640,9 +665,6 @@ void user_output (void const *args){
 			buzzer_write(true);
 		}
 #endif
-#endif
-		
-		//printf("User output\n");
 		start_game_clock_timer();
 	}
 }
@@ -655,6 +677,8 @@ int main(void) {
 	joy_init();
 	button_init();
 	buzzer_init();
+	GrContextInit(&sContext, &g_sCfaf128x128x16);
+	GrFlush(&sContext);
 #endif
 	osKernelInitialize();
 	
@@ -663,6 +687,7 @@ int main(void) {
 	
 	//Threads
 	user_input_id = osThreadCreate(osThread(user_input), game_manager_id);
+	menu_id = osThreadCreate(osThread(menu), NULL);
 	game_manager_id = osThreadCreate(osThread(game_manager), NULL);
 
 	enemy_vehicles_id = osThreadCreate(osThread(enemy_vehicles), NULL);
