@@ -24,7 +24,6 @@ typedef struct car {
 	enum Car_direction direction;
 	Image* image;
 	uint32_t max_speed;
-	uint32_t race_position;
 	bool visible;
 } Car;
 

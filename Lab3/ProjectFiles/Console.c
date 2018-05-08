@@ -6,6 +6,7 @@ Console* new_console(uint32_t x_position, uint32_t y_position){
 	new_console->x_position = x_position;
 	new_console->y_position = y_position;
 	new_console->distance = 0;
+	new_console->player_position = N_ENEMIES_GOAL;
 
 	return new_console;
 }
