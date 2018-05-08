@@ -57,7 +57,7 @@ uint32_t x_distance;
 /*===========================================================================*
  *                                 THREADS                                   *
  *===========================================================================*/
-//Declarações
+//DeclaraÃ§Ãµes
 void timer_game_frames (void const *args);
 void user_input (void const *args);
 void game_manager (void const *args);
@@ -399,7 +399,7 @@ void enemy_vehicles (void const *args){
 			}
 			
 			if (create_car) {
-				game->enemy_car[game->enemy_cars_quantity] = new_car(starting_x_position, starting_y_position, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, 1);
+				game->enemy_car[game->enemy_cars_quantity] = new_car(starting_x_position, starting_y_position, game->console->distance + 30, MAX_CAR_SPEED/2, ClrAquamarine, CAR_MEDIUM);
 				game->enemy_car[game->enemy_cars_quantity]->direction = STRAIGHT;
 				game->enemy_car[game->enemy_cars_quantity]->accelerating = false;
 				game->enemy_car[game->enemy_cars_quantity]->breaking = false;
@@ -443,7 +443,7 @@ void enemy_vehicles (void const *args){
 /*===========================================================================*/
 void player_vehicle (void const *args){
 	int i = 0;
-	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, 2);
+	game->player_car = new_car((uint32_t)(RUNWAY_WIDTH/2), GROUND_Y_POSITION, 0, 1, ClrYellow, CAR_BIG);
 	
 	while(1) {
 		osSignalWait(0x01, osWaitForever);
@@ -609,7 +609,7 @@ void graphics (void const *args){
 
 /*===========================================================================*/
 void user_output (void const *args){
-	int sound_period = 400; // nao sei qual é a unidade para o periodo do buzzer
+	int sound_period = 400; // nao sei qual Ã© a unidade para o periodo do buzzer
 	bool new_collision = false;
 	Image_matrix* image_display = new_matrix_image(DISPLAY_HEIGHT, DISPLAY_WIDTH);
 #ifndef SEM_PLACA_PARA_TESTAR	
