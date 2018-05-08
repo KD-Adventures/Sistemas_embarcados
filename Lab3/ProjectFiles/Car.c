@@ -1,6 +1,6 @@
 #include "Car.h"
 
-Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t runway_distance, uint32_t speed, uint32_t color, uint32_t size) {
+Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t runway_distance, uint32_t speed, uint32_t color, enum Car_size size) {
 
 	Car* new_car = (Car*)malloc(sizeof(Car));
 	new_car->runway_x_position = runway_x_position;
@@ -17,10 +17,13 @@ Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t ru
 	new_car->collision_detected = false;
 	
 	switch(size) {
-		case 0:
+		case VERY_SMALL_CAR:
+			new_car->image = new_image((const int*) CAR_VERY_SMALL_ARRAY, 2, 5);
+		break;
+		case SMALL_CAR:
 			new_car->image = new_image((const int*) CAR_SMALL_ARRAY, 6, 10);
 		break;
-		case 1:
+		case MEDIUM_CAR:
 			new_car->image = new_image((const int*) CAR_MEDIUM_ARRAY, 9, 18);
 		break;
 		default:
@@ -35,6 +38,16 @@ void delete_car(Car* car) {
 	free(car);
 	return;
 }
+
+// Is this a car?
+const int CAR_VERY_SMALL_ARRAY[] = {
+	0xb6,0xb6
+	,0xb6,0xb6
+	,0xb6,0xb6
+	,0xb6,0xb6
+	,0xb6,0xb6
+};
+
 
 const int CAR_SMALL_ARRAY[] = {
 	0x00,0xb6,0xdb,0x92,0xff,0xff,0x92,0xdb,0xb6,0x00

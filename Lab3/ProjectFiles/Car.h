@@ -8,6 +8,7 @@
 
 enum Car_direction {LEFT, RIGHT, STRAIGHT};
 enum Collision_directions {COLLISION_LEFT, COLLISION_RIGHT, COLLISION_FRONT};
+enum Car_size {VERY_SMALL_CAR, SMALL_CAR, MEDIUM_CAR, BIG_CAR};
 
 typedef struct car {
 	uint32_t runway_x_position;
@@ -28,11 +29,12 @@ typedef struct car {
 	bool visible;
 } Car;
 
+extern const int CAR_VERY_SMALL_ARRAY[];
 extern const int CAR_SMALL_ARRAY[];
 extern const int CAR_MEDIUM_ARRAY[];
 extern const int CAR_BIG_ARRAY[];
 
-Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t runway_distance, uint32_t speed, uint32_t color, uint32_t size);
+Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t runway_distance, uint32_t speed, uint32_t color, enum Car_size size);
 void delete_car(Car* car);
 
 #endif
