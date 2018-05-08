@@ -15,10 +15,12 @@ Car *new_car(uint32_t runway_x_position, uint32_t runway_y_position, uint32_t ru
 	new_car->collision_correction_position = 0;
 	new_car->collision_correction_speed = 0;
 	new_car->collision_detected = false;
+	new_car->inverted = false;
+	new_car->inversion_counter = 0;
 	
 	switch(size) {
 		case CAR_VERY_SMALL:
-			new_car->image = new_image((const int*) CAR_VERYSMALL_ARRAY, 2, 5);
+			new_car->image = new_image((const int*) CAR_VERY_SMALL_ARRAY, 2, 5);
 		break;
 		case CAR_SMALL:
 			new_car->image = new_image((const int*) CAR_SMALL_ARRAY, 6, 10);
@@ -42,7 +44,7 @@ void delete_car(Car* car) {
 const int CAR_VERY_SMALL_ARRAY[] = {
 	0x6d,0xb6,0xff,0xb6,0x6d
 	,0x6d,0xdb,0xff,0xdb,0x92
-}
+};
 
 const int CAR_SMALL_ARRAY[] = {
 	0x00,0xb6,0xdb,0x92,0xff,0xff,0x92,0xdb,0xb6,0x00

@@ -15,7 +15,7 @@ void set_weather(enum Weather weather, Scenario* scene) {
 		case DAY:
 			scene->ground = ClrGreen;
 			scene->sky = ClrBlue;
-			scene->horizon = ClrBlueViolet;
+			scene->horizon = ClrBlue;
 			scene->mountains = ClrWhite;
 			scene->runway = ClrWhite;
 		break;
@@ -45,10 +45,10 @@ void set_weather(enum Weather weather, Scenario* scene) {
 		break;
 
 		case SUNRISE:
-			scene->ground = ClrBlack;
-			scene->sky = ClrGray;
-			scene->horizon = ClrGray;
-			scene->mountains = ClrOrangeRed;
+			scene->ground = ClrGreen;
+			scene->sky = ClrBlue;
+			scene->horizon = ClrOrange;
+			scene->mountains = ClrWhite;
 			scene->runway = ClrWhite;
 		break;
 
@@ -94,30 +94,49 @@ void draw_background (Image_matrix* image_memory, Scenario* scene) {
 	}
 }
 
-void draw_image(Image_matrix* image_memory, const Image* image, uint8_t pos_x, uint8_t pos_y, uint32_t color, bool original_color, uint8_t color_threshold) {
+void draw_image(Image_matrix* image_memory, const Image* image, uint8_t pos_x, uint8_t pos_y, uint32_t color, bool original_color, uint8_t color_threshold, bool inverted) {
 	int i, j;
 	int image_array_index = image->height*image->width;
 	
-	for(j = 0; j < image->height; j++){
-		for(i = image->width-1; i >= 0; i--){
-			if(image->array[image_array_index] > color_threshold) {
-				if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height){
-					image_array_index--;
-					continue;
+	if (!inverted) {
+		for(j = 0; j < image->height; j++){
+			for(i = image->width-1; i >= 0; i--){
+				if(image->array[image_array_index] > color_threshold) {
+					if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height){
+						image_array_index--;
+						continue;
+					}
+					if(original_color)
+						image_memory->values[i + pos_x][j + pos_y] = image->array[image_array_index];
+					else
+						image_memory->values[i + pos_x][j + pos_y] = color;
 				}
-				if(original_color)
-					image_memory->values[i + pos_x][j + pos_y] = image->array[image_array_index];
-				else
-					image_memory->values[i + pos_x][j + pos_y] = color;
+				image_array_index--;
 			}
-			image_array_index--;
+		}
+	}
+	else {
+		for(j = 0; j < image->height; j++){
+			for(i = 0; i < image->width; i++){
+				if(image->array[image_array_index] > color_threshold) {
+					if( (i+pos_x) < 0 || (i+pos_x) >= image_memory->width || (j+pos_y < 0) || (j+pos_y) >= image_memory->height){
+						image_array_index--;
+						continue;
+					}
+					if(original_color)
+						image_memory->values[i + pos_x][j + pos_y] = image->array[image_array_index];
+					else
+						image_memory->values[i + pos_x][j + pos_y] = color;
+				}
+				image_array_index--;
+			}
 		}
 	}
 }
 
 void draw_mountain(Image_matrix* image_memory, const Mountain *mountain, Scenario* scene) {
 	
-	draw_image(image_memory, mountain->image, mountain->x_position, HORIZON_Y_POSITION, mountain->color, false, 150);
+	draw_image(image_memory, mountain->image, mountain->x_position, HORIZON_Y_POSITION, mountain->color, false, 150, false);
 }
 
 float _getPt (float n1 , float n2 , float perc)
@@ -192,11 +211,11 @@ void draw_car (Image_matrix* image_memory, const Car *car, enum Runway_direction
 			return;
 	}		
 	
-	draw_image(image_memory, car->image, car_x_position - (car->image->width/2), car->runway_y_position, car->color, false, 150);
+	draw_image(image_memory, car->image, car_x_position - (car->image->width/2), car->runway_y_position, car->color, false, 150, car->inverted);
 }
 
 void draw_console (Image_matrix* image_memory, const Console* console) {
-	draw_image(image_memory, console->image, console->x_position, console->y_position, 0, true, 0);
+	draw_image(image_memory, console->image, console->x_position, console->y_position, 0, true, 0, false);
 }
 
 void draw_menu (Image_matrix* image_memory, tContext sContext, bool game_finished, const Console *console) {
