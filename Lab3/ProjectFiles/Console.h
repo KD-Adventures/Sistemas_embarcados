@@ -3,6 +3,9 @@
 
 #include "Image.h"
 
+#define N_ENEMIES_GOAL 200
+#define LAP_LENGTH 500
+
 typedef struct console {
 	uint32_t x_position;
 	uint32_t y_position;
