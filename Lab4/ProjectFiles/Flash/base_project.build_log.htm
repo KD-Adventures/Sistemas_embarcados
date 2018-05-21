@@ -29,35 +29,17 @@ Project File Date:  05/20/2018
 *** Note: Rebuilding project, since 'Options->Output->Create Batch File' is selected.
 Rebuild Project 'base_project' - Target 'TM4C129 Flash'
 compiling uart_functions.c...
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(585): error:  #20: identifier "bool" is undefined
-  extern bool SysCtlPeripheralPresent(uint32_t ui32Peripheral);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(586): error:  #20: identifier "bool" is undefined
-  extern bool SysCtlPeripheralReady(uint32_t ui32Peripheral);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(596): error:  #20: identifier "bool" is undefined
-  extern void SysCtlPeripheralClockGating(bool bEnable);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(602): error:  #20: identifier "bool" is undefined
-  extern uint32_t SysCtlIntStatus(bool bMasked);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(626): error:  #20: identifier "bool" is undefined
-  extern void SysCtlIOSCVerificationSet(bool bEnable);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(627): error:  #20: identifier "bool" is undefined
-  extern void SysCtlMOSCVerificationSet(bool bEnable);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(628): error:  #20: identifier "bool" is undefined
-  extern void SysCtlPLLVerificationSet(bool bEnable);
-D:\Main\git\Sistemas_embarcados\Lab4\driverlib\sysctl.h(645): error:  #20: identifier "bool" is undefined
-  extern bool SysCtlVCOGet(uint32_t ui32Crystal, uint32_t *pui32VCOFrequency);
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(31): warning:  #1295-D: Deprecated declaration initUART - give arg types
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(68): warning:  #1295-D: Deprecated declaration initUART - give arg types
   void initUART();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(34): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(73): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.c(18): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        *ptr = 0x3F & (uint32_t) ((baud_rate_generator - (int) baud_rate_generator) * 64 + 0.5);
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.c(42): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.c(48): warning:  #1-D: last line of file ends without a newline
   }
-uart_functions.c: 4 warnings, 8 errors
+uart_functions.c: 3 warnings, 0 errors
 compiling Lab4.c...
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(31): warning:  #1295-D: Deprecated declaration initUART - give arg types
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(68): warning:  #1295-D: Deprecated declaration initUART - give arg types
   void initUART();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(34): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(73): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\rgb.h(66): warning:  #1-D: last line of file ends without a newline
   #endif //__RGB_H__
@@ -82,7 +64,7 @@ D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\buttons.h(9): warning:  #1-D: 
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\joy.h(20): warning:  #1295-D: Deprecated declaration joy_read_center - give arg types
   extern 
 ool joy_read_center();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(38): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(42): warning:  #1-D: last line of file ends without a newline
   }
 Lab4.c: 13 warnings, 0 errors
 compiling buzzer.c...
@@ -189,9 +171,8 @@ compiling RTX_Conf_CM.c...
 assembling startup_TM4C129.s...
 compiling system_TM4C129.c...
 linking...
-.\Flash\base_project.axf: error: L6002U: Could not open file .\flash\uart_functions.o: No such file or directory
-Finished: 0 information, 0 warning, 0 error and 1 fatal error messages.
-".\Flash\base_project.axf" - 9 Error(s), 55 Warning(s).
+Program Size: Code=6226 RO-data=638 RW-data=60 ZI-data=9836  
+".\Flash\base_project.axf" - 0 Error(s), 54 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -219,28 +200,27 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:1.0.0
       Include file:  Device\Include\TM4C129\TM4C129.h
-      Source file:   Device\Source\system_TM4C129.c
       Source file:   Device\Source\ARM\startup_TM4C129.s
+      Source file:   Device\Source\system_TM4C129.c
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
-      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
+      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
+      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
-      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
-      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
+      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
       Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
       Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: ARM::CMSIS:CORE:5.0.1
 
    * Component: ::CMSIS:RTOS:1.0.0 (API)
-Target not created.
 Build Time Elapsed:  00:00:05
 </pre>
 </body>

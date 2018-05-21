@@ -10,6 +10,7 @@
   <project>
     <PathAndName>.\ProjectFiles\base_project.uvprojx</PathAndName>
     <NodeIsActive>1</NodeIsActive>
+    <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
   <project>

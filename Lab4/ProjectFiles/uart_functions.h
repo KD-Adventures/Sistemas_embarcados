@@ -3,12 +3,29 @@
 
 #include "TM4C129.h"
 
-//---------------------------------------------------
-//SYSTEM CONTROL REGISTERS
-#define SYSTEM_CONTROL_BASE_ADDR 0x400FE000
+//Register access macro
+#define reg(x) *(uint32_t*) x
 
-//GPIO Alternate Function Select
-#define GPIOAFSEL (SYSTEM_CONTROL_BASE_ADDR + 0x420)
+
+/*************************
+ * GPIO PORT A REGISTERS *
+ *************************/
+#define GPIO_PORT_A_BASE_ADDR 0x40058000
+
+//Alternate Function Select Register
+#define GPIOAFSEL_PORT_A (GPIO_PORT_A_BASE_ADDR + 0x420)
+
+//GPIO Digital Enable
+#define GPIODEN_PORT_A (GPIO_PORT_A_BASE_ADDR + 0x51C)
+
+//GPIO Port Control
+#define GPIOPCTL_PORT_A (GPIO_PORT_A_BASE_ADDR + 0x52C)
+
+
+/****************************
+ * SYSTEM CONTROL REGISTERS *
+ ****************************/
+#define SYSTEM_CONTROL_BASE_ADDR 0x400FE000
 
 //Run Mode Clock Gating Control
 #define RCGCGPIO (SYSTEM_CONTROL_BASE_ADDR + 0x608)
@@ -16,8 +33,10 @@
 //UART Run Mode Clock Gating Control
 #define RCGCUART (SYSTEM_CONTROL_BASE_ADDR + 0x618)
 
-//---------------------------------------------------
-//UART REGISTERS
+
+/******************
+ * UART REGISTERS *
+ ******************/
 #define UART0_BASE_ADDR 0x4000C000
 
 //Data register
@@ -41,10 +60,14 @@
 #define TXE (1<<8)
 #define UARTEN 1
 
-//Clock Configuration
-#define UARTCC (UART0_BASE_ADDR + 0xFC8)
 
+/*************
+ * FUNCTIONS *
+ *************/
+// Configures all the necessary registers
 void initUART();
+
+// Sends an 8-bit char through the UART
 void sendUART(uint8_t data);
 
 #endif

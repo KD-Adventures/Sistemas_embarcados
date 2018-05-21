@@ -26,13 +26,17 @@
 #include "joy.h"
 #include "led.h"
 
-//To print on the screen
 tContext sContext;
 
 int main (void) {
+	int i;	
 	initUART();
 	
+	for (i = 0; i < 1000000; i++);
+
 	while (true) {
-		sendUART('A');
+		sendUART('X');
+		
+		for (i = 0; i < 100000; i++);
 	}
 }
