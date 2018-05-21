@@ -31,7 +31,7 @@ tContext sContext;
 int main (void) {
 	int i;	
 	initUART();
-	
+
 	for (i = 0; i < 1000000; i++);
 
 	while (true) {
