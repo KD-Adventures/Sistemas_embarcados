@@ -1,5 +1,7 @@
 #include "uart_functions.h"
 
+bool global = false;
+
 void initUART() {
 	/******************************************************
 	 * Configuration instructions:                        *
@@ -27,7 +29,8 @@ void initUART() {
 	/********************************
 	 * UART REGISTERS CONFIGURATION *
 	 ********************************/
-	reg(UARTCTL) = 0; // Disabling UART before configuration
+	reg(UARTCTL) = 0;    // Disabling UART before configuration
+	reg(UARTIM) |= RXIM; // Enabling receive interrupt
 
 	/* Setting up a 9600 baud rate                                                *
 	 * Formula used: baud_rate_generator = System clock 16 MHz / (16 * Baud rate) *
@@ -45,4 +48,10 @@ void initUART() {
 void sendUART(uint8_t data) {
 	while(reg(UARTFR) & BUSY); //Waits until BUSY flag is turned off
 	reg(UARTDR) = data; //Sends data through the data register
+}
+
+void UART0_Handler() {
+	uint8_t data = reg(UARTDR);
+	if(data == 'A')
+		global = true;
 }
