@@ -2,6 +2,9 @@
 #define UART_FUNCTIONS
 
 #include "TM4C129.h"
+#include <stdbool.h>
+#include "inc\hw_ints.h"
+#include "driverlib\interrupt.h"
 
 //Register access macro
 #define reg(x) *(uint32_t*) x
@@ -60,6 +63,10 @@
 #define TXE (1<<8)
 #define UARTEN 1
 
+//Interrupt mask register
+#define UARTIM (UART0_BASE_ADDR + 0x038)
+#define RXIM (1<<4)
+
 
 /*************
  * FUNCTIONS *
@@ -69,5 +76,11 @@ void initUART();
 
 // Sends an 8-bit char through the UART
 void sendUART(uint8_t data);
+
+// UART receive interrupt handler
+void UART0_Handler();
+
+// Global variable
+extern bool global;
 
 #endif

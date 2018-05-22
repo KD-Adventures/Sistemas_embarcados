@@ -29,14 +29,13 @@
 tContext sContext;
 
 int main (void) {
-	int i;	
+	IntEnable(INT_UART0);
 	initUART();
 
-	for (i = 0; i < 1000000; i++);
-
 	while (true) {
-		sendUART('X');
-		
-		for (i = 0; i < 100000; i++);
+		if (global) {
+			sendUART('B');
+			global = false;
+		}
 	}
 }
