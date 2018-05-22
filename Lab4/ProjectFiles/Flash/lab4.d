@@ -11,6 +11,8 @@
 .\flash\lab4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h
 .\flash\lab4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h
 .\flash\lab4.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\system_TM4C129.h
+.\flash\lab4.o: ..\inc\hw_ints.h
+.\flash\lab4.o: ..\driverlib\interrupt.h
 .\flash\lab4.o: rgb.h
 .\flash\lab4.o: cfaf128x128x16.h
 .\flash\lab4.o: opt.h

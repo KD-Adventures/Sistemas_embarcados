@@ -22,24 +22,32 @@ Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\base_project.uvprojx
-Project File Date:  05/20/2018
+Project File Date:  05/22/2018
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 *** Note: Rebuilding project, since 'Options->Output->Create Batch File' is selected.
 Rebuild Project 'base_project' - Target 'TM4C129 Flash'
 compiling uart_functions.c...
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(68): warning:  #1295-D: Deprecated declaration initUART - give arg types
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(75): warning:  #1295-D: Deprecated declaration initUART - give arg types
   void initUART();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(73): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(81): warning:  #1295-D: Deprecated declaration readUART - give arg types
+  uint8_t readUART();
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(84): warning:  #1295-D: Deprecated declaration UART0_Handler - give arg types
+  void UART0_Handler();
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(89): warning:  #1-D: last line of file ends without a newline
   #endif
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.c(48): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.c(57): warning:  #1-D: last line of file ends without a newline
   }
-uart_functions.c: 3 warnings, 0 errors
+uart_functions.c: 5 warnings, 0 errors
 compiling Lab4.c...
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(68): warning:  #1295-D: Deprecated declaration initUART - give arg types
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(75): warning:  #1295-D: Deprecated declaration initUART - give arg types
   void initUART();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(73): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(81): warning:  #1295-D: Deprecated declaration readUART - give arg types
+  uint8_t readUART();
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(84): warning:  #1295-D: Deprecated declaration UART0_Handler - give arg types
+  void UART0_Handler();
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\uart_functions.h(89): warning:  #1-D: last line of file ends without a newline
   #endif
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\rgb.h(66): warning:  #1-D: last line of file ends without a newline
   #endif //__RGB_H__
@@ -64,9 +72,15 @@ D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\buttons.h(9): warning:  #1-D: 
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\joy.h(20): warning:  #1295-D: Deprecated declaration joy_read_center - give arg types
   extern 
 ool joy_read_center();
-D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(42): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(84): warning:  #550-D: variable "value_red_led"  was set but never used
+        uint8_t value_red_led, value_green_led, value_blue_led;
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(84): warning:  #550-D: variable "value_green_led"  was set but never used
+        uint8_t value_red_led, value_green_led, value_blue_led;
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(84): warning:  #177-D: variable "value_blue_led"  was declared but never referenced
+        uint8_t value_red_led, value_green_led, value_blue_led;
+D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\Lab4.c(184): warning:  #1-D: last line of file ends without a newline
   }
-Lab4.c: 13 warnings, 0 errors
+Lab4.c: 18 warnings, 0 errors
 compiling buzzer.c...
 D:\Main\git\Sistemas_embarcados\Lab4\ProjectFiles\buzzer.h(18): warning:  #1295-D: Deprecated declaration buzzer_init - give arg types
   extern void buzzer_init();
@@ -171,8 +185,8 @@ compiling RTX_Conf_CM.c...
 assembling startup_TM4C129.s...
 compiling system_TM4C129.c...
 linking...
-Program Size: Code=6226 RO-data=638 RW-data=60 ZI-data=9836  
-".\Flash\base_project.axf" - 0 Error(s), 54 Warning(s).
+Program Size: Code=9044 RO-data=2176 RW-data=108 ZI-data=10236  
+".\Flash\base_project.axf" - 0 Error(s), 61 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -200,28 +214,28 @@ Package Vendor: Keil
 
    * Component: Keil::Device:Startup:1.0.0
       Include file:  Device\Include\TM4C129\TM4C129.h
-      Source file:   Device\Source\ARM\startup_TM4C129.s
       Source file:   Device\Source\system_TM4C129.c
+      Source file:   Device\Source\ARM\startup_TM4C129.s
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
+      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
       Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
       Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
-      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
-      Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
       Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: ARM::CMSIS:CORE:5.0.1
 
    * Component: ::CMSIS:RTOS:1.0.0 (API)
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

@@ -77,10 +77,13 @@ void initUART();
 // Sends an 8-bit char through the UART
 void sendUART(uint8_t data);
 
+// Reads an 8-bit char from the UART buffer
+uint8_t readUART();
+
 // UART receive interrupt handler
 void UART0_Handler();
 
 // Global variable
-extern bool global;
+extern uint8_t global;
 
 #endif
