@@ -1,10 +1,13 @@
 #ifndef UART_FUNCTIONS
 #define UART_FUNCTIONS
 
+#include "cmsis_os.h"
 #include "TM4C129.h"
 #include <stdbool.h>
+#include "grlib/grlib.h"
 #include "inc\hw_ints.h"
 #include "driverlib\interrupt.h"
+
 
 //Register access macro
 #define reg(x) *(uint32_t*) x

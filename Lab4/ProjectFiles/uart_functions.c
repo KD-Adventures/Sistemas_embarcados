@@ -31,14 +31,14 @@ void initUART() {
      ********************************/
     reg(UARTCTL) = 0;    // Disabling UART before configuration
     reg(UARTIM) |= RXIM; // Enabling receive interrupt
-
-    /* Setting up a 9600 baud rate                                                *
-     * Formula used: baud_rate_generator = System clock 16 MHz / (16 * Baud rate) *
+	
+    /* Setting up a 115200 baud rate                                                *
+     * Formula used: baud_rate_generator = System clock 120 MHz / (16 * Baud rate) *
      * UARTIBRD register receives the integer part of baud_rate_generator         *
      * UARTFBRD register is calculated according to the datasheet formula:        *
      *            First 6 bits = integer(decimal part * 64 + 0.5)                 *
      * UARTLCRH must be set after UARTIBRD and UARTFBRD                           */
-    reg(UARTIBRD) = (reg(UARTIBRD) & 0xFFFF0000) | 0x0068;
+    reg(UARTIBRD) = (reg(UARTIBRD) & 0xFFFF0000) | 0x0041; // 0x68 para baud 9600 e 16 MHz, 0x41 para 115200 e 120MHz
     reg(UARTFBRD) = (reg(UARTFBRD) & 0xFFFFFFC0) | 0x0B;
     reg(UARTLCRH) = 0x00000060; //Setting the word length to 8 bits.
 

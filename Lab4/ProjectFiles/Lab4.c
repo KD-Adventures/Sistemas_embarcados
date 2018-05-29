@@ -22,6 +22,14 @@
 #include "joy.h"
 #include "led.h"
 #include "cmsis_os.h"
+#include "Graphics.h"
+#include <string.h>
+#include "Comunication.h"
+
+#define LEFT 'A'
+#define UP 'W'
+#define RIGHT 'D'
+#define DOWN 'S'
 
 tContext sContext;
 
@@ -78,11 +86,38 @@ void UART (void const *args) {
     }
 }
 
+void handleControls(char received_data, InterfaceMenu * menu) {
+	
+	switch (received_data) {
+		case LEFT:
+			previousValue(menu);
+			break;
+		case RIGHT:
+			nextValue(menu);
+			break;
+		case UP:
+			previousEntry(menu);
+			break;
+		case DOWN:
+			nextEntry(menu);
+			break;
+	}
+}
+
 void Menu (void const *args) {
 	osEvent event;
 	uint32_t received_data;
 	uint8_t value_red_led, value_green_led, value_blue_led;
 	uint32_t bit_mask = 0x0000ff;
+	
+	Groups color_groups = loadGroups();
+	InterfaceMenu menu = initMenu(&color_groups);
+	tContext sContext;
+	
+	GrContextInit(&sContext, &g_sCfaf128x128x16);
+	
+	GrFlush(&sContext);
+	GrContextFontSet(&sContext, g_psFontFixed6x8);
 	
     while (true) {
 		event = osMessageGet(MenuMsgBox_id, 100);
@@ -92,6 +127,35 @@ void Menu (void const *args) {
 		
         if (received_data > 0) {
 			
+//			terminal_clear();
+			handleControls(received_data, &menu);
+			drawDisplayMenu(&menu, &sContext);
+			drawConsoleMenu(&menu);
+			//terminal_clear();
+			/*
+			if (received_data == 'A') {
+				sendString(color_groups.colorGroup[BLUE_GROUP].name);
+			}
+			else if (received_data == 'C') {
+				sendString("\033[2J");
+			}
+			else if (received_data == 'L') {
+				sendString("\0338");
+			}
+			else if (received_data == 'M') {
+				sendString("\033[5;10f");
+			}
+			else if (received_data == 'F') {
+				sendString("\033[48;2;155;106;0m");
+				GrContextBackgroundSet(&sContext, ClrBlack);
+				GrContextForegroundSet(&sContext, ClrWhite);
+				rect.i16XMin = 0;
+				rect.i16XMax = 20;
+				rect.i16YMin = 0;
+				rect.i16YMax = 20;
+				GrRectFill(&sContext, &rect);
+			}
+			*/
 			value_red_led = (received_data) & bit_mask;
 			value_green_led = (received_data >> 8) & bit_mask;
 			value_red_led = (received_data >> 16) & bit_mask;
@@ -162,6 +226,7 @@ int main (void) {
     IntEnable(INT_UART0);
     initUART();
 	rgb_init();
+	cfaf128x128x16Init();
 
     osKernelInitialize();
 	
