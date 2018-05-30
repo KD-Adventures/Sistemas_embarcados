@@ -102,11 +102,14 @@ void drawConsoleMenu(InterfaceMenu* menu) {
 			break;
 	}
 	
-	draw_square(0, 20, 10, 20, menu->currentColor->rgb);
+	draw_square(0, 30, 10, 20, menu->currentColor->rgb);
 }
 
 void drawDisplayMenu(InterfaceMenu* menu, tContext* context) {
 	tRectangle rect;
+	uint16_t horizontal_pos;
+	
+	horizontal_pos = 3;
 	
 	GrContextBackgroundSet(context, ClrBlack);	
 	GrContextForegroundSet(context, ClrBlack);	
@@ -116,11 +119,11 @@ void drawDisplayMenu(InterfaceMenu* menu, tContext* context) {
 	
 	GrContextForegroundSet(context, ClrWhite);	
 	
-	GrStringDraw(context, "Escolha o Grupo", -1, (context->psFont->ui8MaxWidth)*4,  (context->psFont->ui8Height+2)*1, true);
-	GrStringDraw(context, menu->currentColorGroup->name, -1, (context->psFont->ui8MaxWidth)*4,  (context->psFont->ui8Height+2)*2, true);
+	GrStringDraw(context, "Escolha o Grupo", -1, (context->psFont->ui8MaxWidth)*horizontal_pos,  (context->psFont->ui8Height+2)*1, true);
+	GrStringDraw(context, menu->currentColorGroup->name, -1, (context->psFont->ui8MaxWidth)*horizontal_pos,  (context->psFont->ui8Height+2)*2, true);
 	
-	GrStringDraw(context, "Escolha a Cor", -1, (context->psFont->ui8MaxWidth)*4,  (context->psFont->ui8Height+2)*4, true);
-	GrStringDraw(context, menu->currentColor->name, -1, (context->psFont->ui8MaxWidth)*4,  (context->psFont->ui8Height+2)*5, true);
+	GrStringDraw(context, "Escolha a Cor", -1, (context->psFont->ui8MaxWidth)*horizontal_pos,  (context->psFont->ui8Height+2)*4, true);
+	GrStringDraw(context, menu->currentColor->name, -1, (context->psFont->ui8MaxWidth)*horizontal_pos,  (context->psFont->ui8Height+2)*5, true);
 	
 	// Nojeira
 	GrContextBackgroundSet(context, ClrBlack);

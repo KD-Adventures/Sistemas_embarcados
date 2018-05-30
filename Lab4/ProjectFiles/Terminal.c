@@ -33,7 +33,7 @@ void background_color(uint32_t rgb) {
 	green = rgb;
 	green = (green >> 8) & 0xff;
 	red = rgb;
-	red = (blue >> 16) & 0xff;
+	red = (red >> 16) & 0xff;
 	
 	intToString(red, r_value, 10, 10, 1);
 	intToString(green , g_value, 10, 10, 1);
@@ -48,15 +48,6 @@ void background_color(uint32_t rgb) {
 	strcat(command, "m");
 	
 	sendString(command);
-}
-
-void background_color_r_g_b(uint32_t reb, uint32_t green, uint32_t blue) {
-}
-
-void foreground_color(uint32_t rgb) {
-}
-
-void foreground_color_r_g_b(uint32_t red, uint32_t green, uint32_t blue) {
 }
 
 void draw_square(uint32_t x_min, uint32_t x_max, uint32_t y_min, uint32_t y_max, uint32_t color) {

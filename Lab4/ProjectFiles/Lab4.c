@@ -108,6 +108,7 @@ void Menu (void const *args) {
 	osEvent event;
 	uint32_t received_data;
 	uint8_t value_red_led, value_green_led, value_blue_led;
+	uint32_t current_color_rgb;
 	uint32_t bit_mask = 0x0000ff;
 	
 	Groups color_groups = loadGroups();
@@ -127,43 +128,19 @@ void Menu (void const *args) {
 		
         if (received_data > 0) {
 			
-//			terminal_clear();
 			handleControls(received_data, &menu);
 			drawDisplayMenu(&menu, &sContext);
 			drawConsoleMenu(&menu);
-			//terminal_clear();
-			/*
-			if (received_data == 'A') {
-				sendString(color_groups.colorGroup[BLUE_GROUP].name);
-			}
-			else if (received_data == 'C') {
-				sendString("\033[2J");
-			}
-			else if (received_data == 'L') {
-				sendString("\0338");
-			}
-			else if (received_data == 'M') {
-				sendString("\033[5;10f");
-			}
-			else if (received_data == 'F') {
-				sendString("\033[48;2;155;106;0m");
-				GrContextBackgroundSet(&sContext, ClrBlack);
-				GrContextForegroundSet(&sContext, ClrWhite);
-				rect.i16XMin = 0;
-				rect.i16XMax = 20;
-				rect.i16YMin = 0;
-				rect.i16YMax = 20;
-				GrRectFill(&sContext, &rect);
-			}
-			*/
-			value_red_led = (received_data) & bit_mask;
-			value_green_led = (received_data >> 8) & bit_mask;
-			value_red_led = (received_data >> 16) & bit_mask;
+			
+			current_color_rgb = menu.currentColor->rgb;
+			value_blue_led = current_color_rgb & bit_mask;
+			value_green_led = (current_color_rgb >> 8) & bit_mask;
+			value_red_led = (current_color_rgb >> 16) & bit_mask;
 			
 			
-            osMessagePut(RedLEDMsgBox_id, (uint32_t) received_data, 0);
-			osMessagePut(GreenLEDMsgBox_id, (uint32_t) received_data, 0);
-			osMessagePut(BlueLEDMsgBox_id, (uint32_t) received_data, 0);
+            osMessagePut(RedLEDMsgBox_id, (uint32_t) value_red_led, 0);
+			osMessagePut(GreenLEDMsgBox_id, (uint32_t) value_green_led, 0);
+			osMessagePut(BlueLEDMsgBox_id, (uint32_t) value_blue_led, 0);
             received_data = 0;
         }
     }
@@ -172,15 +149,18 @@ void Menu (void const *args) {
 void Red_LED (void const *args) {
     osEvent event;
 	uint32_t received_data;
+	bool valid_message_received = false;
 	
 	while (true) {
 		event = osMessageGet(RedLEDMsgBox_id, 100);
 		if (event.status == osEventMessage) {
 			received_data = event.value.v;
+			valid_message_received = true;
 		}
 		
-        if (received_data > 0) {
-			//rgb_write_color(ClrRed);
+        if (valid_message_received) {
+			rgb_write_r((uint8_t)received_data);
+			valid_message_received = false;
 		}
 	}
 }
@@ -188,15 +168,18 @@ void Red_LED (void const *args) {
 void Green_LED (void const *args) {
     osEvent event;
 	uint32_t received_data;
+	bool valid_message_received = false;
 	
 	while (true) {
 		event = osMessageGet(GreenLEDMsgBox_id, 100);
 		if (event.status == osEventMessage) {
 			received_data = event.value.v;
+			valid_message_received = true;
 		}
 		
-        if (received_data > 0) {
-			rgb_write_color(ClrGreen);
+        if (valid_message_received) {
+			rgb_write_g((uint8_t)received_data);
+			valid_message_received = false;
 		}
 	}
 }
@@ -205,15 +188,18 @@ void Green_LED (void const *args) {
 void Blue_LED (void const *args) {
     osEvent event;
 	uint32_t received_data;
+	bool valid_message_received = false;
 	
 	while (true) {
 		event = osMessageGet(BlueLEDMsgBox_id, 100);
 		if (event.status == osEventMessage) {
 			received_data = event.value.v;
+			valid_message_received = true;
 		}
 		
-        if (received_data > 0) {
-			//rgb_write_color(ClrBlue);
+        if (valid_message_received) {
+			rgb_write_b((uint8_t)received_data);
+			valid_message_received = false;
 		}
 	}
 }
