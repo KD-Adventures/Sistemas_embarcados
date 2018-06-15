@@ -1,0 +1,15 @@
+.\ram\uart_functions.o: uart_functions.c
+.\ram\uart_functions.o: uart_functions.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\RTOS\RTX\INC\cmsis_os.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C129.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C1294NCPDT.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm4.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\system_TM4C129.h
+.\ram\uart_functions.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\ram\uart_functions.o: ..\grlib/grlib.h
+.\ram\uart_functions.o: ..\inc\hw_ints.h
+.\ram\uart_functions.o: ..\driverlib\interrupt.h
