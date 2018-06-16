@@ -1,6 +1,6 @@
 .\ram\utils.o: Utils.c
 .\ram\utils.o: Utils.h
-.\ram\utils.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\RTOS\RTX\INC\cmsis_os.h
+.\ram\utils.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\RTOS\RTX\INC\cmsis_os.h
 .\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
