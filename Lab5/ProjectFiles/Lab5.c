@@ -21,6 +21,7 @@
 #include <math.h>
 #include "Utils.h"
 #include "queue.h"
+#include "Task.h"
 
 #define M_PI 3.14159265358979323846
 //#define GANTT
@@ -46,12 +47,13 @@ osThreadDef (Thread_D, osPriorityNormal, 1, 0);
 osThreadDef (Thread_E, osPriorityNormal, 1, 0);
 osThreadDef (Thread_F, osPriorityNormal, 1, 0);
 
-osThreadId Thread_A_id;
-osThreadId Thread_B_id;
-osThreadId Thread_C_id;
-osThreadId Thread_D_id;
-osThreadId Thread_E_id;
-osThreadId Thread_F_id;
+Task task_A;
+Task task_B;
+Task task_C;
+Task task_D;
+Task task_E;
+Task task_F;
+
 osThreadId Dispatcher_id;
 
 osTimerDef(timer, dispatcher_run);
@@ -75,31 +77,40 @@ void Thread_A (void const *args) {
 	int x;
 	double soma;
 		
-	for(soma = 0, x = 0; x <= 256; x++) {
-		soma += x + (x + 2);
+	while (true) {
+		
+		for(soma = 0, x = 0; x <= 256; x++) {
+			soma += x + (x + 2);
+		}
+		x = 0;
 	}
-	x = 0;
 }
 
 void Thread_B (void const *args) {
 	int n;
 	double soma;
+	
+	while (true) {
+		
+		for(soma = 0, n = 1; n <= 16; n++) {
+			soma += pow(2.0, n) / factorial(n);
+		}
 
-	for(soma = 0, n = 1; n <= 16; n++) {
-		soma += pow(2.0, n) / factorial(n);
+		n = 0 ;
 	}
-
-	n = 0 ;
 }
 
 void Thread_C (void const *args) {
 	int n;
 	double soma;
 	
-	for(soma = 0, n = 1; n <= 72; n++) {
-		soma += (double)(n+1)/(double)n;
+	while (true) {
+		
+		for(soma = 0, n = 1; n <= 72; n++) {
+			soma += (double)(n+1)/(double)n;
+		}
+		n = 0;
 	}
-	n = 0;
 }
 
 void Thread_D (void const *args) {
@@ -129,28 +140,28 @@ void Thread_F (void const *args) {
 	y = 0;
 }
 
-void task_yield(osThreadId) {
+void task_yield(Task* running_thread) {
 }
 
-void load_threads(osThreadId tasks[]) {
-	tasks[0] = Thread_A_id;
-	tasks[1] = Thread_B_id;
-	tasks[2] = Thread_C_id;
-	//tasks[3] = Thread_D_id;
-	//tasks[4] = Thread_E_id;
-	//tasks[5] = Thread_F_id;
+void load_threads(Task* tasks[]) {
+	tasks[0] = &task_A;
+	tasks[1] = &task_B;
+	tasks[2] = &task_C;
+	//tasks[3] = task_D;
+	//tasks[4] = task_E;
+	//tasks[5] = task_F;
 }
 
-void scheduler(osThreadId tasks[], int size) {
+void scheduler(Task* tasks[], int size) {
 	// reorder
 }
 
 void dispatcher() {
 	int number_of_tasks;
-	osThreadId ready_tasks[3];
-	osThreadId waiting_tasks[3];
-	osThreadId current_task;
-	osThreadId previous_task;
+	Task* ready_tasks[3];
+	Task* waiting_tasks[3];
+	Task* current_task;
+	Task* previous_task;
 	osEvent event;
 	int ready_tasks_index = 0;
 	int ready_tasks_size;
@@ -166,11 +177,11 @@ void dispatcher() {
 		if (event.status == osEventSignal) {
 			osMutexWait(mutex_running_thread_id, osWaitForever);
 			
-			put_element((void*)ready_tasks, number_of_tasks, current_task, &ready_tasks_size);
+			put_element((void*)ready_tasks, number_of_tasks, (void*)&current_task, &ready_tasks_size);
 			
 			scheduler(ready_tasks, number_of_tasks);
 			
-			current_task = get_first_element((void*)ready_tasks, &ready_tasks_size);
+			current_task = (Task*)get_first_element((void*)&ready_tasks, &ready_tasks_size);
 			
 			osMutexRelease(mutex_running_thread_id);
 			
@@ -179,6 +190,13 @@ void dispatcher() {
 }
 
 int main (void) {
+	osThreadId Thread_A_id;
+	osThreadId Thread_B_id;
+	osThreadId Thread_C_id;
+	osThreadId Thread_D_id;
+	osThreadId Thread_E_id;
+	osThreadId Thread_F_id;
+	
     #ifdef GANTT
 	initUART();
 	#endif
@@ -196,6 +214,14 @@ int main (void) {
 	Thread_E_id = osThreadCreate(osThread(Thread_E), NULL);
 	Thread_F_id = osThreadCreate(osThread(Thread_F), NULL);
     osKernelStart();
+	
+	// os dados de executiong time are not correct
+	task_A = createTask("Task A", Thread_A_id, 10, 8, 1000, 70);
+	task_B = createTask("Task B", Thread_B_id, 0, 2, 1000, 50);
+	task_C = createTask("Task C", Thread_C_id, -30, 5, 1000, 30);
+	task_D = createTask("Task D", Thread_D_id, 0, 1, 1000, 50);
+	task_E = createTask("Task E", Thread_E_id, -30, 6, 1000, 30);
+	task_F = createTask("Task F", Thread_F_id, -100, 10, 1000, 10);
 	
 	timer_id = osTimerCreate(osTimer(timer), osTimerPeriodic, NULL);
 	mutex_running_thread_id = osMutexCreate(osMutex(mutex_running_thread));

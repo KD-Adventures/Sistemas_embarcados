@@ -21,3 +21,4 @@
 .\ram\lab5.o: Utils.h
 .\ram\lab5.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\ram\lab5.o: queue.h
+.\ram\lab5.o: Task.h

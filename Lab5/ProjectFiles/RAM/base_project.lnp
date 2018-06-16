@@ -5,6 +5,7 @@
 ".\ram\utils.o"
 ".\ram\lab5.o"
 ".\ram\queue.o"
+".\ram\task.o"
 ".\ram\cfaf128x128x16.o"
 "..\driverlib\rvmdk\driverlib.lib"
 "..\grlib\rvmdk\grlib.lib"

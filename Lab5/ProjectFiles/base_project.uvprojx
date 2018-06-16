@@ -411,6 +411,11 @@
               <FileType>1</FileType>
               <FilePath>.\queue.c</FilePath>
             </File>
+            <File>
+              <FileName>Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -465,6 +470,11 @@
               <FileName>queue.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\queue.h</FilePath>
+            </File>
+            <File>
+              <FileName>Task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Task.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -884,6 +894,11 @@
               <FileType>1</FileType>
               <FilePath>.\queue.c</FilePath>
             </File>
+            <File>
+              <FileName>Task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -938,6 +953,11 @@
               <FileName>queue.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\queue.h</FilePath>
+            </File>
+            <File>
+              <FileName>Task.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Task.h</FilePath>
             </File>
           </Files>
         </Group>
