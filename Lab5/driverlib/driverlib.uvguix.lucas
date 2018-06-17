@@ -11,17 +11,17 @@
     <View>
       <WinId>38003</WinId>
       <ViewName>Registers</ViewName>
-      <TableColWidths>82 100</TableColWidths>
+      <TableColWidths>115 67</TableColWidths>
     </View>
     <View>
       <WinId>346</WinId>
       <ViewName>Code Coverage</ViewName>
-      <TableColWidths>768 562</TableColWidths>
+      <TableColWidths>770 160</TableColWidths>
     </View>
     <View>
       <WinId>204</WinId>
       <ViewName>Performance Analyzer</ViewName>
-      <TableColWidths>392 139 139 660</TableColWidths>
+      <TableColWidths>930</TableColWidths>
     </View>
   </SECTreeCtrl>
 
@@ -36,7 +36,7 @@
       <WinId>1936</WinId>
       <ViewName>Watch 1</ViewName>
       <UserString></UserString>
-      <TableColWidths>141 64 64</TableColWidths>
+      <TableColWidths>64 64 64</TableColWidths>
     </View>
     <View>
       <WinId>1937</WinId>
@@ -48,7 +48,7 @@
       <WinId>1935</WinId>
       <ViewName>Call Stack + Locals</ViewName>
       <UserString></UserString>
-      <TableColWidths>191 64 64</TableColWidths>
+      <TableColWidths>64 64 64</TableColWidths>
     </View>
     <View>
       <WinId>2506</WinId>
@@ -91,10 +91,10 @@
         <yPos>-1</yPos>
       </MaxPosition>
       <NormalPosition>
-        <Top>108</Top>
-        <Left>0</Left>
-        <Right>864</Right>
-        <Bottom>824</Bottom>
+        <Top>240</Top>
+        <Left>1089</Left>
+        <Right>1953</Right>
+        <Bottom>956</Bottom>
       </NormalPosition>
     </WindowPosition>
     <MDIClientArea>

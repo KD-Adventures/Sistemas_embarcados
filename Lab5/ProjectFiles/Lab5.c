@@ -18,6 +18,14 @@
 
 #define SIGNAL_EXECUTE_THREAD 0x0010
 
+//Estimated execution times in SysTicks
+#define TASK_A_EXECUTION_TIME 41906
+#define TASK_B_EXECUTION_TIME 147138
+#define TASK_C_EXECUTION_TIME 26130
+#define TASK_D_EXECUTION_TIME 5146
+#define TASK_E_EXECUTION_TIME 42902
+#define TASK_F_EXECUTION_TIME 2791439
+
 tContext sContext;
 
 // THREADS
@@ -61,10 +69,10 @@ void dispatcher_run(){
 
 void task_yield(Task* running_thread, bool isPreempt) {
 	#ifdef GANTT
-	gantt_thread_exit(running_thread->name, (int)(osKernelSysTick()/120000));
+	gantt_thread_exit(running_thread->name, osKernelSysTick()/120000);
 	#endif
 	
-	if (running_thread->status == RUNNING) {
+	if (running_thread->task_id != Dispatcher.task_id && running_thread->status == RUNNING) {
 		if (isPreempt)
 			running_thread->status = READY;
 		else
@@ -88,7 +96,7 @@ void Thread_A (void const *args) {
 		
 	while (true) {
 		for(soma = 0, x = 0; x <= 256; x++) {
-			if(task_A.status != RUNNING)
+			while(task_A.status != RUNNING)
 				osThreadYield();
 			soma += x + (x + 2);
 		}
@@ -104,7 +112,7 @@ void Thread_B (void const *args) {
 	
 	while (true) {		
 		for(soma = 0, n = 1; n <= 16; n++) {
-			if(task_B.status != RUNNING)
+			while(task_B.status != RUNNING)
 				osThreadYield();
 			soma += pow(2.0, n) / factorial(n);
 		}
@@ -120,7 +128,7 @@ void Thread_C (void const *args) {
 	
 	while (true) {
 		for(soma = 0, n = 1; n <= 72; n++) {
-			if(task_C.status != RUNNING)
+			while(task_C.status != RUNNING)
 				osThreadYield();
 			soma += (double)(n+1)/(double)n;
 		}
@@ -134,7 +142,7 @@ void Thread_D (void const *args) {
 	double soma;
 	
 	while(true) {
-		if(task_D.status != RUNNING)
+		while(task_D.status != RUNNING)
 			osThreadYield();
 		soma = 1 + (5.0/factorial(3)) + (5.0/factorial(5)) + (5.0/factorial(7)) + (5.0/factorial(9));
 		
@@ -149,7 +157,7 @@ void Thread_E (void const *args) {
 
 	while(true) {
 		for(soma = 0, x = 1; x <= 100; x++) {
-			if(task_E.status != RUNNING)
+			while(task_E.status != RUNNING)
 				osThreadYield();
 			soma += x*M_PI*M_PI;
 		}
@@ -165,7 +173,7 @@ void Thread_F (void const *args) {
 	
 	while(true) {
 		for(soma = 0, y = 1; y <= 128; y++) {
-			if(task_F.status != RUNNING)
+			while(task_F.status != RUNNING)
 				osThreadYield();
 			soma += pow((double) y, 3.0) / pow(2.0, (double) y);
 		}
@@ -235,7 +243,6 @@ void dispatcher() {
 	waiting_tasks_size = number_of_tasks;
 	
 	load_threads(waiting_tasks, number_of_tasks);
-	current_task = &Dispatcher;
 	
 	while(true) {
 		event = osSignalWait (0x0001, 1);
@@ -290,16 +297,18 @@ int main (void) {
 	
     osKernelInitialize();
 	// ajustar valores para dispatcher
+	osThreadSetPriority(osThreadGetId(), osPriorityRealtime);
 	Dispatcher = createTask("Dispatcher ", osThreadGetId(), 0, 0, 0, 0, RUNNING);
 	Dispatcher.status = RUNNING;
+	current_task = &Dispatcher;
 	
 	// os dados de executiong time are not correct
-	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, 1000, 70, WAITING);
-	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, 1000, 50, WAITING);
-	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, 1000, 30, WAITING);
-	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, 1000, 50, WAITING);
-	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, 1000, 30, WAITING);
-	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, 1000, 10, WAITING);
+	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, TASK_A_EXECUTION_TIME, 70, WAITING);
+	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, TASK_B_EXECUTION_TIME, 50, WAITING);
+	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, TASK_C_EXECUTION_TIME, 30, WAITING);
+	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, TASK_D_EXECUTION_TIME, 50, WAITING);
+	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, TASK_E_EXECUTION_TIME, 30, WAITING);
+	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, TASK_F_EXECUTION_TIME, 10, WAITING);
     osKernelStart();
 	
 	timer_id = osTimerCreate(osTimer(timer), osTimerPeriodic, NULL);
