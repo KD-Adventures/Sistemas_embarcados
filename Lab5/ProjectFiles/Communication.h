@@ -1,5 +1,5 @@
-#ifndef COMUNICATION_H
-#define COMUNICATION_H
+#ifndef COMMUNICATION_H
+#define COMMUNICATION_H
 
 #include "cmsis_os.h"
 #include <stdbool.h>

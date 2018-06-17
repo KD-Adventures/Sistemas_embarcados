@@ -1,4 +1,4 @@
-#include "Comunication.h"
+#include "Communication.h"
 
 void sendString(char* string) {
 	int i = 0;

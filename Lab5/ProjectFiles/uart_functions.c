@@ -38,7 +38,7 @@ void initUART() {
      * UARTFBRD register is calculated according to the datasheet formula:        *
      *            First 6 bits = integer(decimal part * 64 + 0.5)                 *
      * UARTLCRH must be set after UARTIBRD and UARTFBRD                           */
-    reg(UARTIBRD) = (reg(UARTIBRD) & 0xFFFF0000) | 0x0041; // 0x68 para baud 9600 e 16 MHz, 0x41 para 115200 e 120MHz
+    reg(UARTIBRD) = (reg(UARTIBRD) & 0xFFFF0000) | 0x0068; // 0x68 para baud 9600 e 16 MHz, 0x41 para 115200 e 120MHz
     reg(UARTFBRD) = (reg(UARTFBRD) & 0xFFFFFFC0) | 0x0B;
     reg(UARTLCRH) = 0x00000060; //Setting the word length to 8 bits.
 

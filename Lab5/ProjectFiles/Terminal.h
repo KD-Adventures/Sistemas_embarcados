@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "grlib/grlib.h"
 #include <stdlib.h>
-#include "Comunication.h"
+#include "Communication.h"
 #include "Utils.h"
 
 void terminal_clear();
