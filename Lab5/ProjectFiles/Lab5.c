@@ -68,17 +68,12 @@ void dispatcher_run(){
 }
 
 void task_yield(Task* running_thread, bool isPreempt) {
-	#ifdef GANTT
-	gantt_thread_exit(running_thread->name, osKernelSysTick()/120000);
-	#endif
-	
 	if (running_thread->task_id != Dispatcher.task_id && running_thread->status == RUNNING) {
 		if (isPreempt)
 			running_thread->status = READY;
 		else
 			running_thread->status = WAITING;
 	}
-	
 	
 	osSignalSet (Dispatcher.task_id, 0x0001);	
 }
@@ -254,17 +249,23 @@ void dispatcher() {
 			osTimerStop(timer_id);
 			osMutexWait(mutex_running_thread_id, osWaitForever);
 			
-			// Se a task terminou
-			if (current_task->status == WAITING) {
-				resetTask(current_task, WAITING);
+			if (current_task != &Dispatcher) {				
+				#ifdef GANTT
+				gantt_thread_exit(current_task->name, floor(getSystemTime()));
+				#endif
+				
+				// Se a task terminou
+				if (current_task->status == WAITING) {
+					resetTask(current_task, WAITING);
+				}
+				
+				//Adds previous task to the "ready tasks" queue			
+				if (current_task > 0 && current_task->status == READY)
+					push_element((void*)ready_tasks, number_of_tasks, (void*)current_task, &ready_tasks_size);
+				else if (current_task > 0 && current_task->status == WAITING)
+					push_element((void*)waiting_tasks, number_of_tasks, (void*)current_task, &waiting_tasks_size);			
 			}
-			
-			//Adds previous task to the "ready tasks" queue			
-			if (current_task > 0 && current_task->status == READY)
-				push_element((void*)ready_tasks, number_of_tasks, (void*)current_task, &ready_tasks_size);
-			else if (current_task > 0 && current_task->status == WAITING)
-				push_element((void*)waiting_tasks, number_of_tasks, (void*)current_task, &waiting_tasks_size);			
-			
+				
 			//Selects next task to be executed
 			updateTasks(ready_tasks, &ready_tasks_size, number_of_tasks, waiting_tasks, &waiting_tasks_size, number_of_tasks);;
 			scheduler(ready_tasks, ready_tasks_size);
@@ -273,7 +274,7 @@ void dispatcher() {
 			
 			//Sets selected task to running mode
 			#ifdef GANTT
-			gantt_thread_enter(current_task->name, (int)(osKernelSysTick()/120000));
+			gantt_thread_enter(current_task->name, floor(getSystemTime()));
 			#endif
 			current_task->status = RUNNING;
 			

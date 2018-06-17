@@ -56,19 +56,19 @@ D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(38): warning:  #1295-D:
   void dispatcher();
 D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(39): warning:  #1295-D: Deprecated declaration dispatcher_run - give arg types
   void dispatcher_run();
-D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(142): warning:  #550-D: variable "soma"  was set but never used
+D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(137): warning:  #550-D: variable "soma"  was set but never used
   	double soma;
-D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(236): warning:  #550-D: variable "previous_task"  was set but never used
+D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(231): warning:  #550-D: variable "previous_task"  was set but never used
   	Task* previous_task;
-D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(238): warning:  #177-D: variable "ready_tasks_index"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(233): warning:  #177-D: variable "ready_tasks_index"  was declared but never referenced
   	int ready_tasks_index = 0;
-D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(240): warning:  #177-D: variable "waiting_tasks_index"  was declared but never referenced
+D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(235): warning:  #177-D: variable "waiting_tasks_index"  was declared but never referenced
   	int waiting_tasks_index = 0;
-D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(319): warning:  #1-D: last line of file ends without a newline
+D:\Main\git\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(320): warning:  #1-D: last line of file ends without a newline
   }
 Lab5.c: 19 warnings, 0 errors
 linking...
-Program Size: Code=18652 RO-data=940 RW-data=84 ZI-data=47572  
+Program Size: Code=18660 RO-data=940 RW-data=84 ZI-data=47572  
 ".\RAM\base_project.axf" - 0 Error(s), 19 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -96,24 +96,24 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device\Source\system_TM4C129.c
       Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\ARM\startup_TM4C129.s
+      Source file:   Device\Source\system_TM4C129.c
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.0
+      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
+      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
       Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
       Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
-      Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
       Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
-      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: ARM::CMSIS:CORE:5.0.1
 
