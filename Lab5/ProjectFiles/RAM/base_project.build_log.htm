@@ -36,34 +36,40 @@ C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\uart_
   void UART0_Handler();
 C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\uart_functions.h(92): warning:  #1-D: last line of file ends without a newline
   #endif
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Utils.h(13): warning:  #1-D: last line of file ends without a newline
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Utils.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Comunication.h(14): warning:  #1-D: last line of file ends without a newline
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Task.h(41): warning:  #1-D: last line of file ends without a newline
   #endif
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\queue.h(10): warning:  #1-D: last line of file ends without a newline
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Utils.h(14): warning:  #1295-D: Deprecated declaration getSystemTime - give arg types
+  double getSystemTime();
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Utils.h(15): warning:  #1-D: last line of file ends without a newline
   #endif
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Task.h(34): warning:  #1-D: last line of file ends without a newline
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Communication.h(14): warning:  #1-D: last line of file ends without a newline
   #endif
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(40): warning:  #1295-D: Deprecated declaration dispatcher - give arg types
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\queue.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\gantt.h(6): warning:  #1295-D: Deprecated declaration gantt_generate_header - give arg types
+  void gantt_generate_header();
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\gantt.h(10): warning:  #1-D: last line of file ends without a newline
+  #endif
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(43): warning:  #1295-D: Deprecated declaration dispatcher - give arg types
   void dispatcher();
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(41): warning:  #1295-D: Deprecated declaration dispatcher_run - give arg types
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(44): warning:  #1295-D: Deprecated declaration dispatcher_run - give arg types
   void dispatcher_run();
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(108): warning:  #550-D: variable "soma"  was set but never used
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(152): warning:  #550-D: variable "soma"  was set but never used
         double soma;
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(153): warning:  #177-D: variable "waiting_tasks"  was declared but never referenced
-        Task* waiting_tasks[3];
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(155): warning:  #177-D: variable "previous_task"  was declared but never referenced
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(248): warning:  #550-D: variable "previous_task"  was set but never used
         Task* previous_task;
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(157): warning:  #177-D: variable "ready_tasks_index"  was declared but never referenced
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(250): warning:  #177-D: variable "ready_tasks_index"  was declared but never referenced
         int ready_tasks_index = 0;
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(159): warning:  #177-D: variable "waiting_tasks_index"  was declared but never referenced
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(252): warning:  #177-D: variable "waiting_tasks_index"  was declared but never referenced
         int waiting_tasks_index = 0;
-C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(222): warning:  #1-D: last line of file ends without a newline
+C:\Users\DaviBoberg\Documents\Github\Sistemas_embarcados\Lab5\ProjectFiles\Lab5.c(333): warning:  #1-D: last line of file ends without a newline
   }
-Lab5.c: 16 warnings, 0 errors
+Lab5.c: 19 warnings, 0 errors
 linking...
-Program Size: Code=16224 RO-data=904 RW-data=76 ZI-data=47412  
-".\RAM\base_project.axf" - 0 Error(s), 16 Warning(s).
+Program Size: Code=18540 RO-data=940 RW-data=84 ZI-data=47572  
+".\RAM\base_project.axf" - 0 Error(s), 19 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -94,25 +100,25 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.1.1
 
    * Component: ARM::CMSIS:RTOS:Keil RTX:4.81.1
-      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
-      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
       Source file:   CMSIS\RTOS\RTX\SRC\ARM\SVC_Table.s
-      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
+      Include file:  CMSIS\RTOS\RTX\INC\cmsis_os.h
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Semaphore.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MsgQueue.c
       Include file:  CMSIS\RTOS\RTX\UserCodeTemplates\osObjects.h
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Source file:   CMSIS\RTOS\RTX\Templates\RTX_Conf_CM.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\main.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MailQueue.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Mutex.c
       Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Thread.c
-      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\MemPool.c
+      Source file:   CMSIS\RTOS\RTX\UserCodeTemplates\Timer.c
+      Library file:  CMSIS\RTOS\RTX\LIB\ARM\RTX_CM4.lib
 
    * Component: Keil::Device:Startup:1.0.0
-      Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\ARM\startup_TM4C129.s
+      Include file:  Device\Include\TM4C129\TM4C129.h
       Source file:   Device\Source\system_TM4C129.c
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

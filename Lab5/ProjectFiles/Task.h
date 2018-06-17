@@ -4,8 +4,9 @@
 #include "cmsis_os.h"
 #include <string.h>
 #include <math.h>
+#include "Utils.h"
 
-enum TAKS_STATUS {
+enum TASK_STATUS {
 	READY = 0,
 	WAITING,
 	RUNNING
@@ -20,15 +21,21 @@ typedef struct Task {
 	int dinamic_priority;
 	
 	double time_to_sleep; // miliseconds
-	double sleeping_time; // miliseconds
+	double time_to_wakeup; // miliseconds
 	
+	int executed_time;
 	int estimated_execution_time; // ticks
 	int relaxing_remaining_time; // ticks
 	int deadline; // ticks
 	
+	int timer;
+	
 } Task;
 
-Task createTask(char name[], osThreadId thread_id, int static_priority, int requency, int execution_time, int deadline_percentage);
+Task createTask(char name[], osThreadId thread_id, int static_priority, int requency, int execution_time, int deadline_percentage, enum TASK_STATUS status);
 
+void resetTask(Task* task, enum TASK_STATUS  status);
+
+void sort(Task* tasks[], int size);
 
 #endif

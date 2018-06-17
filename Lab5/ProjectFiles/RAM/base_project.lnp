@@ -1,11 +1,11 @@
 --cpu=Cortex-M4.fp
 ".\ram\uart_functions.o"
-".\ram\comunication.o"
 ".\ram\terminal.o"
 ".\ram\utils.o"
 ".\ram\lab5.o"
 ".\ram\queue.o"
 ".\ram\task.o"
+".\ram\communication.o"
 ".\ram\cfaf128x128x16.o"
 "..\driverlib\rvmdk\driverlib.lib"
 "..\grlib\rvmdk\grlib.lib"

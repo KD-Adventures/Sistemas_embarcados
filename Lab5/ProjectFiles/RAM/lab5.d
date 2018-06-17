@@ -16,9 +16,11 @@
 .\ram\lab5.o: ..\driverlib\interrupt.h
 .\ram\lab5.o: cfaf128x128x16.h
 .\ram\lab5.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-.\ram\lab5.o: Comunication.h
+.\ram\lab5.o: Communication.h
 .\ram\lab5.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\ram\lab5.o: Utils.h
-.\ram\lab5.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
-.\ram\lab5.o: queue.h
 .\ram\lab5.o: Task.h
+.\ram\lab5.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\ram\lab5.o: Utils.h
+.\ram\lab5.o: queue.h
+.\ram\lab5.o: gantt.h

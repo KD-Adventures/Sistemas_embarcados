@@ -5,3 +5,8 @@
 .\ram\task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 .\ram\task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\ram\task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\ram\task.o: Utils.h
+.\ram\task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\ram\task.o: ..\grlib/grlib.h
+.\ram\task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\ram\task.o: Task.h

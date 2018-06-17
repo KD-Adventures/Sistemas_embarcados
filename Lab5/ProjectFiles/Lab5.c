@@ -1,16 +1,3 @@
-/*============================================================================
- *                    Exemplos de utilização do Kit
- *              EK-TM4C1294XL + Educational BooterPack MKII 
- *---------------------------------------------------------------------------*
- *                    Prof. André Schneider de Oliveira
- *            Universidade Tecnológica Federal do Paraná (UTFPR)
- *===========================================================================
- * Autores das bibliotecas:
- *      Allan Patrick de Souza - <allansouza@alunos.utfpr.edu.br>
- *      Guilherme Jacichen     - <jacichen@alunos.utfpr.edu.br>
- *      Jessica Isoton Sampaio - <jessicasampaio@alunos.utfpr.edu.br>
- *      Mariana Carrião        - <mcarriao@alunos.utfpr.edu.br>
- *===========================================================================*/
 #include "cmsis_os.h"
 #include <stdbool.h>
 #include "grlib/grlib.h"
@@ -25,7 +12,7 @@
 #include "gantt.h"
 
 #define M_PI 3.14159265358979323846
-#define GANTT
+//#define GANTT
 #define SIMULATION
 #define OS_ROBIN 0
 
@@ -56,8 +43,9 @@ Task task_C;
 Task task_D;
 Task task_E;
 Task task_F;
+Task* current_task;
 
-osThreadId Dispatcher_id;
+Task Dispatcher;
 
 osTimerDef(timer, dispatcher_run);
 osTimerId timer_id;
@@ -65,16 +53,26 @@ osTimerId timer_id;
 osMutexDef (mutex_running_thread);
 osMutexId  (mutex_running_thread_id);
 
+void task_yield(Task* running_thread, bool isPreempt);
+
 void dispatcher_run(){
-	osSignalSet (Dispatcher_id, 0x0001);
+	task_yield(current_task, true);
 }
 
-void task_yield(Task* running_thread) {
+void task_yield(Task* running_thread, bool isPreempt) {
 	#ifdef GANTT
 	gantt_thread_exit(running_thread->name, (int)(osKernelSysTick()/120000));
 	#endif
-	running_thread->status = READY;
-	osSignalWait(SIGNAL_EXECUTE_THREAD, osWaitForever);
+	
+	if (running_thread->status == RUNNING) {
+		if (isPreempt)
+			running_thread->status = READY;
+		else
+			running_thread->status = WAITING;
+	}
+	
+	
+	osSignalSet (Dispatcher.task_id, 0x0001);	
 }
 
 double factorial (int n) {
@@ -91,12 +89,12 @@ void Thread_A (void const *args) {
 	while (true) {
 		for(soma = 0, x = 0; x <= 256; x++) {
 			if(task_A.status != RUNNING)
-				task_yield(&task_A);
+				osThreadYield();
 			soma += x + (x + 2);
 		}
 		
 		x = 0;
-		task_yield(&task_A);
+		task_yield(&task_A, false);
 	}
 }
 
@@ -107,12 +105,12 @@ void Thread_B (void const *args) {
 	while (true) {		
 		for(soma = 0, n = 1; n <= 16; n++) {
 			if(task_B.status != RUNNING)
-				task_yield(&task_B);
+				osThreadYield();
 			soma += pow(2.0, n) / factorial(n);
 		}
 
 		n = 0;
-		task_yield(&task_B);
+		task_yield(&task_B, false);
 	}
 }
 
@@ -123,12 +121,12 @@ void Thread_C (void const *args) {
 	while (true) {
 		for(soma = 0, n = 1; n <= 72; n++) {
 			if(task_C.status != RUNNING)
-				task_yield(&task_C);
+				osThreadYield();
 			soma += (double)(n+1)/(double)n;
 		}
 		
 		n = 0;
-		task_yield(&task_C);
+		task_yield(&task_C, false);
 	}
 }
 
@@ -137,11 +135,11 @@ void Thread_D (void const *args) {
 	
 	while(true) {
 		if(task_D.status != RUNNING)
-			task_yield(&task_D);
+			osThreadYield();
 		soma = 1 + (5.0/factorial(3)) + (5.0/factorial(5)) + (5.0/factorial(7)) + (5.0/factorial(9));
 		
 		soma = 0;
-		task_yield(&task_D);
+		task_yield(&task_D, false);
 	}
 }
 
@@ -152,12 +150,12 @@ void Thread_E (void const *args) {
 	while(true) {
 		for(soma = 0, x = 1; x <= 100; x++) {
 			if(task_E.status != RUNNING)
-				task_yield(&task_E);		
+				osThreadYield();
 			soma += x*M_PI*M_PI;
 		}
 		
 		x = 0;
-		task_yield(&task_E);
+		task_yield(&task_E, false);
 	}
 }
 
@@ -168,56 +166,101 @@ void Thread_F (void const *args) {
 	while(true) {
 		for(soma = 0, y = 1; y <= 128; y++) {
 			if(task_F.status != RUNNING)
-				task_yield(&task_F);
+				osThreadYield();
 			soma += pow((double) y, 3.0) / pow(2.0, (double) y);
 		}
 		
 		y = 0;
-		task_yield(&task_F);
+		task_yield(&task_F, false);
 	}
 }
 
-void load_threads(Task* tasks[]) {
+void load_threads(Task* tasks[], int size) {
+	int i;
 	tasks[0] = &task_A;
 	tasks[1] = &task_B;
 	tasks[2] = &task_C;
 	tasks[3] = &task_D;
 	tasks[4] = &task_E;
 	tasks[5] = &task_F;
+	
+	for(i = 0; i < size; i++) {
+		tasks[i]->timer = floor(getSystemTime());
+	}
+}
+
+void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Task* waiting_tasks[], int *n_waiting_tasks, int waiting_max_size) {
+	int i;
+	int previous_time;
+	int diff_time;
+	Task* element;
+	
+	for (i = 0; i < *n_ready_tasks; i++) {
+		previous_time = ready_tasks[i]->timer;
+		ready_tasks[i]->timer = floor(getSystemTime());
+		diff_time = floor(ready_tasks[i]->timer - previous_time);
+		ready_tasks[i]->relaxing_remaining_time -= diff_time;
+		ready_tasks[i]->dinamic_priority--;
+	}
+	
+	for (i = 0; i < *n_waiting_tasks; i++) {
+		previous_time = waiting_tasks[i]->timer;
+		waiting_tasks[i]->timer = floor(getSystemTime());
+		diff_time = floor(waiting_tasks[i]->timer - previous_time);
+		waiting_tasks[i]->time_to_wakeup -= diff_time;
+		if (waiting_tasks[i]->time_to_wakeup <= 0) {
+			element = get_element((void*)waiting_tasks, n_waiting_tasks, i);
+			i--;
+			element->status = READY;
+			push_element((void*)ready_tasks, ready_max_size, element, n_ready_tasks);
+		}
+	}
 }
 
 void scheduler(Task* tasks[], int size) {
-	// reorder
+	sort(tasks, size);
 }
 
 void dispatcher() {
 	int number_of_tasks;
 	Task* ready_tasks[6];
 	Task* waiting_tasks[6];
-	Task* current_task;
 	Task* previous_task;
 	osEvent event;
 	int ready_tasks_index = 0;
-	int ready_tasks_size;
+	int ready_tasks_size = 0;
 	int waiting_tasks_index = 0;
+	int waiting_tasks_size = 0;
 	number_of_tasks = 6;
-	ready_tasks_size = number_of_tasks;
+	waiting_tasks_size = number_of_tasks;
 	
-	load_threads(ready_tasks);
-	current_task = 0;
+	load_threads(waiting_tasks, number_of_tasks);
+	current_task = &Dispatcher;
 	
 	while(true) {
-		event = osSignalWait (0x0001, osWaitForever);
-		if (event.status == osEventSignal) {
+		event = osSignalWait (0x0001, 1);
+		
+		if (current_task->status == RUNNING && current_task->task_id != Dispatcher.task_id) {
+			continue;
+		}
+		else if (event.status == osEventSignal) {
 			osTimerStop(timer_id);
 			osMutexWait(mutex_running_thread_id, osWaitForever);
 			
+			// Se a task terminou
+			if (current_task->status == WAITING) {
+				resetTask(current_task, WAITING);
+			}
+			
 			//Adds previous task to the "ready tasks" queue			
-			if (current_task > 0)
-				put_element((void*)ready_tasks, number_of_tasks, (void*)current_task, &ready_tasks_size);			
+			if (current_task > 0 && current_task->status == READY)
+				push_element((void*)ready_tasks, number_of_tasks, (void*)current_task, &ready_tasks_size);
+			else if (current_task > 0 && current_task->status == WAITING)
+				push_element((void*)waiting_tasks, number_of_tasks, (void*)current_task, &waiting_tasks_size);			
 			
 			//Selects next task to be executed
-			scheduler(ready_tasks, number_of_tasks);
+			updateTasks(ready_tasks, &ready_tasks_size, number_of_tasks, waiting_tasks, &waiting_tasks_size, number_of_tasks);;
+			scheduler(ready_tasks, ready_tasks_size);
 			previous_task = current_task;
 			current_task = (Task*)get_first_element((void*)&ready_tasks, &ready_tasks_size);
 			
@@ -226,11 +269,12 @@ void dispatcher() {
 			gantt_thread_enter(current_task->name, (int)(osKernelSysTick()/120000));
 			#endif
 			current_task->status = RUNNING;
-			osSignalSet(current_task->task_id, SIGNAL_EXECUTE_THREAD);
 			
 			osMutexRelease(mutex_running_thread_id);
 			osTimerStart(timer_id, 10);
 		}
+		
+		osThreadYield();
 	}
 }
 
@@ -245,14 +289,17 @@ int main (void) {
 	#endif
 	
     osKernelInitialize();
-	Dispatcher_id = osThreadGetId();	
+	// ajustar valores para dispatcher
+	Dispatcher = createTask("Dispatcher ", osThreadGetId(), 0, 0, 0, 0, RUNNING);
+	Dispatcher.status = RUNNING;
+	
 	// os dados de executiong time are not correct
-	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, 1000, 70);
-	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, 1000, 50);
-	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, 1000, 30);
-	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, 1000, 50);
-	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, 1000, 30);
-	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, 1000, 10);
+	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, 1000, 70, WAITING);
+	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, 1000, 50, WAITING);
+	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, 1000, 30, WAITING);
+	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, 1000, 50, WAITING);
+	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, 1000, 30, WAITING);
+	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, 1000, 10, WAITING);
     osKernelStart();
 	
 	timer_id = osTimerCreate(osTimer(timer), osTimerPeriodic, NULL);

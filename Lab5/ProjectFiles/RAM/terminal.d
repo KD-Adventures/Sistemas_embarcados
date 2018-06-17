@@ -6,7 +6,7 @@
 .\ram\terminal.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\ram\terminal.o: ..\grlib/grlib.h
 .\ram\terminal.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
-.\ram\terminal.o: Comunication.h
+.\ram\terminal.o: Communication.h
 .\ram\terminal.o: uart_functions.h
 .\ram\terminal.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C129.h
 .\ram\terminal.o: C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C129\TM4C1294NCPDT.h
@@ -18,4 +18,7 @@
 .\ram\terminal.o: ..\inc\hw_ints.h
 .\ram\terminal.o: ..\driverlib\interrupt.h
 .\ram\terminal.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\ram\terminal.o: Utils.h
+.\ram\terminal.o: Task.h
+.\ram\terminal.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\ram\terminal.o: Utils.h

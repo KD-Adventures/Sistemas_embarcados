@@ -387,11 +387,6 @@
               <FilePath>.\uart_functions.c</FilePath>
             </File>
             <File>
-              <FileName>Comunication.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Comunication.c</FilePath>
-            </File>
-            <File>
               <FileName>Terminal.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Terminal.c</FilePath>
@@ -415,6 +410,11 @@
               <FileName>Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Communication.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -457,11 +457,6 @@
               <FilePath>.\Terminal.h</FilePath>
             </File>
             <File>
-              <FileName>Comunication.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Comunication.h</FilePath>
-            </File>
-            <File>
               <FileName>Utils.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Utils.h</FilePath>
@@ -475,6 +470,11 @@
               <FileName>Task.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Task.h</FilePath>
+            </File>
+            <File>
+              <FileName>Communication.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Communication.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -870,11 +870,6 @@
               <FilePath>.\uart_functions.c</FilePath>
             </File>
             <File>
-              <FileName>Comunication.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Comunication.c</FilePath>
-            </File>
-            <File>
               <FileName>Terminal.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Terminal.c</FilePath>
@@ -898,6 +893,11 @@
               <FileName>Task.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Task.c</FilePath>
+            </File>
+            <File>
+              <FileName>Communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Communication.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -940,11 +940,6 @@
               <FilePath>.\Terminal.h</FilePath>
             </File>
             <File>
-              <FileName>Comunication.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Comunication.h</FilePath>
-            </File>
-            <File>
               <FileName>Utils.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Utils.h</FilePath>
@@ -958,6 +953,11 @@
               <FileName>Task.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Task.h</FilePath>
+            </File>
+            <File>
+              <FileName>Communication.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Communication.h</FilePath>
             </File>
           </Files>
         </Group>

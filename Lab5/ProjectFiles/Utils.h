@@ -6,8 +6,10 @@
 #include "grlib/grlib.h"
 #include <stdlib.h>
 #include <string.h>
+#include "Task.h"
 
 void intToString(int64_t value, char * pBuf, uint32_t len, uint32_t base, uint8_t zeros);
 void floatToString(float value, char *pBuf, uint32_t len, uint32_t base, uint8_t zeros, uint8_t precision);
 
+double getSystemTime();
 #endif

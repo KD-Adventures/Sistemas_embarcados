@@ -86,3 +86,7 @@ void floatToString(float value, char *pBuf, uint32_t len, uint32_t base, uint8_t
 		pBuf[start++] = pAscii[(uint32_t) value];
 	}
 }
+
+double getSystemTime() {
+	return ((double)osKernelSysTick())/((double)120);
+}

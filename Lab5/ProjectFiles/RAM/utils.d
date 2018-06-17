@@ -7,3 +7,6 @@
 .\ram\utils.o: ..\grlib/grlib.h
 .\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\ram\utils.o: Task.h
+.\ram\utils.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\ram\utils.o: Utils.h
