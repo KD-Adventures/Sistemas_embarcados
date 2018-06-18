@@ -11,15 +11,15 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 	new_task.static_priority = static_priority;
 	new_task.dinamic_priority = static_priority;
 	
-	new_task.time_to_sleep = 1000/frequency;
+	new_task.time_to_sleep = floor(1000000/frequency);
 	new_task.time_to_wakeup = new_task.time_to_sleep;
 	
 	new_task.executed_time = 0;
 	new_task.estimated_execution_time = execution_time;	
-	new_task.deadline = floor(new_task.estimated_execution_time*deadline_percentage/100); // ticks
+	new_task.deadline = floor(new_task.estimated_execution_time + new_task.estimated_execution_time*deadline_percentage/100); // ticks
 	new_task.relaxing_remaining_time = new_task.deadline - new_task.estimated_execution_time;
 	
-	new_task.timer = floor(getSystemTime());
+	new_task.timer = floor(getSystemTime()/1000); //miliseconds
 	
 	return new_task;
 }
