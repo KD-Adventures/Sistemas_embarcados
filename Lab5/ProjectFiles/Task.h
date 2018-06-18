@@ -33,8 +33,8 @@ typedef struct Task {
 	int static_priority;
 	int dinamic_priority;
 	
-	double time_to_sleep; // miliseconds
-	double time_to_wakeup; // miliseconds
+	double time_to_sleep; // useconds
+	double time_to_wakeup; // useconds
 	
 	int executed_time;
 	int estimated_execution_time; // ticks

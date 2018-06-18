@@ -12,4 +12,5 @@ void intToString(int64_t value, char * pBuf, uint32_t len, uint32_t base, uint8_
 void floatToString(float value, char *pBuf, uint32_t len, uint32_t base, uint8_t zeros, uint8_t precision);
 
 double getSystemTime();
+double getSystemTime_miliseconds();
 #endif
