@@ -90,3 +90,7 @@ void floatToString(float value, char *pBuf, uint32_t len, uint32_t base, uint8_t
 double getSystemTime() {
 	return ((double)osKernelSysTick())/((double)120);
 }
+
+double getSystemTime_miliseconds() {
+	return ((double)osKernelSysTick())/((double)120000);
+}

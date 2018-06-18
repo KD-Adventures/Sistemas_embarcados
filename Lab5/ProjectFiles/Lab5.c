@@ -196,6 +196,7 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 	int i;
 	int previous_time;
 	int diff_time;
+	int increase_priority;
 	Task* element;
 	
 	for (i = 0; i < *n_ready_tasks; i++) {
@@ -203,7 +204,13 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		ready_tasks[i]->timer = floor(getSystemTime());
 		diff_time = floor(ready_tasks[i]->timer - previous_time);
 		ready_tasks[i]->relaxing_remaining_time -= diff_time;
-		ready_tasks[i]->dinamic_priority--;
+		
+		increase_priority = ceil(1000000/ready_tasks[i]->relaxing_remaining_time);
+		if (increase_priority > 100) {
+			increase_priority = 100;
+		}
+		
+		ready_tasks[i]->dinamic_priority = ready_tasks[i]->static_priority - increase_priority;
 	}
 	
 	for (i = 0; i < *n_waiting_tasks; i++) {
