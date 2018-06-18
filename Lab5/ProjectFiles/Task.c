@@ -30,6 +30,7 @@ void resetTask(Task* task, enum TASK_STATUS  status) {
 	task->time_to_wakeup = task->time_to_sleep;
 	task->status = status;
 	task->timer = floor(getSystemTime());
+	task->executed_time = 0;
 }
 
 void sort(Task* tasks[], int size) {

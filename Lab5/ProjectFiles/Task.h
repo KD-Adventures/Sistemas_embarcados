@@ -12,6 +12,19 @@ enum TASK_STATUS {
 	RUNNING
 };
 
+enum TASK_FAULTS {
+	MASTER_FAULT = 0,
+	SECONDARY_FAULT,
+	NO_FAULT
+};
+
+enum TASK_PRIORITY {
+	REALTIME = 100,
+	HIGH = 30,
+	NORMAL = 0,
+	LOW = 10
+};
+
 typedef struct Task {
 	osThreadId task_id;
 	char name[50];

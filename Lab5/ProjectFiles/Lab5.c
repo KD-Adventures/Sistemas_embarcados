@@ -192,6 +192,23 @@ void load_threads(Task* tasks[], int size) {
 	}
 }
 
+enum TASK_FAULTS analyze_task(Task* task) {
+	
+	if (task->executed_time > task->deadline) {
+		if (task->static_priority == REALTIME) {
+			return MASTER_FAULT;
+		}
+		task->static_priority -= 10;
+		return SECONDARY_FAULT;
+	}
+	else if(task->executed_time < task->deadline/2) {
+		task->static_priority += 10;
+		return SECONDARY_FAULT;
+	}
+	
+	return NO_FAULT;
+}
+
 void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Task* waiting_tasks[], int *n_waiting_tasks, int waiting_max_size) {
 	int i;
 	int previous_time;
@@ -203,7 +220,7 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		previous_time = ready_tasks[i]->timer;
 		ready_tasks[i]->timer = floor(getSystemTime());
 		diff_time = floor(ready_tasks[i]->timer - previous_time);
-		ready_tasks[i]->relaxing_remaining_time -= diff_time;
+		ready_tasks[i]->relaxing_remaining_time -= diff_time + ready_tasks[i]->executed_time;
 		
 		increase_priority = ceil(1000000/ready_tasks[i]->relaxing_remaining_time);
 		if (increase_priority > 100) {
@@ -237,6 +254,8 @@ void dispatcher() {
 	Task* waiting_tasks[6];
 	Task* previous_task;
 	osEvent event;
+	enum TASK_FAULTS fault;
+	int diff_time;
 	int ready_tasks_index = 0;
 	int ready_tasks_size = 0;
 	int waiting_tasks_index = 0;
@@ -261,8 +280,13 @@ void dispatcher() {
 				gantt_thread_exit(current_task->name, floor(getSystemTime()));
 				#endif
 				
+				// Deveria fazer isso no yield, mas da problema, talvez por ser dentro da interrupcao
+				diff_time = floor(getSystemTime() - current_task->timer);
+				current_task->executed_time += diff_time;
+				
 				// Se a task terminou
 				if (current_task->status == WAITING) {
+					fault = analyze_task(current_task);
 					resetTask(current_task, WAITING);
 				}
 				
