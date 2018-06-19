@@ -13,7 +13,7 @@
 #include "gantt.h"
 
 #define M_PI 3.14159265358979323846
-#define GANTT
+//#define GANTT
 //#define SIMULATION
 #define DISPLAY_TASK
 #define OS_ROBIN 0
@@ -26,14 +26,14 @@
 
 #define SIGNAL_EXECUTE_THREAD 0x0010
 
-//Estimated execution times in SysTicks
-#define TASK_A_EXECUTION_TIME 41906
-#define TASK_B_EXECUTION_TIME 147138
-#define TASK_C_EXECUTION_TIME 26130
-#define TASK_D_EXECUTION_TIME 5146
-#define TASK_E_EXECUTION_TIME 42902
-#define TASK_F_EXECUTION_TIME 2791439
-#define DISPLAY_TASK_EXECUTION_TIME 1000000
+//Estimated execution times in microseconds
+const int task_a_execution_time = 349;
+const int task_b_execution_time = 1226;
+const int task_c_execution_time = 218;
+const int task_d_execution_time = 43;
+const int task_e_execution_time = 358;
+const int task_f_execution_time = 23261;
+const int display_task_execution_time = 100000;
 
 tContext sContext;
 
@@ -62,6 +62,8 @@ Task task_E;
 Task task_F;
 Task* current_task;
 Task Dispatcher;
+
+bool secondary_fault = false, master_fault = false;
 
 #ifdef DISPLAY_TASK
 void Thread_Display (void const *args);
@@ -278,8 +280,15 @@ void show_task_info (Task task_info, int x_pos) {
 	
 	
 	/* FAULTS */
-	/*intToString();
-	GrStringDraw(&sContext, "F", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);*/
+	if (master_fault) {
+		master_fault = false;
+		secondary_fault = false;
+		GrStringDraw(&sContext, "MASTER FLT", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);
+	}
+	else if (secondary_fault) {
+		secondary_fault = false;
+		GrStringDraw(&sContext, "SECONDARY FLT", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);
+	}
 }
 
 void Thread_Display (void const *args) {
@@ -340,13 +349,16 @@ void load_threads(Task* tasks[], int size) {
 enum TASK_FAULTS analyze_task(Task* task) {
 	if (task->executed_time > task->deadline) {
 		if (task->static_priority == REALTIME) {
+			master_fault = true;
 			return MASTER_FAULT;
 		}
 		task->static_priority -= 10;
+		secondary_fault = true;
 		return SECONDARY_FAULT;
 	}
 	else if(task->executed_time < task->deadline/2) {
 		task->static_priority += 10;
+		secondary_fault = true;
 		return SECONDARY_FAULT;
 	}
 	
@@ -362,11 +374,11 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 	
 	for (i = 0; i < *n_ready_tasks; i++) {
 		previous_time = ready_tasks[i]->timer;
-		ready_tasks[i]->timer = floor(getSystemTime());
+		ready_tasks[i]->timer = (int) floor(getSystemTime());
 		diff_time = floor(ready_tasks[i]->timer - previous_time);
 		ready_tasks[i]->relaxing_remaining_time -= diff_time + ready_tasks[i]->executed_time;
 		
-		increase_priority = ceil(1000000/ready_tasks[i]->relaxing_remaining_time);
+		increase_priority = abs((int) ceil(1000000/ready_tasks[i]->relaxing_remaining_time));
 		if (increase_priority > 100) {
 			increase_priority = 100;
 		}
@@ -398,7 +410,7 @@ void scheduler(Task* tasks[], int size) {
 	int i;
 	sort(tasks, size);
 	
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < size; i++) {
 		tasks[i]->queue_position = i+1;
 	}
 }
@@ -431,11 +443,10 @@ void dispatcher() {
 			osMutexWait(mutex_running_thread_id, osWaitForever);
 			
 			if (current_task != &Dispatcher) {
-				// Deveria fazer isso no yield, mas da problema, talvez por ser dentro da interrupcao
 				diff_time = floor(getSystemTime() - current_task->timer);
 				current_task->executed_time += diff_time;
 				
-				// Se a task terminou
+				//Task is finished
 				if (current_task->status == WAITING) {
 					fault = analyze_task(current_task);
 					resetTask(current_task, WAITING);
@@ -490,20 +501,20 @@ int main (void) {
 	Dispatcher = createTask("Dispatcher ", osThreadGetId(), 0, 0, 0, 0, RUNNING);
 	Dispatcher.status = RUNNING;
 	current_task = &Dispatcher;
-	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, TASK_A_EXECUTION_TIME, 70, WAITING);
-	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, TASK_B_EXECUTION_TIME, 50, WAITING);
-	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, TASK_C_EXECUTION_TIME, 30, WAITING);
-	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, TASK_D_EXECUTION_TIME, 50, WAITING);
-	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, TASK_E_EXECUTION_TIME, 30, WAITING);
-	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, TASK_F_EXECUTION_TIME, 10, WAITING);
+	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, task_a_execution_time, 70, WAITING);
+	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, task_b_execution_time, 50, WAITING);
+	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, task_c_execution_time, 30, WAITING);
+	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, task_d_execution_time, 50, WAITING);
+	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, task_e_execution_time, 30, WAITING);
+	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, task_f_execution_time, 10, WAITING);
 	#ifdef DISPLAY_TASK
-	task_Display = createTask("Display Task", osThreadCreate(osThread(Thread_Display), NULL), 10, 1, DISPLAY_TASK_EXECUTION_TIME, 100, WAITING);
+	task_Display = createTask("Display Task", osThreadCreate(osThread(Thread_Display), NULL), -50, 1, display_task_execution_time, 10, WAITING);
 	#endif
     osKernelStart();
 	
 	timer_id = osTimerCreate(osTimer(timer), osTimerPeriodic, NULL);
 	mutex_running_thread_id = osMutexCreate(osMutex(mutex_running_thread));
     
-	osTimerStart(timer_id, 10);
+	osTimerStart(timer_id, 1);
 	dispatcher();
 }

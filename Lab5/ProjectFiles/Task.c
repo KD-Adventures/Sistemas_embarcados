@@ -13,16 +13,16 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 	
 	new_task.queue_position = 0;
 	
-	new_task.time_to_sleep = floor(1000000/frequency);
+	new_task.time_to_sleep = (int) floor(1000/frequency);
 	new_task.time_to_wakeup = new_task.time_to_sleep;
 	
 	new_task.executed_time = 0;
 	new_task.estimated_execution_time = execution_time;	
-	new_task.deadline = floor(new_task.estimated_execution_time + new_task.estimated_execution_time*deadline_percentage/100); // ticks
+	new_task.deadline = (int) floor(new_task.estimated_execution_time + new_task.estimated_execution_time*deadline_percentage/100); // ticks
 	new_task.relaxing_remaining_time = new_task.deadline - new_task.estimated_execution_time;
 	new_task.time_since_start = 0;
 	
-	new_task.timer = floor(getSystemTime()/1000); //miliseconds
+	new_task.timer = floor(getSystemTime());
 	
 	return new_task;
 }
@@ -33,7 +33,7 @@ void resetTask(Task* task, enum TASK_STATUS  status) {
 	task->time_since_start = 0;
 	task->time_to_wakeup = task->time_to_sleep;
 	task->status = status;
-	task->timer = floor(getSystemTime());
+	task->timer = (int) floor(getSystemTime());
 	task->executed_time = 0;
 }
 
