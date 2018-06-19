@@ -11,6 +11,8 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 	new_task.static_priority = static_priority;
 	new_task.dinamic_priority = static_priority;
 	
+	new_task.queue_position = 0;
+	
 	new_task.time_to_sleep = floor(1000000/frequency);
 	new_task.time_to_wakeup = new_task.time_to_sleep;
 	
@@ -18,6 +20,7 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 	new_task.estimated_execution_time = execution_time;	
 	new_task.deadline = floor(new_task.estimated_execution_time + new_task.estimated_execution_time*deadline_percentage/100); // ticks
 	new_task.relaxing_remaining_time = new_task.deadline - new_task.estimated_execution_time;
+	new_task.time_since_start = 0;
 	
 	new_task.timer = floor(getSystemTime()/1000); //miliseconds
 	
@@ -27,6 +30,7 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 void resetTask(Task* task, enum TASK_STATUS  status) {
 	task->dinamic_priority = task->static_priority;
 	task->relaxing_remaining_time = task->deadline - task->estimated_execution_time;
+	task->time_since_start = 0;
 	task->time_to_wakeup = task->time_to_sleep;
 	task->status = status;
 	task->timer = floor(getSystemTime());

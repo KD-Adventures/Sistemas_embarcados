@@ -1,5 +1,6 @@
 #include "cmsis_os.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include "grlib/grlib.h"
 #include "uart_functions.h"
 #include "cfaf128x128x16.h"
@@ -12,9 +13,16 @@
 #include "gantt.h"
 
 #define M_PI 3.14159265358979323846
-//#define GANTT
-#define SIMULATION
+#define GANTT
+//#define SIMULATION
+#define DISPLAY_TASK
 #define OS_ROBIN 0
+
+#ifdef DISPLAY_TASK
+#define NUMBER_OF_TASKS 7
+#else
+#define NUMBER_OF_TASKS 6
+#endif
 
 #define SIGNAL_EXECUTE_THREAD 0x0010
 
@@ -25,6 +33,7 @@
 #define TASK_D_EXECUTION_TIME 5146
 #define TASK_E_EXECUTION_TIME 42902
 #define TASK_F_EXECUTION_TIME 2791439
+#define DISPLAY_TASK_EXECUTION_TIME 1000000
 
 tContext sContext;
 
@@ -52,8 +61,13 @@ Task task_D;
 Task task_E;
 Task task_F;
 Task* current_task;
-
 Task Dispatcher;
+
+#ifdef DISPLAY_TASK
+void Thread_Display (void const *args);
+osThreadDef (Thread_Display, osPriorityNormal, 1, 0);
+Task task_Display;
+#endif
 
 osTimerDef(timer, dispatcher_run);
 osTimerId timer_id;
@@ -68,11 +82,10 @@ void dispatcher_run(){
 }
 
 void task_yield(Task* running_thread, bool isPreempt) {
-	if (running_thread->task_id != Dispatcher.task_id && running_thread->status == RUNNING) {
-		if (isPreempt)
-			running_thread->status = READY;
-		else
-			running_thread->status = WAITING;
+	if (!isPreempt)
+		running_thread->status = WAITING;
+	else if (running_thread->task_id != Dispatcher.task_id && running_thread->status == RUNNING) {
+		running_thread->status = READY;
 	}
 	
 	osSignalSet (Dispatcher.task_id, 0x0001);	
@@ -178,6 +191,135 @@ void Thread_F (void const *args) {
 	}
 }
 
+#ifdef DISPLAY_TASK
+void draw_table_structure() {
+	GrStringDraw(&sContext, "A", -1, (sContext.psFont->ui8MaxWidth)*4, (sContext.psFont->ui8Height+8)*0, true);
+	GrStringDraw(&sContext, "B", -1, (sContext.psFont->ui8MaxWidth)*7, (sContext.psFont->ui8Height+8)*0, true);
+	GrStringDraw(&sContext, "C", -1, (sContext.psFont->ui8MaxWidth)*10, (sContext.psFont->ui8Height+8)*0, true);
+	GrStringDraw(&sContext, "D", -1, (sContext.psFont->ui8MaxWidth)*13, (sContext.psFont->ui8Height+8)*0, true);
+	GrStringDraw(&sContext, "E", -1, (sContext.psFont->ui8MaxWidth)*16, (sContext.psFont->ui8Height+8)*0, true);
+	GrStringDraw(&sContext, "F", -1, (sContext.psFont->ui8MaxWidth)*19, (sContext.psFont->ui8Height+8)*0, true);
+	
+	GrStringDraw(&sContext, "P", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*1, true);
+	GrStringDraw(&sContext, "R", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*2, true);
+	GrStringDraw(&sContext, "S", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*3, true);
+	GrStringDraw(&sContext, "%", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*4, true);
+	GrStringDraw(&sContext, "D", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*5, true);
+	GrStringDraw(&sContext, "Q", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*6, true);
+	GrStringDraw(&sContext, "F", -1, (sContext.psFont->ui8MaxWidth)*1, (sContext.psFont->ui8Height+8)*7, true);
+}
+
+void copy_task_struct (Task* copy_from, Task* copy_to) {
+	copy_to->task_id = copy_from->task_id;
+	copy_to->status = copy_from->status;
+	copy_to->static_priority = copy_from->static_priority;
+	copy_to->dinamic_priority = copy_from->dinamic_priority;
+	copy_to->queue_position = copy_from->queue_position;
+	copy_to->executed_time = copy_from->executed_time;
+	copy_to->estimated_execution_time = copy_from->estimated_execution_time;	
+	copy_to->relaxing_remaining_time = copy_from->relaxing_remaining_time;
+	copy_to->time_since_start = copy_from->time_since_start;
+}
+
+void fill_task_info (Task* task_info) {
+	copy_task_struct(&task_A, &task_info[0]);
+	copy_task_struct(&task_B, &task_info[1]);
+	copy_task_struct(&task_C, &task_info[2]);
+	copy_task_struct(&task_D, &task_info[3]);
+	copy_task_struct(&task_E, &task_info[4]);
+	copy_task_struct(&task_F, &task_info[5]);
+}
+
+void show_task_info (Task task_info, int x_pos) {
+	char buffer[10];
+
+	/* PRIORITY */
+	intToString(task_info.dinamic_priority, buffer, 10, 10, 2);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*1, true);
+
+	
+	/* RELAXING TIME */
+	intToString(task_info.relaxing_remaining_time, buffer, 10, 10, 2);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*2, true);
+	
+	
+	/* STATUS */
+	switch(task_info.status) {
+		case (READY):
+			strcpy(buffer,"R");
+			break;
+		case (WAITING):
+			strcpy(buffer,"W");
+			break;
+		default:
+			strcpy(buffer," ");
+			break;
+	}
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*(x_pos+2), (sContext.psFont->ui8Height+8)*3, true);
+	
+	
+	/* PERCENT DONE */
+	intToString((task_info.executed_time*100/task_info.estimated_execution_time), buffer, 10, 10, 2);
+	strcat(buffer, " ");
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*4, true);
+
+	
+	/* DELAY */
+	if (task_info.time_since_start > task_info.estimated_execution_time)
+		intToString((task_info.time_since_start - task_info.estimated_execution_time), buffer, 10, 10, 2);
+	else
+		strcpy(buffer, "00");
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*5, true);
+	
+	
+	/* QUEUE POSITION */
+	intToString(task_info.queue_position, buffer, 10, 10, 2);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*6, true);
+	
+	
+	/* FAULTS */
+	/*intToString();
+	GrStringDraw(&sContext, "F", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);*/
+}
+
+void Thread_Display (void const *args) {
+	int task_index, x_pos, y_pos;
+	Task task_info[6];//, task_B_info, task_C_info, task_D_info, task_E_info, task_F_info;
+	
+	while(task_Display.status != RUNNING)
+		osThreadYield();
+	
+	GrContextInit(&sContext, &g_sCfaf128x128x16);
+	GrFlush(&sContext);
+	GrContextFontSet(&sContext, &g_sFontFixed6x8);
+	GrContextForegroundSet(&sContext, ClrWhite);
+	GrContextBackgroundSet(&sContext, ClrBlack);
+	
+	draw_table_structure();
+	
+	while(true) {
+		while(task_Display.status != RUNNING)
+			osThreadYield();
+		
+		fill_task_info(task_info);
+		
+		//Magic numbers
+		for (x_pos = 2, task_index = 0; task_index < 6; task_index++) {
+			while(task_Display.status != RUNNING)
+				osThreadYield();
+			
+			show_task_info(task_info[task_index], x_pos);
+			x_pos += 3;
+		}
+		
+		//Being the longest task, it is necessary to ensure that task_Display is at RUNNING state.
+		while(task_Display.status != RUNNING)
+			osThreadYield();
+		task_yield(&task_Display, false);
+	}
+}
+#endif
+
 void load_threads(Task* tasks[], int size) {
 	int i;
 	tasks[0] = &task_A;
@@ -186,6 +328,9 @@ void load_threads(Task* tasks[], int size) {
 	tasks[3] = &task_D;
 	tasks[4] = &task_E;
 	tasks[5] = &task_F;
+	#ifdef DISPLAY_TASK
+	tasks[6] = &task_Display;
+	#endif
 	
 	for(i = 0; i < size; i++) {
 		tasks[i]->timer = floor(getSystemTime());
@@ -193,7 +338,6 @@ void load_threads(Task* tasks[], int size) {
 }
 
 enum TASK_FAULTS analyze_task(Task* task) {
-	
 	if (task->executed_time > task->deadline) {
 		if (task->static_priority == REALTIME) {
 			return MASTER_FAULT;
@@ -228,6 +372,10 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		}
 		
 		ready_tasks[i]->dinamic_priority = ready_tasks[i]->static_priority - increase_priority;
+		
+		ready_tasks[i]->time_since_start += diff_time;
+		if(ready_tasks[i] == current_task)
+			ready_tasks[i]->executed_time += diff_time;
 	}
 	
 	for (i = 0; i < *n_waiting_tasks; i++) {
@@ -235,6 +383,8 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		waiting_tasks[i]->timer = floor(getSystemTime());
 		diff_time = floor(waiting_tasks[i]->timer - previous_time);
 		waiting_tasks[i]->time_to_wakeup -= diff_time;
+		waiting_tasks[i]->time_since_start += diff_time;
+		waiting_tasks[i]->queue_position = 0;
 		if (waiting_tasks[i]->time_to_wakeup <= 0) {
 			element = get_element((void*)waiting_tasks, n_waiting_tasks, i);
 			i--;
@@ -245,13 +395,18 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 }
 
 void scheduler(Task* tasks[], int size) {
+	int i;
 	sort(tasks, size);
+	
+	for (i = 0; i < 6; i++) {
+		tasks[i]->queue_position = i+1;
+	}
 }
 
 void dispatcher() {
 	int number_of_tasks;
-	Task* ready_tasks[6];
-	Task* waiting_tasks[6];
+	Task* ready_tasks[NUMBER_OF_TASKS];
+	Task* waiting_tasks[NUMBER_OF_TASKS];
 	Task* previous_task;
 	osEvent event;
 	enum TASK_FAULTS fault;
@@ -260,7 +415,7 @@ void dispatcher() {
 	int ready_tasks_size = 0;
 	int waiting_tasks_index = 0;
 	int waiting_tasks_size = 0;
-	number_of_tasks = 6;
+	number_of_tasks = NUMBER_OF_TASKS;
 	waiting_tasks_size = number_of_tasks;
 	
 	load_threads(waiting_tasks, number_of_tasks);
@@ -275,11 +430,7 @@ void dispatcher() {
 			osTimerStop(timer_id);
 			osMutexWait(mutex_running_thread_id, osWaitForever);
 			
-			if (current_task != &Dispatcher) {				
-				#ifdef GANTT
-				gantt_thread_exit(current_task->name, floor(getSystemTime()));
-				#endif
-				
+			if (current_task != &Dispatcher) {
 				// Deveria fazer isso no yield, mas da problema, talvez por ser dentro da interrupcao
 				diff_time = floor(getSystemTime() - current_task->timer);
 				current_task->executed_time += diff_time;
@@ -303,10 +454,17 @@ void dispatcher() {
 			previous_task = current_task;
 			current_task = (Task*)get_first_element((void*)&ready_tasks, &ready_tasks_size);
 			
-			//Sets selected task to running mode
 			#ifdef GANTT
-			gantt_thread_enter(current_task->name, floor(getSystemTime()));
+			if (previous_task == &Dispatcher) {
+				gantt_thread_enter(current_task->name, (int) getSystemTime());
+			}
+			else if (current_task != previous_task) {
+				gantt_thread_exit(previous_task->name, (int) getSystemTime());
+				gantt_thread_enter(current_task->name, (int) getSystemTime());
+			}
 			#endif
+			
+			//Sets selected task to running mode
 			current_task->status = RUNNING;
 			
 			osMutexRelease(mutex_running_thread_id);
@@ -317,30 +475,30 @@ void dispatcher() {
 	}
 }
 
-int main (void) {
+int main (void) {	
+	#ifndef SIMULATION
+	cfaf128x128x16Init();
+	#endif
+	
 	#ifdef GANTT
 	initUART();
 	gantt_generate_header();
 	#endif
 	
-	#ifndef SIMULATION
-	cfaf128x128x16Init();
-	#endif
-	
     osKernelInitialize();
-	// ajustar valores para dispatcher
 	osThreadSetPriority(osThreadGetId(), osPriorityRealtime);
 	Dispatcher = createTask("Dispatcher ", osThreadGetId(), 0, 0, 0, 0, RUNNING);
 	Dispatcher.status = RUNNING;
 	current_task = &Dispatcher;
-	
-	// os dados de executiong time are not correct
 	task_A = createTask("Task A", osThreadCreate(osThread(Thread_A), NULL), 10, 8, TASK_A_EXECUTION_TIME, 70, WAITING);
 	task_B = createTask("Task B", osThreadCreate(osThread(Thread_B), NULL), 0, 2, TASK_B_EXECUTION_TIME, 50, WAITING);
 	task_C = createTask("Task C", osThreadCreate(osThread(Thread_C), NULL), -30, 5, TASK_C_EXECUTION_TIME, 30, WAITING);
 	task_D = createTask("Task D", osThreadCreate(osThread(Thread_D), NULL), 0, 1, TASK_D_EXECUTION_TIME, 50, WAITING);
 	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, TASK_E_EXECUTION_TIME, 30, WAITING);
 	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, TASK_F_EXECUTION_TIME, 10, WAITING);
+	#ifdef DISPLAY_TASK
+	task_Display = createTask("Display Task", osThreadCreate(osThread(Thread_Display), NULL), 10, 1, DISPLAY_TASK_EXECUTION_TIME, 100, WAITING);
+	#endif
     osKernelStart();
 	
 	timer_id = osTimerCreate(osTimer(timer), osTimerPeriodic, NULL);
