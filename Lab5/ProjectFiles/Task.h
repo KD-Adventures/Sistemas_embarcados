@@ -33,19 +33,22 @@ typedef struct Task {
 	int static_priority;
 	int dinamic_priority;
 	
-	double time_to_sleep; // useconds
-	double time_to_wakeup; // useconds
+	int queue_position;
+	
+	double time_to_sleep; // miliseconds
+	double time_to_wakeup; // miliseconds
 	
 	int executed_time;
 	int estimated_execution_time; // ticks
 	int relaxing_remaining_time; // ticks
 	int deadline; // ticks
+	int time_since_start;
 	
 	int timer;
 	
 } Task;
 
-Task createTask(char name[], osThreadId thread_id, int static_priority, int requency, int execution_time, int deadline_percentage, enum TASK_STATUS status);
+Task createTask(char name[], osThreadId thread_id, int static_priority, int frequency, int execution_time, int deadline_percentage, enum TASK_STATUS status);
 
 void resetTask(Task* task, enum TASK_STATUS  status);
 
