@@ -19,8 +19,8 @@ enum TASK_FAULTS {
 };
 
 enum TASK_PRIORITY {
-	REALTIME = 100,
-	HIGH = 30,
+	REALTIME = -100,
+	HIGH = -30,
 	NORMAL = 0,
 	LOW = 10
 };
@@ -28,6 +28,8 @@ enum TASK_PRIORITY {
 typedef struct Task {
 	osThreadId task_id;
 	char name[50];
+	
+	enum TASK_FAULTS fault;
 	
 	int status;
 	int static_priority;

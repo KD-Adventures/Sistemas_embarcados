@@ -63,8 +63,6 @@ Task task_F;
 Task* current_task;
 Task Dispatcher;
 
-bool secondary_fault = false, master_fault = false;
-
 #ifdef DISPLAY_TASK
 void Thread_Display (void const *args);
 osThreadDef (Thread_Display, osPriorityNormal, 1, 0);
@@ -221,6 +219,7 @@ void copy_task_struct (Task* copy_from, Task* copy_to) {
 	copy_to->estimated_execution_time = copy_from->estimated_execution_time;	
 	copy_to->relaxing_remaining_time = copy_from->relaxing_remaining_time;
 	copy_to->time_since_start = copy_from->time_since_start;
+	copy_to->fault = copy_from->fault;
 }
 
 void fill_task_info (Task* task_info) {
@@ -236,7 +235,7 @@ void show_task_info (Task task_info, int x_pos) {
 	char buffer[10];
 
 	/* PRIORITY */
-	intToString(task_info.dinamic_priority, buffer, 10, 10, 2);
+	intToString(task_info.static_priority, buffer, 10, 10, 2);
 	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*1, true);
 
 	
@@ -263,7 +262,7 @@ void show_task_info (Task task_info, int x_pos) {
 	/* PERCENT DONE */
 	intToString((task_info.executed_time*100/task_info.estimated_execution_time), buffer, 10, 10, 2);
 	strcat(buffer, " ");
-	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*4, true);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*4, true);
 
 	
 	/* DELAY */
@@ -271,24 +270,21 @@ void show_task_info (Task task_info, int x_pos) {
 		intToString((task_info.time_since_start - task_info.estimated_execution_time), buffer, 10, 10, 2);
 	else
 		strcpy(buffer, "00");
-	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*5, true);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*5, true);
 	
 	
 	/* QUEUE POSITION */
 	intToString(task_info.queue_position, buffer, 10, 10, 2);
-	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*6, true);
+	GrStringDraw(&sContext, buffer, -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*6, true);
 	
 	
 	/* FAULTS */
-	if (master_fault) {
-		master_fault = false;
-		secondary_fault = false;
-		GrStringDraw(&sContext, "MASTER FLT", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);
-	}
-	else if (secondary_fault) {
-		secondary_fault = false;
-		GrStringDraw(&sContext, "SECONDARY FLT", -1, (sContext.psFont->ui8MaxWidth)*x_pos, (sContext.psFont->ui8Height+8)*7, true);
-	}
+	if (task_info.fault == MASTER_FAULT)
+		GrStringDraw(&sContext, " M", -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*7, true);
+	else if (task_info.fault == SECONDARY_FAULT)
+		GrStringDraw(&sContext, " S", -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*7, true);
+	else
+		GrStringDraw(&sContext, "  ", -1, (sContext.psFont->ui8MaxWidth)*(x_pos+1), (sContext.psFont->ui8Height+8)*7, true);
 }
 
 void Thread_Display (void const *args) {
@@ -348,17 +344,14 @@ void load_threads(Task* tasks[], int size) {
 
 enum TASK_FAULTS analyze_task(Task* task) {
 	if (task->executed_time > task->deadline) {
-		if (task->static_priority == REALTIME) {
-			master_fault = true;
+		if (task->static_priority <= REALTIME) {
 			return MASTER_FAULT;
 		}
 		task->static_priority -= 10;
-		secondary_fault = true;
 		return SECONDARY_FAULT;
 	}
 	else if(task->executed_time < task->deadline/2) {
 		task->static_priority += 10;
-		secondary_fault = true;
 		return SECONDARY_FAULT;
 	}
 	
@@ -376,8 +369,10 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		previous_time = ready_tasks[i]->timer;
 		ready_tasks[i]->timer = (int) floor(getSystemTime());
 		diff_time = floor(ready_tasks[i]->timer - previous_time);
-		ready_tasks[i]->relaxing_remaining_time -= diff_time + ready_tasks[i]->executed_time;
+		ready_tasks[i]->dinamic_priority--;
 		
+		//WORST CODE EVER
+		/*ready_tasks[i]->relaxing_remaining_time -= diff_time + ready_tasks[i]->executed_time;
 		increase_priority = abs((int) ceil(1000000/ready_tasks[i]->relaxing_remaining_time));
 		if (increase_priority > 100) {
 			increase_priority = 100;
@@ -387,7 +382,7 @@ void updateTasks(Task* ready_tasks[], int *n_ready_tasks, int ready_max_size, Ta
 		
 		ready_tasks[i]->time_since_start += diff_time;
 		if(ready_tasks[i] == current_task)
-			ready_tasks[i]->executed_time += diff_time;
+			ready_tasks[i]->executed_time += diff_time;*/
 	}
 	
 	for (i = 0; i < *n_waiting_tasks; i++) {
@@ -449,6 +444,7 @@ void dispatcher() {
 				//Task is finished
 				if (current_task->status == WAITING) {
 					fault = analyze_task(current_task);
+					current_task->fault = fault;
 					resetTask(current_task, WAITING);
 				}
 				
@@ -508,7 +504,7 @@ int main (void) {
 	task_E = createTask("Task E", osThreadCreate(osThread(Thread_E), NULL), -30, 6, task_e_execution_time, 30, WAITING);
 	task_F = createTask("Task F", osThreadCreate(osThread(Thread_F), NULL), -100, 10, task_f_execution_time, 10, WAITING);
 	#ifdef DISPLAY_TASK
-	task_Display = createTask("Display Task", osThreadCreate(osThread(Thread_Display), NULL), -50, 1, display_task_execution_time, 10, WAITING);
+	task_Display = createTask("Display Task", osThreadCreate(osThread(Thread_Display), NULL), -50, 1, display_task_execution_time, 100, WAITING);
 	#endif
     osKernelStart();
 	

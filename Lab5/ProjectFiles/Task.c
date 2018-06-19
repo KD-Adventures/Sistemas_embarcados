@@ -11,6 +11,8 @@ Task createTask(char name[], osThreadId thread_id, int static_priority, int freq
 	new_task.static_priority = static_priority;
 	new_task.dinamic_priority = static_priority;
 	
+	new_task.fault = NO_FAULT;
+	
 	new_task.queue_position = 0;
 	
 	new_task.time_to_sleep = (int) floor(1000/frequency);
